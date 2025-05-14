@@ -1,0 +1,76 @@
+ <!-- Step 7: Costs -->
+      <div id="step-7" className="step">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-2xl font-bold mb-6">Koszty utrzymania dziecka</h2>
+          <p className="text-gray-700 mb-6">
+            Nie po to, by je oceniać. Pytamy, by lepiej zrozumieć rzeczywiste potrzeby dzieci w różnych sytuacjach życiowych – 
+            i dać Ci dane, które możesz wykorzystać w rozmowach, negocjacjach lub przed sądem.
+          </p>
+          <p className="text-gray-700 mb-6">
+            📌 Jeśli masz wydatki roczne (np. wakacje, sprzęt sportowy), podziel je przez 12 i podaj uśrednioną miesięczną kwotę.
+          </p>
+
+          <div className="space-y-6">
+            <div>
+              <label className="block text-gray-700 mb-2">Kwota alimentów</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01" required>
+              <p className="text-sm text-gray-500 mt-1">Jaka kwota została ustalona jako alimenty na to dziecko (przez sąd lub w porozumieniu)?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Twoje miesięczne wydatki na dziecko</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01" required>
+              <p className="text-sm text-gray-500 mt-1">Jaką średnią miesięczną kwotę przeznaczasz na potrzeby dziecka?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Wydatki drugiego rodzica (jeśli znane)</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01">
+              <p className="text-sm text-gray-500 mt-1">Jaką kwotę miesięcznie przeznacza na dziecko drugi rodzic?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Koszty uznane przez sąd (jeśli dotyczy)</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01">
+              <p className="text-sm text-gray-500 mt-1">Jaką miesięczną kwotę jako koszt utrzymania dziecka wskazał sąd w swoim postanowieniu?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Inne źródła utrzymania dziecka</label>
+              <div className="space-y-2">
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Renta rodzinna
+              </label>
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Świadczenie pielęgnacyjne
+              </label>
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Inne
+                  <input type="text" className="ml-2 p-2 border rounded" placeholder="Proszę podać">
+              </label>
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Brak dodatkowych źródeł
+              </label>
+            </div>
+          </div>
+          </div>
+                </div>
+            
+          <div className="mt-8 flex justify-between">
+            <button onclick="prevStep()" className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+              Wstecz
+            </button>
+            <button onclick="nextStep()" className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>

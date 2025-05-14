@@ -16,7 +16,6 @@ import { PlusCircle, MinusCircle } from "lucide-react";
 export default function Dzieci() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
-
   // Inicjalizacja stanu dla liczby dzieci i ich danych z formStore
   const [liczbaDzieci, setLiczbaDzieci] = useState<number>(
     formData.liczbaDzieci || 1
@@ -28,6 +27,7 @@ export default function Dzieci() {
       plec: "K" | "M" | "";
       specjalnePotrzeby: boolean;
       opisSpecjalnychPotrzeb: string;
+      modelOpieki: "50/50" | "inny" | "";
     }>
   >(
     formData.dzieci?.map(
@@ -37,12 +37,14 @@ export default function Dzieci() {
         plec: "K" | "M";
         specjalnePotrzeby: boolean;
         opisSpecjalnychPotrzeb?: string;
+        modelOpieki?: "50/50" | "inny";
       }) => ({
         id: d.id,
         wiek: typeof d.wiek === "number" ? d.wiek : "",
         plec: d.plec,
         specjalnePotrzeby: d.specjalnePotrzeby,
         opisSpecjalnychPotrzeb: d.opisSpecjalnychPotrzeb || "",
+        modelOpieki: d.modelOpieki || "",
       })
     ) || [
       {
@@ -51,12 +53,12 @@ export default function Dzieci() {
         plec: "",
         specjalnePotrzeby: false,
         opisSpecjalnychPotrzeb: "",
+        modelOpieki: "",
       },
     ]
   );
 
   const [error, setError] = useState<string | null>(null);
-
   // Aktualizacja dzieci, gdy zmieni się liczba dzieci
   useEffect(() => {
     // Jeśli brakuje dzieci, dodajemy nowe
@@ -69,6 +71,7 @@ export default function Dzieci() {
           plec: "",
           specjalnePotrzeby: false,
           opisSpecjalnychPotrzeb: "",
+          modelOpieki: "",
         });
       }
       setDzieci(noweDzieci);
@@ -85,7 +88,6 @@ export default function Dzieci() {
     noweDzieci[index] = { ...noweDzieci[index], ...data };
     setDzieci(noweDzieci);
   };
-
   // Funkcja do obsługi przejścia do następnego kroku
   const handleNext = () => {
     // Walidacja danych
@@ -105,6 +107,10 @@ export default function Dzieci() {
         hasError = true;
         errorMessage = `Proszę opisać specjalne potrzeby dziecka ${index + 1}`;
       }
+      if (dziecko.modelOpieki === "") {
+        hasError = true;
+        errorMessage = `Proszę wybrać model opieki dla dziecka ${index + 1}`;
+      }
     });
 
     if (hasError) {
@@ -121,14 +127,24 @@ export default function Dzieci() {
       opisSpecjalnychPotrzeb: d.specjalnePotrzeby
         ? d.opisSpecjalnychPotrzeb
         : undefined,
+      modelOpieki: d.modelOpieki as "50/50" | "inny",
     }));
-    updateFormData({
-      liczbaDzieci,
-      dzieci: dzieciDoZapisu,
-    });
+    updateFormData({ liczbaDzieci, dzieci: dzieciDoZapisu });
 
-    // Przekierowanie do następnego kroku - teraz jest to strona postępowania
-    router.push("/postepowanie");
+    // Sprawdzamy, czy któreś dziecko ma model opieki "inny" - jeśli tak, przechodzimy do strony czasu opieki
+    // W przeciwnym wypadku przechodzimy od razu do kosztów utrzymania
+    const dzieckoZModelemInny = dzieciDoZapisu.find(
+      (d) => d.modelOpieki === "inny"
+    );
+    if (dzieckoZModelemInny) {
+      // Ustawiamy pierwsze dziecko z modelem "inny" jako aktualne
+      updateFormData({
+        aktualneDzieckoWTabeliCzasu: dzieckoZModelemInny.id,
+      });
+      router.push("/czas-opieki");
+    } else {
+      router.push("/koszty-utrzymania");
+    }
   };
 
   // Funkcja do obsługi powrotu do poprzedniego kroku
@@ -202,7 +218,6 @@ export default function Dzieci() {
                   className="p-4 border-2 border-gray-200 rounded-lg"
                 >
                   <h3 className="font-medium mb-3">Dziecko {index + 1}</h3>
-
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <Label htmlFor={`wiek-${dziecko.id}`}>Wiek</Label>
@@ -242,8 +257,7 @@ export default function Dzieci() {
                         <option value="M">Chłopiec</option>
                       </select>
                     </div>
-                  </div>
-
+                  </div>{" "}
                   <div className="space-y-3">
                     <div className="flex items-center space-x-2">
                       <Checkbox
@@ -281,6 +295,60 @@ export default function Dzieci() {
                         />
                       </div>
                     )}
+
+                    <div className="mt-4">
+                      <Label htmlFor={`model-opieki-${dziecko.id}`}>
+                        Model opieki nad dzieckiem
+                      </Label>
+                      <div className="mt-2">
+                        <div className="flex flex-col space-y-2">
+                          <label className="flex items-center space-x-2 p-3 border rounded-md cursor-pointer hover:bg-slate-50">
+                            <input
+                              type="radio"
+                              name={`model-opieki-${dziecko.id}`}
+                              value="50/50"
+                              checked={dziecko.modelOpieki === "50/50"}
+                              onChange={() =>
+                                updateDziecko(index, {
+                                  modelOpieki: "50/50",
+                                })
+                              }
+                              className="h-4 w-4 text-blue-600"
+                            />
+                            <div>
+                              <span className="font-medium">Model 50/50</span>
+                              <p className="text-sm text-gray-500">
+                                Dziecko spędza równy czas pod opieką każdego z
+                                rodziców
+                              </p>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center space-x-2 p-3 border rounded-md cursor-pointer hover:bg-slate-50">
+                            <input
+                              type="radio"
+                              name={`model-opieki-${dziecko.id}`}
+                              value="inny"
+                              checked={dziecko.modelOpieki === "inny"}
+                              onChange={() =>
+                                updateDziecko(index, {
+                                  modelOpieki: "inny",
+                                })
+                              }
+                              className="h-4 w-4 text-blue-600"
+                            />
+                            <div>
+                              <span className="font-medium">Inny model</span>
+                              <p className="text-sm text-gray-500">
+                                Dziecko spędza różną ilość czasu pod opieką
+                                każdego rodzica - wymagane wypełnienie tabeli
+                                czasu
+                              </p>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -26,6 +26,37 @@ export type FormData = {
     plec: "K" | "M";
     specjalnePotrzeby: boolean;
     opisSpecjalnychPotrzeb?: string;
+    modelOpieki?: "50/50" | "inny";
+    // Dane związane z tabelą czasu opieki (tylko dla modelu "inny")
+    cyklOpieki?: "1" | "2" | "4" | "custom"; // co tydzień, co 2 tygodnie, co 4 tygodnie, brak stałego schematu
+    tabelaCzasu?: {
+      [dzienTygodnia: string]: {
+        // "pn", "wt", "sr", "cz", "pt", "sb", "nd"
+        poranek: number;
+        placowkaEdukacyjna: number;
+        czasPoEdukacji: number;
+        senURodzica: number;
+      };
+    };
+  }[];
+
+  // Stan aktualnego dziecka w tabeli czasu
+  aktualneDzieckoWTabeliCzasu?: number;
+
+  // Krok 7: Koszty utrzymania dzieci
+  kosztyDzieci?: {
+    id: number;
+    kwotaAlimentow: number;
+    twojeMiesieczneWydatki: number;
+    wydatkiDrugiegoRodzica?: number;
+    kosztyUznanePrzezSad?: number;
+    inneZrodlaUtrzymania: {
+      rentaRodzinna: boolean;
+      swiadczeniePielegnacyjne: boolean;
+      inne: boolean;
+      inneOpis?: string;
+      brakDodatkowychZrodel: boolean;
+    };
   }[];
 };
 

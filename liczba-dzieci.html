@@ -1,0 +1,80 @@
+<!-- Step 5: Children info -->
+<div id="step-5" className="step">
+  <div className="bg-white rounded-lg shadow-sm p-6">
+    <h2 className="text-xl font-bold mb-4">Informacje o dzieciach</h2>
+    <div className="text-gray-700 space-y-3 mb-6">
+      <p>
+        Ta część formularza dotyczy dzieci, których sytuacja alimentacyjna lub
+        sposób dzielenia się kosztami utrzymania została już w jakiś sposób
+        ustalona.
+      </p>
+      <p>
+        W AliMatrix wierzymy, że rzetelna analiza zaczyna się od zrozumienia
+        konkretu – a potrzeby dziecka są jednym z jego najważniejszych wymiarów.
+        W kolejnych krokach poprosimy Cię o informacje, które pomogą określić,
+        jak wygląda Wasza codzienność – opieka, czas spędzany z dzieckiem, jego
+        wiek, edukacja oraz rzeczywiste wydatki.
+      </p>
+      <p>
+        Te dane są nie tylko potrzebne do przygotowania raportu – mogą pomóc
+        również Tobie, by lepiej zobaczyć strukturę codzienności i
+        odpowiedzialności. Wiele osób dopiero w trakcie tego etapu uświadamia
+        sobie, jak naprawdę wygląda podział czasu i kosztów związanych z
+        wychowaniem.
+      </p>
+    </div>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-gray-700 mb-2"
+          >Liczba dzieci: Ile dzieci objętych jest ustaleniami dotyczącymi
+          alimentów lub współfinansowania kosztów życia?
+          <span className="tooltip">
+            <span className="info-icon">i</span>
+            <span className="tooltiptext-wide"
+              >Wybierz liczbę dzieci, dla których chcesz wypełnić formularz.
+              Każde dziecko będzie miało osobny zestaw pytań.</span
+            >
+          </span>
+        </label>
+        <select
+          className="w-full p-3 border-2 border-gray-200 rounded-lg"
+          onchange="generateChildForms(this.value)"
+        >
+          <option value="">Wybierz...</option>
+          <option value="1">1 dziecko</option>
+          <option value="2">2 dzieci</option>
+          <option value="3">3 dzieci</option>
+          <option value="4">4 dzieci</option>
+          <option value="5">5+ dzieci</option>
+        </select>
+        <br />
+        &nbsp;
+        <span className="tooltip">
+          <span className="info-icon">i</span>
+          <span className="tooltiptext-wide"
+            >Twoja odpowiedź pomoże dostosować dalsze pytania w formularzu do
+            Twojej sytuacji. Dzięki temu raport, który otrzymasz, będzie lepiej
+            odzwierciedlał Twoją rzeczywistość.
+          </span>
+        </span>
+      </div>
+      <div id="children-forms" className="space-y-6">
+        <!-- Child forms will be generated here -->
+      </div>
+    </div>
+    <div className="mt-6 flex gap-3">
+      <button
+        onclick="prevStep()"
+        className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+      >
+        Wstecz
+      </button>
+      <button
+        onclick="nextStep()"
+        className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+      >
+        Dalej
+      </button>
+    </div>
+  </div>
+</div>

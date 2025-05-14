@@ -1,15 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-// Definiujemy typy dla danych formularza
+// Rozszerzona definicja typów dla danych formularza
 export type FormData = {
   // Krok 1: Wybór ścieżki
   sciezkaWybor?: "established" | "not-established";
 
+  // Dane dla ścieżki alternatywnej
+  alternativeEmail?: string;
+  alternativeConsent?: boolean;
+
   // W przyszłości dodamy tu więcej pól
 };
 
-// Definiujemy interfejs dla store'a
+// Definicja interfejsu dla store'a
 interface FormStore {
   // Dane formularza
   formData: FormData;

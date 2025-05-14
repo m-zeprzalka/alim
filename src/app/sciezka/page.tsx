@@ -52,12 +52,12 @@ export default function WyborSciezki() {
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <Card className="w-full max-w-lg shadow-lg">
-        <Logo size="medium" />
-        <FormProgress currentStep={1} totalSteps={12} />
-        <CardContent className="pt-6">
+        <CardContent>
+          <Logo size="medium" />
+          <FormProgress currentStep={1} totalSteps={12} />
           <div className="space-y-6">
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold">
+              <h1 className="text-3xl font-bold text-left text-sky-950">
                 🔍 Na jakim etapie ustaleń dotyczących finansowania potrzeb
                 dziecka jesteś?
               </h1>

@@ -64,12 +64,11 @@ export default function PostepowaniePorozumienie() {
                 <span className="block mb-2">
                   Jak oceniasz adekwatność osiągniętego porozumienia w Twojej
                   sprawie?
-                </span>
+                </span>{" "}
                 <div className="text-sm text-gray-600 mb-2">
-                  Oceń w skali 1–5, gdzie 1 oznacza „zupełnie nieadekwatne", a 5
-                  „w pełni adekwatne"
+                  Oceń w skali 1–5, gdzie 1 oznacza &ldquo;zupełnie
+                  nieadekwatne&rdquo;, a 5 &ldquo;w pełni adekwatne&rdquo;
                 </div>
-
                 <div className="relative py-5">
                   <div className="flex justify-between mb-1">
                     <span>1</span>

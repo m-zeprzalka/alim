@@ -9,10 +9,9 @@ import { useEffect } from "react";
 export default function Finansowanie() {
   const router = useRouter();
   const { formData } = useFormStore();
-
   // Zabezpieczenie - sprawdzamy czy użytkownik przeszedł przez wybór ścieżki
   useEffect(() => {
-    if (!formData.sciezkaWybor || formData.sciezkaWybor !== "established") {
+    if (!formData.sciezkaWybor) {
       router.push("/sciezka");
     }
   }, [formData.sciezkaWybor, router]);
@@ -31,10 +30,11 @@ export default function Finansowanie() {
             </p>
 
             <div className="flex space-x-3">
+              {" "}
               <Button
                 variant="outline"
                 className="flex-1"
-                onClick={() => router.push("/sciezka")}
+                onClick={() => router.push("/koszty-utrzymania")}
               >
                 Wstecz
               </Button>

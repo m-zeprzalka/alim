@@ -10,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFormStore } from "@/lib/store/form-store";
-import { Select } from "@/components/ui/select";
 
 export default function CzasOpieki() {
   const router = useRouter();

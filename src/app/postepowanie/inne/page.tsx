@@ -66,12 +66,11 @@ export default function PostepowanieInne() {
                 <span className="block mb-2">
                   Jak oceniasz adekwatność obecnego sposobu finansowania potrzeb
                   dziecka?
-                </span>
+                </span>{" "}
                 <div className="text-sm text-gray-600 mb-2">
-                  Oceń w skali 1–5, gdzie 1 oznacza „zupełnie nieadekwatny", a 5
-                  „w pełni adekwatny"
+                  Oceń w skali 1–5, gdzie 1 oznacza &ldquo;zupełnie
+                  nieadekwatny&rdquo;, a 5 &ldquo;w pełni adekwatny&rdquo;
                 </div>
-
                 <div className="relative py-5">
                   <div className="flex justify-between mb-1">
                     <span>1</span>

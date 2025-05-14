@@ -1,5 +1,6 @@
 "use client";
 
+import { FormProgress } from "@/components/ui/custom/FormProgress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -50,6 +51,7 @@ export default function WyborSciezki() {
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <Card className="w-full max-w-lg shadow-lg">
+        <FormProgress currentStep={1} totalSteps={12} />
         <CardContent className="pt-6">
           <div className="space-y-6">
             <div className="space-y-2">

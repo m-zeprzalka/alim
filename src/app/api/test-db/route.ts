@@ -1,8 +1,8 @@
 // Narzędzie do testowania połączenia z bazą danych
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Sprawdź połączenie z bazą danych
     const result = await prisma.$queryRaw`SELECT NOW() as current_time`;

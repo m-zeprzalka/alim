@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new subscription
-    const subscription = await prisma.emailSubscription.create({
+    await prisma.emailSubscription.create({
       data: {
         email,
         acceptedTerms,

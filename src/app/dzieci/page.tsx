@@ -39,9 +39,9 @@ export default function Dzieci() {
         specjalnePotrzeby: boolean;
         opisSpecjalnychPotrzeb?: string;
       }) => ({
-        id: d.id,
-        wiek: d.wiek,
-        plec: d.plec,
+        id: parseInt(d.id, 10) || 0,
+        wiek: d.wiek ? parseInt(d.wiek, 10) || "" : "",
+        plec: d.plec === "K" || d.plec === "M" ? d.plec : "",
         specjalnePotrzeby: d.specjalnePotrzeby,
         opisSpecjalnychPotrzeb: d.opisSpecjalnychPotrzeb || "",
       })

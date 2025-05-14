@@ -10,9 +10,9 @@ export function FormProgress({ currentStep, totalSteps }: FormProgressProps) {
 
   return (
     <div className="w-full mb-6">
-      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="h-2 bg-sky-100 rounded-full overflow-hidden">
         <div
-          className="h-full bg-blue-500 transition-all duration-500 ease-in-out"
+          className="h-full bg-sky-950 transition-all duration-500 ease-in-out rounded-full"
           style={{ width: `${progress}%` }}
         />
       </div>

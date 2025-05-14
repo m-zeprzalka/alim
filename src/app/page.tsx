@@ -1,3 +1,4 @@
+import { Logo } from "@/components/ui/custom/Logo";
 import { FormProgress } from "@/components/ui/custom/FormProgress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,12 +8,13 @@ export default function Home() {
   return (
     <main className="flex justify-center p-4">
       <Card className="w-full max-w-lg shadow-lg">
-        <CardContent className="pt-6">
+        <CardContent>
+          <Logo size="medium" />
           <FormProgress currentStep={1} totalSteps={12} />
           <div className="text-center space-y-6">
-            <h1 className="text-3xl font-bold">AliMatrix</h1>
-            <p className="font-semibold text-lg">Alimenty bez tajemnic.</p>
-
+            <h1 className="text-3xl font-bold text-left text-sky-950">
+              AliMatrix - Alimenty bez tajemnic
+            </h1>
             <div className="space-y-4 text-gray-700 text-left">
               <p>
                 <strong>AliMatrix</strong> to niezależna inicjatywa oparta na

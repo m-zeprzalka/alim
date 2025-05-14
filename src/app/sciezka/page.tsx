@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/ui/custom/Logo";
 import { FormProgress } from "@/components/ui/custom/FormProgress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -51,6 +52,7 @@ export default function WyborSciezki() {
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <Card className="w-full max-w-lg shadow-lg">
+        <Logo size="medium" />
         <FormProgress currentStep={1} totalSteps={12} />
         <CardContent className="pt-6">
           <div className="space-y-6">

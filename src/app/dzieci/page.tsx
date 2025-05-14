@@ -31,13 +31,21 @@ export default function Dzieci() {
       opisSpecjalnychPotrzeb: string;
     }>
   >(
-    formData.dzieci?.map((d: any) => ({
-      id: d.id,
-      wiek: d.wiek,
-      plec: d.plec,
-      specjalnePotrzeby: d.specjalnePotrzeby,
-      opisSpecjalnychPotrzeb: d.opisSpecjalnychPotrzeb || "",
-    })) || [
+    formData.dzieci?.map(
+      (d: {
+        id: string;
+        wiek: string;
+        plec: string;
+        specjalnePotrzeby: boolean;
+        opisSpecjalnychPotrzeb?: string;
+      }) => ({
+        id: d.id,
+        wiek: d.wiek,
+        plec: d.plec,
+        specjalnePotrzeby: d.specjalnePotrzeby,
+        opisSpecjalnychPotrzeb: d.opisSpecjalnychPotrzeb || "",
+      })
+    ) || [
       {
         id: 1,
         wiek: "",
@@ -70,7 +78,7 @@ export default function Dzieci() {
     else if (dzieci.length > liczbaDzieci) {
       setDzieci(dzieci.slice(0, liczbaDzieci));
     }
-  }, [liczbaDzieci]);
+  }, [liczbaDzieci, dzieci]);
 
   // Funkcja do aktualizacji danych dziecka
   const updateDziecko = (index: number, data: Partial<(typeof dzieci)[0]>) => {

@@ -21,7 +21,6 @@ export default function Dzieci() {
   const [liczbaDzieci, setLiczbaDzieci] = useState<number>(
     formData.liczbaDzieci || 1
   );
-
   const [dzieci, setDzieci] = useState<
     Array<{
       id: number;
@@ -33,15 +32,15 @@ export default function Dzieci() {
   >(
     formData.dzieci?.map(
       (d: {
-        id: string;
-        wiek: string;
-        plec: string;
+        id: number;
+        wiek: number;
+        plec: "K" | "M";
         specjalnePotrzeby: boolean;
         opisSpecjalnychPotrzeb?: string;
       }) => ({
-        id: parseInt(d.id, 10) || 0,
-        wiek: d.wiek ? parseInt(d.wiek, 10) || "" : "",
-        plec: d.plec === "K" || d.plec === "M" ? d.plec : "",
+        id: d.id,
+        wiek: typeof d.wiek === "number" ? d.wiek : "",
+        plec: d.plec,
         specjalnePotrzeby: d.specjalnePotrzeby,
         opisSpecjalnychPotrzeb: d.opisSpecjalnychPotrzeb || "",
       })

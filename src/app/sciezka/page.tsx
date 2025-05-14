@@ -43,7 +43,7 @@ export default function WyborSciezki() {
 
     // Przekierowanie w zależności od wybranej ścieżki
     if (selectedOption === "established") {
-      router.push("/finansowanie");
+      router.push("/podstawa-ustalen");
     } else {
       router.push("/alternatywna");
     }

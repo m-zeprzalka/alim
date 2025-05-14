@@ -1,5 +1,4 @@
 import { Logo } from "@/components/ui/custom/Logo";
-import { FormProgress } from "@/components/ui/custom/FormProgress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
@@ -10,7 +9,6 @@ export default function Home() {
       <Card className="w-full max-w-lg shadow-lg">
         <CardContent>
           <Logo size="medium" />
-          <FormProgress currentStep={1} totalSteps={12} />
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-left text-sky-950">
               AliMatrix - Alimenty bez tajemnic

@@ -10,7 +10,19 @@ export type FormData = {
   alternativeEmail?: string;
   alternativeConsent?: boolean;
 
-  // W przyszłości dodamy tu więcej pól
+  // Krok 3: Podstawa ustaleń
+  podstawaUstalen?: string;
+  podstawaUstalenInne?: string;
+
+  // Krok 4: Dzieci
+  liczbaDzieci?: number;
+  dzieci?: {
+    id: number;
+    wiek: number;
+    plec: "K" | "M";
+    specjalnePotrzeby: boolean;
+    opisSpecjalnychPotrzeb?: string;
+  }[];
 };
 
 // Definicja interfejsu dla store'a

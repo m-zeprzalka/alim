@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState } from "react";
+import { Info } from "lucide-react";
 
 interface InfoTooltipProps {
   content: React.ReactNode;
@@ -25,12 +26,14 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
             className="inline-flex items-center justify-center w-5 h-5 ml-1 text-xs font-bold text-white bg-blue-500 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             aria-label="Więcej informacji"
           >
-            i
+            <Info className="w-3 h-3" />
           </button>
         </TooltipTrigger>
         <TooltipContent
-          side="right"
-          className="max-w-sm p-4 bg-slate-900 text-white"
+          side="bottom"
+          align="center"
+          className="max-w-[calc(100vw-32px)] sm:max-w-sm p-4 bg-slate-900 text-white text-[13px] leading-5 shadow-lg z-50"
+          sideOffset={5}
         >
           {content}
         </TooltipContent>

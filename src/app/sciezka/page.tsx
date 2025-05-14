@@ -81,9 +81,10 @@ export default function WyborSciezki() {
                   </li>
                 </ul>
                 <p className="mt-1">
-                  W formularzu będziemy używać słowa „alimenty", ponieważ takie
-                  określenie stosuje prawo i praktyka sądowa – nawet jeśli
-                  sposób finansowania potrzeb dziecka został ustalony inaczej.
+                  W formularzu będziemy używać słowa &quot;alimenty&quot;,
+                  ponieważ takie określenie stosuje prawo i praktyka sądowa –
+                  nawet jeśli sposób finansowania potrzeb dziecka został
+                  ustalony inaczej.
                 </p>
               </div>
             </div>

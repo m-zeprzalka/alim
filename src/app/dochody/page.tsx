@@ -19,28 +19,47 @@ export default function Dochody() {
     }
   }, [formData, router]);
 
+  // Funkcja określająca, do którego wariantu postępowania wrócić
+  const handleBack = () => {
+    // Sprawdzamy wariant postępowania zapisany w formData
+    if (formData.wariantPostepu) {
+      switch (formData.wariantPostepu) {
+        case "court":
+          router.push("/postepowanie/sadowe");
+          break;
+        case "agreement":
+          router.push("/postepowanie/porozumienie");
+          break;
+        case "other":
+          router.push("/postepowanie/inne");
+          break;
+        default:
+          // Jeśli nie ma określonego wariantu, wracamy do ekranu dzieci
+          router.push("/postepowanie");
+      }
+    } else {
+      // Jeśli nie ma określonego wariantu, wracamy do ekranu dzieci
+      router.push("/dzieci");
+    }
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <Card className="w-full max-w-lg shadow-lg">
         <CardContent className="pt-6">
+          {" "}
           <div className="flex justify-center mb-6">
             <Logo size="medium" />
           </div>
-          <FormProgress currentStep={5} totalSteps={12} />
-
+          <FormProgress currentStep={10} totalSteps={12} />
           <div className="space-y-6">
             <h1 className="text-2xl font-bold">Dochody</h1>
             <p className="text-gray-600">
               Ta strona jest w trakcie implementacji. Tutaj znajdzie się kolejny
               krok formularza dotyczący dochodów rodziny.
-            </p>
-
+            </p>{" "}
             <div className="flex space-x-3">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => router.push("/dzieci")}
-              >
+              <Button variant="outline" className="flex-1" onClick={handleBack}>
                 Wstecz
               </Button>
               <Button className="flex-1" onClick={() => router.push("/")}>

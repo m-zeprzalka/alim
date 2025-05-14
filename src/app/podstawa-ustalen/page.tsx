@@ -34,7 +34,6 @@ export default function PodstawaUstalen() {
       setError(null);
     }
   }, [selectedOption]);
-
   // Funkcja do obsługi przejścia do następnego kroku
   const handleNext = () => {
     if (!selectedOption) {
@@ -48,14 +47,23 @@ export default function PodstawaUstalen() {
       return;
     }
 
+    // Określamy kategorię podstawy ustaleń do użycia w kroku 9
+    let wariantPostepu: "court" | "agreement" | "other" = "other"; // Domyślnie "inne"
+
+    if (["zabezpieczenie", "wyrok", "ugoda-sad"].includes(selectedOption)) {
+      wariantPostepu = "court"; // Wariant dla postępowania sądowego
+    } else if (["mediacja", "prywatne"].includes(selectedOption)) {
+      wariantPostepu = "agreement"; // Wariant dla porozumienia
+    }
+
     // Zapisujemy wybrane dane do store'a
     updateFormData({
       podstawaUstalen: selectedOption,
       podstawaUstalenInne: selectedOption === "inne" ? inneDetails : "",
+      wariantPostepu: wariantPostepu, // Zapisujemy kategorię do późniejszego użycia
     });
 
     // Przekierowanie do następnego kroku - zakładam, że będzie to strona z kolejnymi danymi
-    // TODO: Zaktualizuj ścieżkę po utworzeniu następnego kroku formularza
     router.push("/dzieci");
   };
 

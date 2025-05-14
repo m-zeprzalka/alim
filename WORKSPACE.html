@@ -1,0 +1,3022 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AliMatrix - Formularz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background: linear-gradient(135deg, #eaf1fb 0%, #dbeafe 100%);
+        min-height: 100vh;
+        font-family: 'Inter', Arial, sans-serif;
+      }
+      .step {
+        display: none;
+      }
+      .step.active {
+        display: block;
+      }
+      .slide-in {
+        animation: slideIn 0.3s ease-out;
+      }
+      @keyframes slideIn {
+        from { transform: translateY(40px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      /* Progres bar */
+      .progress-bar {
+        transition: width 0.3s ease;
+        height: 6px;
+        border-radius: 3px;
+      }
+      /* Nowoczesne inputy */
+      .modern-input {
+        width: 100%;
+        padding: 18px 20px;
+        border-radius: 16px;
+        border: none;
+        background: #f1f5f9;
+        font-size: 1.2rem;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        outline: none;
+        transition: box-shadow 0.2s;
+      }
+      .modern-input:focus {
+        box-shadow: 0 0 0 2px #2563eb33;
+      }
+      /* Nowoczesny przycisk */
+      .modern-btn {
+        width: 100%;
+        padding: 18px 0;
+        border-radius: 16px;
+        background: #1e293b;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: 600;
+        border: none;
+        margin-top: 8px;
+        margin-bottom: 32px;
+        transition: background 0.2s;
+      }
+      .modern-btn:active, .modern-btn:hover {
+        background: #2563eb;
+      }
+      /* Branding/logo */
+      .alimatrix-logo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 32px;
+        margin-bottom: 8px;
+      }
+      .alimatrix-logo img {
+        width: 48px;
+        margin-bottom: 8px;
+      }
+      .alimatrix-logo .brand {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        letter-spacing: -1px;
+      }
+      .alimatrix-logo .subtitle {
+        font-size: 1rem;
+        color: #64748b;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+      }
+      /* Tooltip nowoczesny */
+      .tooltip {
+        position: relative;
+        display: inline-block;
+      }
+      .tooltip .tooltiptext, .tooltip .tooltiptext-wide {
+        visibility: hidden;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: #1e293b;
+        color: #fff;
+        border-radius: 16px;
+        padding: 24px 20px 32px 20px;
+        font-size: 1.1rem;
+        max-width: 90vw;
+        width: 340px;
+        box-shadow: 0 8px 32px rgba(30,41,59,0.18);
+        opacity: 0;
+        transition: opacity 0.2s;
+        text-align: left;
+        word-break: break-word;
+        z-index: 99999;
+      }
+      .tooltip .tooltiptext.active, .tooltip .tooltiptext-wide.active {
+        visibility: visible;
+        opacity: 1;
+      }
+      .tooltip .close-tooltip {
+        position: absolute;
+        top: 12px;
+        right: 18px;
+        font-size: 1.5rem;
+        color: #fff;
+        cursor: pointer;
+      }
+      .info-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #2563eb;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-left: 8px;
+        cursor: pointer;
+      }
+      /* Custom checkbox/radio */
+      .modern-check {
+        appearance: none;
+        width: 40px;
+        height: 40px;
+        border: 2px solid #cbd5e1;
+        border-radius: 12px;
+        background: #f1f5f9;
+        margin-right: 16px;
+        display: inline-block;
+        vertical-align: middle;
+        position: relative;
+        transition: border 0.2s;
+      }
+      .modern-check:checked {
+        border: 2px solid #2563eb;
+        background: #2563eb;
+      }
+      .modern-check:checked:after {
+        content: '';
+        display: block;
+        width: 18px;
+        height: 18px;
+        background: #fff;
+        border-radius: 6px;
+        position: absolute;
+        top: 9px;
+        left: 9px;
+      }
+      .modern-radio {
+        appearance: none;
+        width: 40px;
+        height: 40px;
+        border: 2px solid #cbd5e1;
+        border-radius: 50%;
+        background: #f1f5f9;
+        margin-right: 16px;
+        display: inline-block;
+        vertical-align: middle;
+        position: relative;
+        transition: border 0.2s;
+      }
+      .modern-radio:checked {
+        border: 2px solid #2563eb;
+        background: #2563eb;
+      }
+      .modern-radio:checked:after {
+        content: '';
+        display: block;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border-radius: 50%;
+        position: absolute;
+        top: 10px;
+        left: 10px;
+      }
+      .modern-label {
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        margin-bottom: 18px;
+        cursor: pointer;
+      }
+      /* Tabela czasu opieki - mobile first */
+      .care-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        overflow-x: auto;
+        display: block;
+        font-size: 1.1rem;
+      }
+      .care-table th, .care-table td {
+        min-width: 60px;
+        padding: 8px 4px;
+        text-align: center;
+      }
+      .care-table input[type="number"] {
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        border: 1.5px solid #cbd5e1;
+        background: #f1f5f9;
+        text-align: center;
+        margin: 0 auto;
+      }
+       /* Stylizacja suwaka dla różnych przeglądarek */
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 10px;
+    border-radius: 10px;
+    background: #e2e8f0;
+    outline: none;
+  }
+  
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  
+  input[type=range]::-moz-range-thumb {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #2563eb;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  input[type=range]:focus {
+    outline: none;
+  }
+  
+  input[type=range]:focus::-webkit-slider-thumb {
+    background: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  }
+  
+  input[type=range]:focus::-moz-range-thumb {
+    background: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  }
+      @media (max-width: 600px) {
+        .care-table th, .care-table td {
+          min-width: 44px;
+          padding: 6px 2px;
+        }
+        .care-table input[type="number"] {
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+        }
+      }
+      /* Duże odstępy sekcji */
+      .section {
+        margin-bottom: 48px;
+      }
+    </style>
+  </head>
+  <body className="bg-gray-50 min-h-screen">
+    <!-- Progress bar -->
+    <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 z-50">
+      <div
+        id="progress"
+        className="progress-bar h-full bg-blue-600"
+        style="width: 0%"
+      ></div>
+    </div>
+
+    <!-- Header -->
+    <header className="bg-white shadow-sm sticky top-1 z-40">
+      <div className="flex justify-center max-w-md mx-auto py-1 snap-center">
+        <img src="assets/logo_AliMatrix_Mono.png" alt="AliMatrix" className="h-16">
+      </div>
+    </header>
+
+    <!-- Main container -->
+    <main className="max-w-md mx-auto px-4 py-6">
+      <!-- Step 1: Welcome -->
+      <div id="step-1" className="step active">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-2xl font-bold mb-4">
+            AliMatrix. Alimenty bez tajemnic.
+          </h2>
+          <div className="space-y-4 text-gray-700">
+            <p>
+              <strong>AliMatrix</strong> to niezależna inicjatywa oparta na
+              rzeczywistych danych. Pokazujemy, jak w praktyce rodzice w Polsce dzielą się kosztami
+              utrzymania dzieci – w różnych sytuacjach życiowych, różnych
+              układach opieki i różnych decyzjach sądowych. Chcemy, żeby ustalenia dotyczące alimentów były bardziej przejrzyste, a mniej zależne od przypadku.
+            </p>
+            <p>
+              Rozwód, rozstanie, ustalanie sposobu finansowania potrzeb dziecka – to momenty, które rodzą wiele pytań i niepewności. W polskim systemie brakuje jasnych standardów, a decyzje sądowe często znacząco się różnią. AliMatrix powstał po to, by to zmienić – przez analizę rzeczywistych przypadków i budowę narzędzia opartego na danych, nie na opiniach.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="font-semibold mb-2">Wypełniając ten formularz:</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>otrzymasz <strong>spersonalizowany raport</strong>, który pokaże, jak Twoja sytuacja wygląda na tle innych podobnych przypadków (pierwsze 1000 osób – bezpłatnie)</li>
+                <li>
+                  pomagasz stworzyć
+                  <strong>pierwszą w Polsce bazę danych alimentacyjnych</strong>, która może realnie zmienić system
+                </li>
+                <li>
+                  masz wpływ na
+                  <strong>większą przewidywalność i uczciwość</strong> w sprawach dotyczących dzieci.
+                </li>
+              </ul>
+            </div>
+            <div className="bg-amber-50 p-4 rounded-lg">
+              <p className="text-sm">
+                <strong>Uwaga:</strong> obecnie zbieramy dane do stworzenia
+                pierwszych raportów. Aby raporty były wiarygodne i naprawdę użyteczne, potrzebujemy odpowiedniej liczby spójnych przypadków. Po osiągnięciu wymaganej liczby odpowiedzi, przygotujemy i bezpłatnie udostępnimy raporty pierwszym 1000 osobom, które wypełniły formularz - Dostęp do raportów będzie w przyszłości odpłatny. O postępach i gotowości raportu będziemy Cię informować, jeśli zdecydujesz się zostawić swój adres e-mail.
+              </p>
+            </div>
+            <p className="text-sm text-gray-600">
+              Przewidywany czas wypełnienia: około 60 minut.
+            </p>
+            <p>
+              To nie jest zwykła ankieta – to proces, który może przynieść wartość także Tobie. Odpowiadając na pytania, być może lepiej zrozumiesz swoją sytuację, zobaczysz ją w szerszym kontekście i zyskasz wskazówki, które pomogą w dalszych decyzjach. Twoje odpowiedzi z kolei pozwolą AliMatrix tworzyć trafniejsze estymacje – zarówno dla Ciebie, jak i dla innych osób w podobnej sytuacji.
+            </p>
+            <p className="font-semibold mt-4">Formularz został podzielony na kilka przejrzystych części:</p>
+            <ul className="list-disc list-inside space-y-1 text-sm">
+                <li>Informacje o dzieciach, na które ustalane są zasady finansowania potrzeb.</li>
+                <li>Dochody, koszty życia rodziców i wydatki związane z wychowaniem dzieci.</li>
+                <li>Informacje o postępowaniu sądowym dotyczącym Twojej sytuacji.</li>
+                <li>Dane użytkownika potrzebne do bardziej miarodajnej analizy.</li>
+            </ul>
+            <p className="text-sm mt-2">
+              Po zakończeniu wypełniania formularza poprosimy Cię o wyrażenie osobnej zgody na przetwarzanie danych w celu przygotowania spersonalizowanego raportu. Jeśli zdecydujesz się podać adres e‑mail, będzie on przechowywany oddzielnie od pozostałych informacji. Twoje dane będą pseudonimizowane i nie będą powiązane z Twoją tożsamością. Możesz je w każdej chwili edytować lub usunąć. Przetwarzamy je zgodnie z RODO, stosując nowoczesne technologie ochrony prywatności i bezpieczeństwa.
+            </p>
+             <p className="text-sm mt-2">
+              Wiemy, że odpowiedzi na pytania dotyczące sytuacji rodzinnej i finansowej mogą wymagać chwili zastanowienia. Dlatego formularz został zaprojektowany tak, by automatycznie zapisywać Twoje postępy. Możesz wypełniać go we własnym tempie – wracać do wcześniejszych odpowiedzi, poprawiać je lub uzupełniać, kiedy będziesz gotowy.
+            </p>
+            <p className="text-sm mt-2">
+              Dokładne odpowiedzi pomogą zbudować obraz Twojej sytuacji tak, aby raport był dla Ciebie naprawdę użytecznym drogowskazem. Każda precyzyjna informacja to krok ku większej przejrzystości – dla Ciebie i dla tych, którzy pójdą Twoim śladem.
+            </p>
+          </div>
+          <div className="mt-6">
+            <button
+              onclick="nextStep()"
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Rozpocznij
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Path selection -->
+      <div id="step-2" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">
+            🔍 Na jakim etapie ustaleń dotyczących finansowania potrzeb dziecka jesteś?
+          </h2>
+          <p className="text-gray-700 mb-2">
+            Zanim przejdziesz dalej, odpowiedz proszę na jedno pytanie:
+          </p>
+          <p className="text-gray-700 mb-4">
+            Czy w Twojej sytuacji zostało już ustalone, w jaki sposób dzielicie
+            się z drugim rodzicem kosztami wychowania dziecka lub dzieci?
+          </p>
+          <p className="text-sm text-gray-600 mb-4">
+            Takie ustalenia mogą przyjmować różne formy:
+            <ul className="list-disc list-inside text-sm ml-4 mb-2">
+                <li>orzeczenie sądu (np. postanowienie zabezpieczające, wyrok rozwodowy, zmiana wysokości alimentów),</li>
+                <li>ugoda zawarta przed sądem lub mediatorem,</li>
+                <li>prywatne porozumienie między rodzicami,</li>
+                <li>współmierne dzielenie się kosztami, bez formalnych przelewów.</li>
+            </ul>
+            W formularzu będziemy używać słowa „alimenty", ponieważ takie określenie stosuje prawo i praktyka sądowa – nawet jeśli sposób finansowania potrzeb dziecka został ustalony inaczej, np. w wyniku porozumienia. Niezależnie od formy, chodzi o to samo: zapewnienie dziecku odpowiedniego wsparcia i zabezpieczenia jego potrzeb.
+          </p>
+          <p className="text-gray-700 mb-6 font-semibold">
+            📌 Wybierz ścieżkę, która najlepiej opisuje Twoją sytuację:
+          </p>
+          <div className="space-y-4">
+       <label className="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition">
+  <div className="flex items-start">
+    <input
+      type="radio"
+      name="path"
+      value="established"
+      className="mr-3 mt-1"
+      onchange="handlePathSelection(this)"
+    />
+    <div className="flex-1">
+      <div className="flex items-center">
+        <span className="font-semibold">Zasady finansowania potrzeb dziecka są już ustalone</span>
+        <div className="tooltip ml-2" onclick="event.stopPropagation()">
+          <span className="info-icon">i</span>
+          <span className="tooltiptext-wide">Twoje odpowiedzi – pseudonimizowane i przetwarzane zgodnie z RODO – pomogą lepiej zrozumieć, jak w praktyce wygląda finansowe wspieranie dzieci po rozstaniu rodziców. Jeśli znajdziesz się wśród pierwszych 1000 osób, które wypełnią formularz, otrzymasz bezpłatnie spersonalizowany raport. Pokaże on, jak Twoja sytuacja wygląda na tle innych przypadków – co może być pomocne, jeśli zastanawiasz się, czy sposób finansowania potrzeb dziecka jest adekwatny, albo rozważasz kolejne kroki: prawne, negocjacyjne lub organizacyjne.</span>
+        </div>
+      </div>
+      <p className="text-sm text-gray-600 mt-1">
+        Chcę wypełnić formularz i podzielić się informacjami o swojej sytuacji. ➡️ Jeśli wybierzesz tę opcję, przejdziesz do pełnego formularza AliMatrix.
+      </p>
+    </div>
+  </div>
+</label>
+            <label
+              className="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="path"
+                value="not-established"
+                className="mr-3"
+                onchange="handlePathSelection(this)"
+              />
+              <span className="font-semibold">Zasady finansowania potrzeb dziecka nie zostały jeszcze ustalone</span>
+               <span className="tooltip">
+                <span className="info-icon">i</span>
+                <span className="tooltiptext-wide">Obecnie koncentrujemy się na zebraniu informacji od osób, które już mają ustalone zasady finansowego wsparcia dzieci. Na tej podstawie powstaną pierwsze raporty, które udostępnimy także osobom w Twojej sytuacji. Jeśli chcesz otrzymać powiadomienie, gdy raporty będą gotowe – możesz zostawić swój adres e-mail. Dzięki temu jako pierwszy(a) dowiesz się o możliwości skorzystania z wyników analizy.</span>
+              </span>
+  
+              <p className="text-sm text-gray-600 mt-1">
+                Chciał(a)bym dowiedzieć się, jak to może wyglądać. ➡️ Jeśli wybierzesz tę opcję, przekierujemy Cię do krótszego formularza zapisu na powiadomienie.
+              </p>
+            </label>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              id="path-next"
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+              disabled
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3A: Main form - Financing method -->
+      <div id="step-3a" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">
+            Sposób finansowania potrzeb dziecka
+            <span className="tooltip">
+              <span className="info-icon">i</span>
+              <span className="tooltiptext-wide">Pytamy o główne zasady finansowania potrzeb dziecka lub dzieci. Wiemy, że w praktyce sytuacje bywają różne – ale ważne, żeby istniał ustalony sposób dzielenia się kosztami, nawet nieformalny. Wskaż odpowiedź, która najlepiej oddaje Waszą obecną sytuację.</span>
+            </span>
+          </h2>
+          <p className="text-gray-700 mb-6">
+            Jak w Twojej sytuacji wygląda obecnie główne ustalenie dotyczące
+            finansowania potrzeb dziecka lub dzieci? (jeśli masz więcej niż jedno dziecko, odpowiedz ogólnie – w kolejnych pytaniach będzie miejsce na szczegóły)
+          </p>
+          <p className="text-gray-700 mb-2 font-semibold">Wybierz opcję, która najlepiej oddaje Twoją sytuację:</p>
+          <div className="space-y-3">
+            <label
+              className="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input type="radio" name="financing" value="i-pay" className="mr-3" />
+              <span className="font-semibold"
+                >Ja regularnie przekazuję środki na utrzymanie dziecka/dzieci drugiemu rodzicowi</span
+              >
+              <p className="text-sm text-gray-600 mt-1">
+                (np. alimenty lub inne uzgodnienia – niezależnie od tego, czy ponoszę jeszcze inne koszty podczas opieki.)
+              </p>
+            </label>
+            <label
+              className="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="financing"
+                value="i-receive"
+                className="mr-3"
+              />
+              <span className="font-semibold"
+                >Drugi rodzic regularnie przekazuje środki na utrzymanie dziecka/dzieci mnie</span
+              >
+              <p className="text-sm text-gray-600 mt-1">
+                (nawet jeśli także sam pokrywa niektóre koszty podczas swojej opieki.)
+              </p>
+            </label>
+            <label
+              className="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="financing"
+                value="shared"
+                className="mr-3"
+              />
+              <span className="font-semibold"
+                >Koszty utrzymania dzieci dzielimy w miarę proporcjonalnie, bez formalnego przekazywania pieniędzy między sobą</span
+              >
+              <p className="text-sm text-gray-600 mt-1">
+                (Każdy rodzic pokrywa swoje wydatki bezpośrednio lub finansujemy wspólnie w określony sposób.)
+              </p>
+            </label>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition tooltip"
+            >
+              Dalej
+              <span className="tooltiptext">Twoja odpowiedź pomoże dostosować dalsze pytania w formularzu do Twojej sytuacji. Dzięki temu raport, który otrzymasz, będzie lepiej odzwierciedlał Twoją rzeczywistość.</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3B: Alternative path - email only -->
+      <div id="step-3b" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">
+            🔵 Gdzie jesteśmy i jak możemy Ci pomóc
+          </h2>
+          <div className="space-y-4 text-gray-700">
+            <p>Dziękujemy za Twoje zainteresowanie AliMatrixem!</p>
+            <p>
+              Aktualnie koncentrujemy się na zbieraniu danych od osób, które już
+              mają ustalone zasady finansowego wspierania dzieci. Dzięki temu wkrótce powstaną pierwsze raporty dostępne także dla osób w Twojej sytuacji.
+            </p>
+            <p>
+              Twój udział i Twoje zainteresowanie mają realne znaczenie – im szybciej zbudujemy pełną bazę danych, tym szybciej stworzymy narzędzie, które pomoże Ci lepiej ocenić Twoje możliwości i opcje.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <p className="font-semibold mb-2">
+                📩 Zostaw e-mail, aby otrzymać powiadomienie
+              </p>
+              <p>
+                Jeśli chcesz otrzymać powiadomienie, gdy raporty dla Twojej
+                sytuacji będą gotowe – zostaw swój adres e-mail. ➡️ Dzięki temu jako pierwszy(a) dowiesz się o możliwości skorzystania z wyników analizy.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <label className="block">
+                <span className="text-gray-700">Adres e-mail
+                  <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext-wide">Twój e-mail będzie używany wyłącznie do wysłania Ci powiadomienia o gotowości raportów. Nie będziemy przesyłać żadnych reklam ani udostępniać Twojego adresu osobom trzecim. Dane kontaktowe przechowujemy oddzielnie od danych analitycznych, z zachowaniem zasad RODO.</span>
+                  </span>
+                </span>
+                <input
+                  type="email"
+                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  placeholder="twoj@email.pl"
+                />
+              </label>
+              <label className="flex items-start">
+                <input type="checkbox" className="mt-1 mr-3" />
+                <span className="text-sm text-gray-600"
+                  >Wyrażam zgodę na przetwarzanie danych osobowych zgodnie z
+                  RODO</span
+                > <!-- TODO: Link to RODO policy -->
+              </label>
+            </div>
+            <div className="bg-pink-50 p-4 rounded-lg">
+              <p className="font-semibold mb-2">
+                ❤️ Chcesz dodatkowo wesprzeć rozwój AliMatrixa?
+              </p>
+              <p className="text-sm mb-2">Jeśli masz ochotę – możesz również pomóc nam przyspieszyć powstanie pierwszych raportów. Każde wsparcie, nawet symboliczne, realnie wpływa na szybkość tworzenia narzędzia, które może zmienić sposób ustalania alimentów w Polsce.</p>
+              <button
+                className="mt-2 bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition"
+                onclick="window.open('https://zrzutka.pl', '_blank')"
+              >
+                ➡️ Przejdź do wsparcia na zrzutka.pl
+              </button>
+            </div>
+            <p className="text-center font-semibold">Dziękujemy, że jesteś częścią tej zmiany!</p>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="finishAlternative()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Zapisz się
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Legal basis -->
+      <div id="step-4" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">Podstawa ustaleń
+            <span className="tooltip">
+                <span className="info-icon">i</span>
+                <span className="tooltiptext-wide">Dlaczego o to pytamy? Typ ustaleń wpływa na trwałość i pewność sytuacji prawnej. Twoja odpowiedź pozwoli dopasować dalsze pytania do Twojej sytuacji oraz zwiększyć precyzję Twojego raportu.</span>
+            </span>
+          </h2>
+          <p className="text-gray-700 mb-6">
+            Na jakiej podstawie zostały ustalone zasady finansowania potrzeb
+            dziecka lub dzieci? (Wybierz opcję, która najlepiej oddaje Twoją sytuację.)
+          </p>
+          <div className="space-y-3">
+            <label
+              className="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="legal-basis"
+                value="zabezpieczenie"
+                className="mr-3"
+              />
+              <span>Postanowienie zabezpieczające</span>
+              <p className="text-xs text-gray-500 ml-6">
+                (tymczasowe ustalenie przez sąd – np. na czas trwania sprawy
+                rozwodowej lub rodzinnej)
+              </p>
+            </label>
+            <label
+              className="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="legal-basis"
+                value="wyrok"
+                className="mr-3"
+              />
+              <span>Wyrok rozwodowy lub wyrok w innej sprawie rodzinnej</span>
+              <p className="text-xs text-gray-500 ml-6">
+                (ostateczne rozstrzygnięcie sądu o alimentach)
+              </p>
+            </label>
+            <label
+              className="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="legal-basis"
+                value="ugoda-sad"
+                className="mr-3"
+              />
+              <span>Porozumienie rodzicielskie zatwierdzone przez sąd</span>
+              <p className="text-xs text-gray-500 ml-6">
+                (rodzice sami ustalili zasady, a sąd je zatwierdził i nadał im moc prawną)
+              </p>
+            </label>
+            <label
+              className="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="legal-basis"
+                value="mediacja"
+                className="mr-3"
+              />
+              <span>Porozumienie mediacyjne</span>
+              <p className="text-xs text-gray-500 ml-6">
+                (ustalenia zawarte podczas mediacji – z lub bez późniejszego zatwierdzenia przez sąd)
+              </p>
+            </label>
+            <label
+              className="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="legal-basis"
+                value="prywatne"
+                className="mr-3"
+              />
+              <span>Prywatne porozumienie bez zatwierdzenia przez sąd</span>
+              <p className="text-xs text-gray-500 ml-6">
+                (uzgodnienia między rodzicami, bez formalnej akceptacji sądowej)
+              </p>
+            </label>
+            <label
+              className="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+            >
+              <input
+                type="radio"
+                name="legal-basis"
+                value="inne"
+                className="mr-3"
+                onchange="document.getElementById('legal-basis-inne-details').style.display = this.checked ? 'block' : 'none';"
+              />
+              <span>Inne</span>
+            </label>
+            <div id="legal-basis-inne-details" className="ml-6 mt-2" style="display: none;">
+                <input type="text" className="w-full p-2 border border-gray-300 rounded-lg" placeholder="Prosimy o krótki opis">
+            </div>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Children info -->
+      <div id="step-5" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">Informacje o dzieciach</h2>
+          <div className="text-gray-700 space-y-3 mb-6">
+            <p>Ta część formularza dotyczy dzieci, których sytuacja alimentacyjna lub sposób dzielenia się kosztami utrzymania została już w jakiś sposób ustalona.</p>
+            <p>W AliMatrix wierzymy, że rzetelna analiza zaczyna się od zrozumienia konkretu – a potrzeby dziecka są jednym z jego najważniejszych wymiarów. W kolejnych krokach poprosimy Cię o informacje, które pomogą określić, jak wygląda Wasza codzienność – opieka, czas spędzany z dzieckiem, jego wiek, edukacja oraz rzeczywiste wydatki.</p>
+            <p>Te dane są nie tylko potrzebne do przygotowania raportu – mogą pomóc również Tobie, by lepiej zobaczyć strukturę codzienności i odpowiedzialności. Wiele osób dopiero w trakcie tego etapu uświadamia sobie, jak naprawdę wygląda podział czasu i kosztów związanych z wychowaniem.</p>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-2">Liczba dzieci: Ile dzieci objętych jest ustaleniami dotyczącymi alimentów lub współfinansowania kosztów życia?
+                <span className="tooltip">
+                  <span className="info-icon">i</span>
+                  <span className="tooltiptext-wide">Wybierz liczbę dzieci, dla których chcesz wypełnić formularz. Każde dziecko będzie miało osobny zestaw pytań.</span>
+                </span>
+              </label>
+              <select className="w-full p-3 border-2 border-gray-200 rounded-lg" onchange="generateChildForms(this.value)">
+                <option value="">Wybierz...</option>
+                <option value="1">1 dziecko</option>
+                <option value="2">2 dzieci</option>
+                <option value="3">3 dzieci</option>
+                <option value="4">4 dzieci</option>
+                <option value="5">5+ dzieci</option>
+              </select>
+              <br>
+              &nbsp;
+<span className="tooltip">
+                  <span className="info-icon">i</span>
+                  <span className="tooltiptext-wide">Twoja odpowiedź pomoże dostosować dalsze pytania w formularzu do Twojej sytuacji.
+Dzięki temu raport, który otrzymasz, będzie lepiej odzwierciedlał Twoją rzeczywistość.
+</span>
+                </span>
+            </div>
+            <div id="children-forms" className="space-y-6">
+              <!-- Child forms will be generated here -->
+            </div>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Care time -->
+      <div id="step-6" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">Czas opieki</h2>
+           <div className="text-gray-700 space-y-3 mb-4">
+                <p>Pamiętaj, że w tej sekcji będziemy zbierać informacje o opiece nad dzieckiem i czasie, jaki spędzasz z nim w danym okresie. Aby obliczenia były precyzyjne, prosimy o wpisanie czasu spędzanego z dzieckiem w poszczególnych dniach. Każda godzina ma znaczenie – pamiętaj, że noc przypisujemy do dnia, w którym dziecko zasnęło. Proces wypełniania tej sekcji może zająć kilka minut, ale wierzymy, że pomoże Ci to lepiej zrozumieć, jak wygląda podział opieki i jak złożona jest kwestia alimentów.</p>
+           </div>
+          <p className="text-gray-700 mb-4">
+            Określenie czasu opieki nad dzieckiem (przykład dla pierwszego
+            dziecka).
+          </p>
+          <div className="bg-blue-50 p-4 rounded-lg mb-6">
+            <p className="text-sm font-semibold">Zanim zaczniesz: kilka słów od nas.</p>
+            <p className="text-sm">
+              Ta część może zająć chwilę – ale każda minuta ma sens. Wypełniając
+              tę sekcję, nie tylko dostarczasz danych do raportu. Masz szansę
+              przyjrzeć się uważnie codzienności – czasowi, który naprawdę spędzasz z dzieckiem, i temu, jak wygląda Wasz rytm tygodnia.
+            </p>
+            <p className="text-sm mt-2">🧠 To może być moment refleksji – i bardzo często jest.</p>
+          </div>
+          <div className="bg-amber-50 p-4 rounded-lg mb-6">
+            <p className="text-sm font-semibold">📌 Uwaga techniczna:</p>
+            <ul className="list-disc list-inside text-sm space-y-1">
+                <li>Wypełniasz tylko czas, kiedy dziecko jest z Tobą.</li>
+                <li>Sen przypisujemy do dnia, w którym dziecko zasnęło.</li>
+                <li>Jeśli dziecko chodzi do szkoły lub przedszkola, podaj liczbę godzin w placówce.</li>
+                <li>Pozostałe godziny formularz przypisze automatycznie drugiemu rodzicowi.</li>
+            </ul>
+          </div>
+          <div className="space-y-4">
+            <label className="block">
+              <span className="text-gray-700">Cykl opieki</span>
+              <select
+                className="mt-1 w-full p-3 border-2 border-gray-200 rounded-lg"
+                id="care-cycle"
+              >
+                <option value="1">Co tydzień</option>
+                <option value="2">Co 2 tygodnie</option>
+                <option value="4">Co 4 tygodnie (np. układ miesięczny)</option>
+                <option value="custom">Brak stałego schematu – uśrednimy dane do 4-tygodniowego cyklu</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Jeśli wybierzesz "Brak stałego schematu", podaj dane dla przykładowych 4 tygodni, żeby ustandaryzować analizę.</p>
+            </label>
+            
+            <div className="text-gray-700 space-y-3 my-4 p-3 bg-gray-100 rounded-md">
+                <p className="font-semibold">Wskazówki do wypełniania tabeli:</p>
+                <p>Przy wypełnianiu tabeli pamiętaj, że wpisujesz czas, jaki spędzasz z dzieckiem. Wpisuj pełne godziny od momentu w którym zaczynasz opiekę nad dzieckiem w danym dniu, aż do momentu zakończenia, pamiętaj, że noc przypisujemy do dnia, w którym dziecko zasnęło. Pamiętaj, aby wprowadzić godziny, w których dziecko jest pod Twoją opieką. Jeśli dziecko jest w placówce edukacyjnej, wpisz czas, który tam spędza. Jeśli dziecko śpi, wybierz odpowiednią kolumnę – 'Sen u Ciebie' lub 'Sen u drugiego rodzica'. System automatycznie przypisze pozostały czas drugiemu rodzicowi. Czas wypełnienia formularza zajmie około 10-15 minut. Pamiętaj, że zawsze możesz wrócić do poprzednich sekcji i skorygować swoje odpowiedzi. Z góry dziękujemy za poświęcony czas – dzięki temu Twoje dane będą precyzyjnie odzwierciedlać sytuację, co pozwoli nam stworzyć dokładny raport a Ty uzyskasz wiedzę o podziale procentowym czasu opieki w różnych aspektach.</p>
+            </div>
+
+            <!-- Time table for care cycle -->
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm care-table">
+                <thead>
+                  <tr className="border-b">
+                    <th className="p-2 text-left">Czas</th>
+                    <th className="p-2">Pn</th>
+                    <th className="p-2">Wt</th>
+                    <th className="p-2">Śr</th>
+                    <th className="p-2">Cz</th>
+                    <th className="p-2">Pt</th>
+                    <th className="p-2">Sb</th>
+                    <th className="p-2">Nd</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="p-2">Poranek
+                        <span className="tooltip"><span className="info-icon">i</span><span className="tooltiptext">Godziny, w których rodzic ma opiekę nad dzieckiem rano (np. od momentu wstania do wyjścia z domu).</span></span>
+                    </td>
+                    <!-- Input fields for each day -->
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-2">Placówka edukacyjna
+                        <span className="tooltip"><span className="info-icon">i</span><span className="tooltiptext">Czas, który dziecko spędza w placówce edukacyjnej (np. szkoła, przedszkole, żłobek). Tutaj użytkownik wpisuje liczbę godzin.</span></span>
+                    </td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-2">Czas po edukacji
+                         <span className="tooltip"><span className="info-icon">i</span><span className="tooltiptext">Czas spędzany z dzieckiem po powrocie z placówki edukacyjnej (np. zabawa, zajęcia w domu).</span></span>
+                    </td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-2">Sen u Ciebie
+                        <span className="tooltip"><span className="info-icon">i</span><span className="tooltiptext">Czas, który dziecko spędza na spaniu, gdy jest pod Twoją opieką.</span></span>
+                    </td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                  </tr>
+                  <tr>
+                    <td className="p-2">Sen u drugiego rodzica
+                        <span className="tooltip"><span className="info-icon">i</span><span className="tooltiptext">Czas, który dziecko spędza na spaniu, gdy jest pod opieką drugiego rodzica.</span></span>
+                    </td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                    <td className="p-2"><input type="number" className="w-12 p-1 border rounded" placeholder="0" min="0" max="24"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+             <p className="text-xs text-gray-500 mt-2">System automatycznie przypisze godziny do drugiego rodzica, uwzględniając różnicę między czasem snu u jednego i drugiego rodzica.</p>
+             <p className="text-xs text-gray-500 mt-1">Ta tabela powinna być wyświetlona tyle razy ile zostanie podane jako cykl opieki (np. 2 razy dla cyklu "Co 2 tygodnie") i później się zsumować do %: udział Twojego czasu w total bez placówki edukacyjnej, udział Twojego czasu bez placówki edukacyjnej i bez czasu snu dziecka. (Logika do implementacji w JS)</p>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7: Costs -->
+      <div id="step-7" className="step">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-2xl font-bold mb-6">Koszty utrzymania dziecka</h2>
+          <p className="text-gray-700 mb-6">
+            Nie po to, by je oceniać. Pytamy, by lepiej zrozumieć rzeczywiste potrzeby dzieci w różnych sytuacjach życiowych – 
+            i dać Ci dane, które możesz wykorzystać w rozmowach, negocjacjach lub przed sądem.
+          </p>
+          <p className="text-gray-700 mb-6">
+            📌 Jeśli masz wydatki roczne (np. wakacje, sprzęt sportowy), podziel je przez 12 i podaj uśrednioną miesięczną kwotę.
+          </p>
+
+          <div className="space-y-6">
+            <div>
+              <label className="block text-gray-700 mb-2">Kwota alimentów</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01" required>
+              <p className="text-sm text-gray-500 mt-1">Jaka kwota została ustalona jako alimenty na to dziecko (przez sąd lub w porozumieniu)?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Twoje miesięczne wydatki na dziecko</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01" required>
+              <p className="text-sm text-gray-500 mt-1">Jaką średnią miesięczną kwotę przeznaczasz na potrzeby dziecka?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Wydatki drugiego rodzica (jeśli znane)</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01">
+              <p className="text-sm text-gray-500 mt-1">Jaką kwotę miesięcznie przeznacza na dziecko drugi rodzic?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Koszty uznane przez sąd (jeśli dotyczy)</label>
+              <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                     placeholder="0" min="0" step="0.01">
+              <p className="text-sm text-gray-500 mt-1">Jaką miesięczną kwotę jako koszt utrzymania dziecka wskazał sąd w swoim postanowieniu?</p>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 mb-2">Inne źródła utrzymania dziecka</label>
+              <div className="space-y-2">
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Renta rodzinna
+              </label>
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Świadczenie pielęgnacyjne
+              </label>
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Inne
+                  <input type="text" className="ml-2 p-2 border rounded" placeholder="Proszę podać">
+              </label>
+              <label className="flex items-center">
+                  <input type="checkbox" className="mr-2">
+                  Brak dodatkowych źródeł
+              </label>
+            </div>
+          </div>
+          </div>
+                </div>
+            
+          <div className="mt-8 flex justify-between">
+            <button onclick="prevStep()" className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+              Wstecz
+            </button>
+            <button onclick="nextStep()" className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: Income -->
+      <div id="step-8" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">
+            Dochody i koszty życia rodziców
+          </h2>
+          <div className="text-gray-700 space-y-2 mb-6">
+            <p>To nie test ani osąd – to analiza, która ma pomóc lepiej zrozumieć sytuację.</p>
+            <p>Im dokładniejsze będą Twoje dane, tym trafniejszy będzie raport – zarówno dla Ciebie, jak i innych osób w podobnej sytuacji.</p>
+            <p>Zadbaliśmy o to, żeby pytania były zrozumiałe, a formularz prowadził Cię krok po kroku. Dla wielu osób ta część formularza bywa też momentem refleksji nad tym, jak naprawdę wygląda ich codzienność finansowa.</p>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">Twoje dochody</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700 mb-1"
+                  >Oficjalne dochody netto (miesięcznie)</label
+                >
+                <p className="text-xs text-gray-500 mb-2">Podaj swoje oficjalne dochody netto z ostatnich 12 miesięcy PRZED ustanowieniem alimentów – średnią miesięczną kwotę, obejmującą: wynagrodzenia z umów o pracę, zlecenie, dzieło; przychody z działalności gospodarczej; inne powtarzalne źródła dochodu. Uwaga: Jeśli Twoje dochody są sezonowe (np. premia roczna, sprzedaż usług w określonym okresie roku), prosimy o uwzględnienie tych wahań – podaj uśrednioną wartość miesięczną.</p>
+                <input
+                  type="number"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg"
+                  placeholder="0 zł"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1"
+                  >Potencjał dochodowy (miesięcznie)
+                  <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext-wide">Jeśli prowadzisz działalność i część kosztów firmowych (np. leasing, paliwo, telefon) dotyczy także życia prywatnego – oszacuj ich wartość i uwzględnij proporcjonalnie w swoich kosztach życia, a nie jako czystą stratę firmową.</span>
+                  </span>
+                </label>
+                <p className="text-xs text-gray-500 mb-2">Nie zawsze dochody pokazują pełen obraz. Sąd – a my w raporcie również – bierze pod uwagę Twoje możliwości zarobkowe. W tej części prosimy o oszacowanie: ile realnie mógłbyś/mogłabyś zarabiać przy uwzględnieniu Twojego wykształcenia, doświadczenia, branży, dostępności ofert pracy; w przypadku działalności gospodarczej: jaka jest realna możliwość zwiększenia dochodu (np. wzrost marży, wykorzystanie pełnego czasu pracy, ograniczenie kosztów).</p>
+                <input
+                  type="number"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg"
+                  placeholder="0 zł"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">Twoje koszty życia i zobowiązania</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700 mb-1"
+                  >Koszty utrzymania siebie (miesięcznie)</label
+                >
+                <p className="text-xs text-gray-500 mb-2">Podaj kwotę miesięcznych wydatków na: żywność, mieszkanie, media, transport, leki, ubezpieczenia, inne stałe koszty związane z codziennym funkcjonowaniem.</p>
+                <input
+                  type="number"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg"
+                  placeholder="0 zł"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1"
+                  >Koszty utrzymania innych osób (miesięcznie)</label
+                >
+                <p className="text-xs text-gray-500 mb-2">Jeśli wspierasz finansowo inne osoby (np. dzieci z poprzedniego związku, partnera/partnerkę, rodziców), wskaż ich łączny koszt miesięczny.</p>
+                <input
+                  type="number"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg"
+                  placeholder="0 zł"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1"
+                  >Dodatkowe zobowiązania (miesięcznie)</label
+                >
+                <p className="text-xs text-gray-500 mb-2">Podaj wysokość wszystkich miesięcznych obciążeń finansowych: kredyty, raty, pożyczki, alimenty na inne dzieci, inne regularne płatności (np. windykacje, kary umowne).</p>
+                <input
+                  type="number"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg"
+                  placeholder="0 zł"
+                />
+              </div>
+              <p className="text-xs text-gray-600 bg-gray-100 p-2 rounded">Uwaga techniczna: Nie uwzględniaj tych samych kosztów dwa razy – np. jeśli leasing pojazdu rozliczasz w firmie, nie wpisuj go ponownie jako koszt życia osobistego.</p>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">Dochody i koszty drugiego rodzica</h3>
+            <p className="text-sm text-gray-600 mb-4">Jeśli posiadasz informacje na temat sytuacji drugiego rodzica, podaj je w analogiczny sposób. Nie masz pewności? Wpisz „nd" (nie dotyczy / nieznane) w polach tekstowych lub pozostaw pola liczbowe puste/0 – formularz nadal zostanie prawidłowo przetworzony.</p>
+            
+            <h4 className="text-md font-semibold mt-4 mb-2 text-gray-800">Dochody drugiego rodzica</h4>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700 mb-1">Oficjalne dochody netto drugiego rodzica (miesięcznie)</label>
+                <p className="text-xs text-gray-500 mb-2">Średnia miesięczna kwota.</p>
+                <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="0 zł lub pozostaw puste"/>
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Potencjał dochodowy drugiego rodzica (miesięcznie)</label>
+                 <p className="text-xs text-gray-500 mb-2">Oszacowanie możliwości zarobkowych.</p>
+                <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="0 zł lub pozostaw puste"/>
+              </div>
+            </div>
+
+            <h4 className="text-md font-semibold mt-6 mb-2 text-gray-800">Koszty życia i zobowiązania drugiego rodzica</h4>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-gray-700 mb-1">Koszty utrzymania siebie drugiego rodzica (miesięcznie)</label>
+                <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="0 zł lub pozostaw puste"/>
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Koszty utrzymania innych osób przez drugiego rodzica (miesięcznie)</label>
+                <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="0 zł lub pozostaw puste"/>
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Dodatkowe zobowiązania drugiego rodzica (miesięcznie)</label>
+                <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="0 zł lub pozostaw puste"/>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="goToStep9FromStep8()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+              id="step-8-next-button"
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 9: Container step -->
+      <div id="step-9" className="step">
+        <!-- This is just a container step, the actual content will be in the variant divs -->
+        <div style="display: none">Step 9 container</div>
+      </div>
+
+      <!-- Step 9 Court Variant: For court proceedings -->
+      <div id="step-9-court" className="step" style="display: none;">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">🧾 Informacje o postępowaniu sądowym</h2>
+          <p className="text-gray-700 mb-6">
+            W tej części zbieramy informacje o decyzji, która określiła zasady finansowania potrzeb dziecka – może to być wyrok, 
+            postanowienie zabezpieczające, ugoda lub inne rozstrzygnięcie.
+          </p>
+          <p className="text-gray-700 mb-6">
+            Chcemy lepiej zrozumieć kontekst tej decyzji – kiedy zapadła, przez jaki sąd została wydana, w jakim składzie, 
+            oraz jak oceniasz jej adekwatność względem rzeczywistości. Dzięki temu możliwe będzie trafniejsze porównanie 
+            Twojej sytuacji z innymi oraz lepsze uchwycenie różnic między praktyką różnych sądów.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-2">Data decyzji lub zatwierdzenia porozumienia
+                <span className="tooltip">
+                  <span className="info-icon">i</span>
+                  <span className="tooltiptext">Dzięki tej dacie system lepiej dopasuje porównania do sytuacji rynkowej i orzeczniczej z tamtego okresu.</span>
+                </span>
+              </label>
+              <input type="date" className="w-full p-3 border-2 border-gray-200 rounded-lg" required>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Sąd, który wydał decyzję</label>
+              <div className="space-y-3">
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+                  <option value="">Rodzaj sądu</option>
+                  <option value="rejonowy">Sąd Rejonowy</option>
+                  <option value="okregowy">Sąd Okręgowy</option>
+                </select>
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+                  <option value="">Województwo</option>
+                  <option value="dolnoslaskie">Dolnośląskie</option>
+                  <option value="kujawsko-pomorskie">Kujawsko-Pomorskie</option>
+                  <option value="lubelskie">Lubelskie</option>
+                  <option value="lubuskie">Lubuskie</option>
+                  <option value="lodzkie">Łódzkie</option>
+                  <option value="malopolskie">Małopolskie</option>
+                  <option value="mazowieckie">Mazowieckie</option>
+                  <option value="opolskie">Opolskie</option>
+                  <option value="podkarpackie">Podkarpackie</option>
+                  <option value="podlaskie">Podlaskie</option>
+                  <option value="pomorskie">Pomorskie</option>
+                  <option value="slaskie">Śląskie</option>
+                  <option value="swietokrzyskie">Świętokrzyskie</option>
+                  <option value="warminsko-mazurskie">Warmińsko-Mazurskie</option>
+                  <option value="wielkopolskie">Wielkopolskie</option>
+                  <option value="zachodniopomorskie">Zachodniopomorskie</option>
+                </select>
+                <input type="text" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="Miejscowość sądu">
+              </div>
+              <p className="text-sm text-gray-500 mt-1">Pozwoli to na mapowanie lokalnych różnic w orzecznictwie.</p>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Skład orzekający</label>
+              <div className="space-y-3">
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+                  <option value="">Liczba sędziów</option>
+                  <option value="jeden">1 sędzia</option>
+                  <option value="trzech">3 sędziów</option>
+                </select>
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+                  <option value="">Płeć sędziego przewodniczącego</option>
+                  <option value="kobieta">Kobieta</option>
+                  <option value="mezczyzna">Mężczyzna</option>
+                </select>
+                <input type="text" className="w-full p-3 border-2 border-gray-200 rounded-lg" placeholder="Inicjały sędziego prowadzącego (opcjonalnie)">
+              </div>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Czy to Ty złożyłeś/łaś pozew?</label>
+              <div className="space-y-2">
+                <label className="flex items-center">
+                  <input type="radio" name="pozew-skladajacy" value="tak" className="mr-2">
+                  Tak
+                </label>
+                <label className="flex items-center">
+                  <input type="radio" name="pozew-skladajacy" value="nie" className="mr-2">
+                  Nie
+                </label>
+              </div>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Czy w pozwie pojawił się wątek winy?</label>
+              <div className="space-y-2">
+                <label className="flex items-center">
+                  <input type="radio" name="wina-pozew" value="tak-ja" className="mr-2">
+                  Tak – domagałem/am się orzeczenia o winie
+                </label>
+                <label className="flex items-center">
+                  <input type="radio" name="wina-pozew" value="tak-druga-strona" className="mr-2">
+                  Tak – druga strona domagała się orzeczenia o winie
+                </label>
+                <label className="flex items-center">
+                  <input type="radio" name="wina-pozew" value="nie" className="mr-2">
+                  Nie
+                </label>
+              </div>
+            </div>
+           <div className="mt-3">
+    <div className="text-sm text-gray-600 mb-2">Oceń w skali 1–5, gdzie 1 oznacza „zupełnie nieadekwatny", a 5 „w pełni adekwatny"</div>
+    
+    <div className="relative py-5">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm text-gray-600">zupełnie nieadekwatny</span>
+        <span className="text-sm text-gray-600">w pełni adekwatny</span>
+      </div>
+      
+      <div className="flex justify-between mb-2">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+      </div>
+      
+      <input 
+        type="range" 
+        min="1" 
+        max="5" 
+        step="1" 
+        value="3"
+        name="finansowanie-ocena"
+        className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+        oninput="document.getElementById('rating-value').textContent = this.value"
+      >
+      
+      <div className="flex justify-center mt-4">
+        <span className="inline-block px-4 py-2 bg-blue-600 text-white font-semibold text-lg rounded-full">
+          Ocena: <span id="rating-value">3</span>
+        </span>  
+      </div>
+    </div>
+  </div>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 9 Agreement Variant: For mediation or private agreements -->
+      <div id="step-9-agreement" className="step" style="display: none;">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">🧾 Informacje o porozumieniu</h2>
+          <p className="text-gray-700 mb-6">
+            W tej części zbieramy informacje o porozumieniu, które określiło zasady finansowania potrzeb dziecka. 
+            Zależy nam na lepszym zrozumieniu kontekstu zawartego porozumienia - kiedy zostało zawarte, w jaki sposób, 
+            oraz jaką ma formę.
+          </p>
+          <p className="text-gray-700 mb-6">
+          Wiemy, że wiele porozumień nie trafia do sądu, ale mają one realne znaczenie w codziennym życiu i w rzeczywistości alimentacyjnej. Chcemy zrozumieć, kiedy powstało takie porozumienie, jakie były jego podstawy, kto je zainicjował i jak oceniasz jego adekwatność. Dzięki temu możliwe będzie pełniejsze uchwycenie różnorodności praktyki – nie tylko tej sądowej.
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-2">Data zawarcia porozumienia
+                <span className="tooltip">
+                  <span className="info-icon">i</span>
+                  <span className="tooltiptext">Dzięki tej dacie system lepiej dopasuje porównania do sytuacji rynkowej z tamtego okresu.</span>
+                </span>
+              </label>
+              <input type="date" className="w-full p-3 border-2 border-gray-200 rounded-lg" required>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Sposób zawarcia porozumienia</label>
+              <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+                <option value="">Wybierz...</option>
+                <option value="mediator">Przy udziale mediatora</option>
+                <option value="prawnik">Przy udziale prawnika/adwokata</option>
+                <option value="samodzielnie">Samodzielnie (bezpośrednio między rodzicami)</option>
+                <option value="inny">Inny</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Forma porozumienia</label>
+              <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+                <option value="">Wybierz...</option>
+                <option value="pisemna">Pisemna (podpisany dokument)</option>
+                <option value="ustna">Ustna (bez dokumentu)</option>
+                <option value="elektroniczna">Elektroniczna (e-mail, wiadomości)</option>
+                <option value="inna">Inna</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-2">Czy porozumienie zawiera klauzulę waloryzacyjną?
+                <span className="tooltip">
+                  <span className="info-icon">i</span>
+                  <span className="tooltiptext">Klauzula waloryzacyjna to sposób na automatyczne dostosowanie wysokości alimentów do zmieniających się warunków ekonomicznych, np. poprzez coroczną indeksację o wskaźnik inflacji.</span>
+                </span>
+              </label>
+              <div className="space-y-2">
+                <label className="flex items-center">
+                  <input type="radio" name="klauzula-waloryzacyjna" value="tak" className="mr-2">
+                  Tak
+                </label>
+                <label className="flex items-center">
+                  <input type="radio" name="klauzula-waloryzacyjna" value="nie" className="mr-2">
+                  Nie
+                </label>
+                <label className="flex items-center">
+                  <input type="radio" name="klauzula-waloryzacyjna" value="nie-wiem" className="mr-2">
+                  Nie wiem
+                </label>
+              </div>
+            </div>
+    <div className="mt-3">
+    <div className="text-sm text-gray-600 mb-2">Oceń w skali 1–5, gdzie 1 oznacza „zupełnie nieadekwatny", a 5 „w pełni adekwatny"</div>
+    
+    <div className="relative py-5">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm text-gray-600">zupełnie nieadekwatny</span>
+        <span className="text-sm text-gray-600">w pełni adekwatny</span>
+      </div>
+      
+      <div className="flex justify-between mb-2">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+      </div>
+      
+      <input 
+        type="range" 
+        min="1" 
+        max="5" 
+        step="1" 
+        value="3"
+        name="finansowanie-ocena"
+        className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+        oninput="document.getElementById('rating-value').textContent = this.value"
+      >
+      
+      <div className="flex justify-center mt-4">
+        <span className="inline-block px-4 py-2 bg-blue-600 text-white font-semibold text-lg rounded-full">
+          Ocena: <span id="rating-value">3</span>
+        </span>  
+      </div>
+    </div>
+  </div>
+  </div>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+     <!-- Step 9 Other Variant: For other arrangements -->
+<div id="step-9-other" className="step" style="display: none">
+  <div className="bg-white rounded-lg shadow-sm p-6">
+    <h2 className="text-xl font-bold mb-4">
+      🧾 Ustalenia tymczasowe, ustne lub jednostronne
+    </h2>
+    <p className="text-gray-700 mb-6">
+      Czasem sposób dzielenia się kosztami dziecka nie wynika z decyzji sądu ani formalnego porozumienia – ale z doraźnych, tymczasowych lub jednostronnych ustaleń. Chcemy lepiej zrozumieć także te sytuacje. To ważne, by uchwycić, jak w praktyce wyglądają rozwiązania stosowane przez rodziców poza oficjalnymi ścieżkami.
+    </p>
+    <div className="space-y-4">
+      <div>
+        <label className="block text-gray-700 mb-2">
+          Od kiedy obowiązuje obecny sposób finansowania potrzeb dziecka?
+          <span className="tooltip">
+            <span className="info-icon">i</span>
+            <span className="tooltiptext">Dzięki tej dacie system lepiej dopasuje porównania do sytuacji rynkowej i orzeczniczej z tamtego okresu.</span>
+          </span>
+        </label>
+        <input
+          type="date"
+          className="w-full p-3 border-2 border-gray-200 rounded-lg"
+        />
+      </div>
+      <div>
+        <label className="block text-gray-700 mb-2">
+          Czy sposób finansowania został wcześniej uzgodniony z drugim rodzicem?
+          <span className="tooltip">
+            <span className="info-icon">i</span>
+            <span className="tooltiptext">To pytanie pomaga zrozumieć, czy podział kosztów oparty jest na konsensusie czy presji jednej ze stron.</span>
+          </span>
+        </label>
+        <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+          <option value="">Wybierz...</option>
+          <option value="wspolnie">Tak, wspólnie ustaliliśmy zasady</option>
+          <option value="jednostronnie-ja">Nie – to moje jednostronne decyzje</option>
+          <option value="jednostronnie-drugi">Nie – to drugi rodzic narzucił te zasady</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-gray-700 mb-2">
+          Czy którykolwiek z rodziców planuje w najbliższym czasie wystąpienie do sądu w sprawie alimentów?
+        </label>
+        <select className="w-full p-3 border-2 border-gray-200 rounded-lg">
+          <option value="">Wybierz...</option>
+          <option value="ja-planuje">Tak, ja planuję</option>
+          <option value="drugi-planuje">Tak, drugi rodzic zapowiedział taki krok</option>
+          <option value="nie-wiem">Nie wiem</option>
+          <option value="nie-planujemy">Nie planujemy</option>
+        </select>
+      </div>
+      <div>
+  <label className="block text-gray-700 mb-2">
+    Jak oceniasz aktualny sposób finansowania potrzeb dziecka?
+    <span className="tooltip">
+      <span className="info-icon">i</span>
+      <span className="tooltiptext">Ta odpowiedź nie wpływa na Twój raport – ale pomoże nam lepiej rozpoznać, kiedy brak formalnych ustaleń prowadzi do niesprawiedliwych rozwiązań.</span>
+    </span>
+  </label>
+  <div className="mt-3">
+    <div className="text-sm text-gray-600 mb-2">Oceń w skali 1–5, gdzie 1 oznacza „zupełnie nieadekwatny", a 5 „w pełni adekwatny"</div>
+    
+    <div className="relative py-5">
+      <div className="flex justify-between mb-1">
+        <span className="text-sm text-gray-600">zupełnie nieadekwatny</span>
+        <span className="text-sm text-gray-600">w pełni adekwatny</span>
+      </div>
+      
+      <div className="flex justify-between mb-2">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+      </div>
+      
+      <input 
+        type="range" 
+        min="1" 
+        max="5" 
+        step="1" 
+        value="3"
+        name="finansowanie-ocena"
+        className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+        oninput="document.getElementById('rating-value').textContent = this.value"
+      >
+      
+      <div className="flex justify-center mt-4">
+        <span className="inline-block px-4 py-2 bg-blue-600 text-white font-semibold text-lg rounded-full">
+          Ocena: <span id="rating-value">3</span>
+        </span>  
+      </div>
+    </div>
+  </div>
+</div>
+    <div className="mt-6 flex gap-3">
+      <button
+        onclick="prevStep()"
+        className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+      >
+        Wstecz
+      </button>
+      <button
+        onclick="nextStep()"
+        className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+      >
+        Dalej
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+      <!-- Step 10: Demographics -->
+      <div id="step-10" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">
+            Informacje o Tobie i drugim rodzicu
+          </h2>
+          <p className="text-gray-700 mb-4">Ta część formularza pozwoli nam lepiej dopasować analizę do Twojej sytuacji i zwiększyć wiarygodność raportów. Zbieramy wyłącznie podstawowe dane demograficzne – nie pytamy o nazwiska, adresy ani inne dane umożliwiające identyfikację.</p>
+          <p className="text-gray-700 mb-6">Dzięki temu możliwa będzie analiza wpływu kontekstu społecznego i geograficznego na kwestie alimentacyjne.</p>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold mb-3">O Tobie</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 mb-2">Płeć</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="user_gender">
+                    <option value="">Wybierz...</option>
+                    <option value="kobieta">Kobieta</option>
+                    <option value="mezczyzna">Mężczyzna</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Wiek</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="user_age">
+                    <option value="">Wybierz...</option>
+                    <option value="ponizej_25">Poniżej 25 lat</option>
+                    <option value="25_34">25-34 lata</option>
+                    <option value="35_44">35-44 lata</option>
+                    <option value="45_54">45-54 lata</option>
+                    <option value="powyzej_55">55 lat i więcej</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Województwo zamieszkania</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="user_voivodeship">
+                    <option value="">Wybierz...</option>
+                    {/* Populate with all 16 voivodeships */}
+                    <option>Dolnośląskie</option><option>Kujawsko-pomorskie</option><option>Lubelskie</option><option>Lubuskie</option><option>Łódzkie</option><option>Małopolskie</option><option>Mazowieckie</option><option>Opolskie</option><option>Podkarpackie</option><option>Podlaskie</option><option>Pomorskie</option><option>Śląskie</option><option>Świętokrzyskie</option><option>Warmińsko-mazurskie</option><option>Wielkopolskie</option><option>Zachodniopomorskie</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Rodzaj miejscowości zamieszkania</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="user_locality_type">
+                    <option value="">Wybierz...</option>
+                    <option value="wies">Wieś</option>
+                    <option value="miasto_do_50">Miasto do 50 tys. mieszkańców</option>
+                    <option value="miasto_50_200">Miasto 50-200 tys. mieszkańców</option>
+                    <option value="miasto_powyzej_200">Miasto powyżej 200 tys. mieszkańców</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Stan cywilny
+                     <span className="tooltip"><span className="info-icon">i</span><span className="tooltiptext-wide">Te informacje pomagają lepiej osadzić dane w realiach prawnych – np. czy użytkownik już przeszedł przez proces rozwodowy, czy dopiero przed nim stoi. To ważne w analizach, które mają dać możliwie najbardziej precyzyjny kontekst sytuacji.</span></span>
+                  </label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="user_marital_status">
+                    <option value="">Wybierz...</option>
+                    <option value="malzenstwo">Małżeństwo</option>
+                    <option value="separacja">W separacji</option>
+                    <option value="rozwod_w_trakcie">W trakcie postępowania rozwodowego</option>
+                    <option value="rozwod_bez_winy">Rozwód bez orzeczenia o winie</option>
+                    <option value="rozwod_z_wina">Rozwód z orzeczeniem o winie</option>
+                    <option value="inne">Inne</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold mb-3">O drugim rodzicu</h3>
+              <div className="space-y-4">
+                 <div>
+                  <label className="block text-gray-700 mb-2">Płeć</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="other_parent_gender">
+                    <option value="">Wybierz...</option>
+                    <option value="kobieta">Kobieta</option>
+                    <option value="mezczyzna">Mężczyzna</option>
+                    <option value="nie_dotyczy">Nie wiem / Nie chcę podawać</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Wiek</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="other_parent_age">
+                    <option value="">Wybierz...</option>
+                    <option value="ponizej_25">Poniżej 25 lat</option>
+                    <option value="25_34">25-34 lata</option>
+                    <option value="35_44">35-44 lata</option>
+                    <option value="45_54">45-54 lata</option>
+                    <option value="powyzej_55">55 lat i więcej</option>
+                    <option value="nie_dotyczy">Nie wiem / Nie chcę podawać</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Województwo zamieszkania</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="other_parent_voivodeship">
+                     <option value="">Wybierz...</option>
+                    {/* Populate with all 16 voivodeships */}
+                    <option>Dolnośląskie</option><option>Kujawsko-pomorskie</option><option>Lubelskie</option><option>Lubuskie</option><option>Łódzkie</option><option>Małopolskie</option><option>Mazowieckie</option><option>Opolskie</option><option>Podkarpackie</option><option>Podlaskie</option><option>Pomorskie</option><option>Śląskie</option><option>Świętokrzyskie</option><option>Warmińsko-mazurskie</option><option>Wielkopolskie</option><option>Zachodniopomorskie</option>
+                    <option value="nie_dotyczy">Nie wiem / Nie chcę podawać</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2">Rodzaj miejscowości zamieszkania</label>
+                  <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="other_parent_locality_type">
+                    <option value="">Wybierz...</option>
+                    <option value="wies">Wieś</option>
+                    <option value="miasto_do_50">Miasto do 50 tys. mieszkańców</option>
+                    <option value="miasto_50_200">Miasto 50-200 tys. mieszkańców</option>
+                    <option value="miasto_powyzej_200">Miasto powyżej 200 tys. mieszkańców</option>
+                    <option value="nie_dotyczy">Nie wiem / Nie chcę podawać</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="nextStep()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Dalej
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 11: Email and consent -->
+      <div id="step-11" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold mb-4">Podanie e-maila i zgody</h2>
+          <p className="text-gray-700 mb-2">
+            Zostaw swój adres e-mail, żebyśmy mogli przesłać Ci spersonalizowany
+            raport przygotowany na podstawie Twoich odpowiedzi.
+          </p>
+          <p className="text-sm text-gray-600 mb-6">
+            Potrzebujemy Twojego adresu e-mail – wyłącznie po to, żebyśmy mogli bezpiecznie przesłać Ci Twój raport. Twój adres przechowujemy zgodnie z RODO. Nie wykorzystujemy go do żadnych innych celów. Dane analityczne i kontaktowe są przechowywane oddzielnie, choć na potrzeby przygotowania raportu możliwe jest ich powiązanie. W każdej chwili możesz zażądać wglądu, zmiany lub usunięcia wszystkich swoich danych.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-gray-700 mb-2">Twój adres e-mail (wymagane)
+                <span className="tooltip">
+                  <span className="info-icon">i</span>
+                  <span className="tooltiptext-wide">Twój e-mail będzie wykorzystany wyłącznie w celu przesłania Ci spersonalizowanego raportu. Nie będziemy wysyłać żadnych reklam ani udostępniać Twoich danych osobom trzecim. Adres e-mail będzie przechowywany oddzielnie od danych analitycznych.</span>
+                </span>
+              </label>
+              <input
+                type="email"
+                id="final-email"
+                className="w-full p-3 border-2 border-gray-200 rounded-lg"
+                placeholder="twoj@email.pl"
+                required
+              />
+            </div>
+            <div className="space-y-3 mt-6">
+              <h3 className="text-lg font-semibold text-gray-800">Zgody i ochrona prywatności</h3>
+              <p className="text-sm text-gray-600">Zanim zakończysz wypełnianie formularza, prosimy Cię o wyrażenie zgód niezbędnych do przygotowania i przesłania raportu.</p>
+              <label className="flex items-start">
+                <input type="checkbox" id="consent-data-processing" className="mt-1 mr-3" required />
+                <span className="text-sm"
+                  >✅ Wyrażam zgodę na przetwarzanie przekazanych przeze mnie
+                  danych w celu ich analizy statystycznej i wygenerowania
+                  spersonalizowanego raportu w ramach projektu AliMatrix.</span
+                >
+              </label>
+              <label className="flex items-start">
+                <input type="checkbox" id="consent-contact" className="mt-1 mr-3" required />
+                <span className="text-sm"
+                  >✅ Wyrażam zgodę na kontakt mailowy w celu dostarczenia mojego
+                  raportu oraz ewentualnej komunikacji związanej z dalszą
+                  realizacją usługi. Mój adres e-mail będzie przechowywany oddzielnie od pozostałych danych analitycznych.</span
+                >
+              </label>
+            </div>
+            <div className="bg-gray-100 p-4 rounded-lg mt-4">
+              <p className="text-sm text-gray-700 font-semibold">🔒 Klauzula informacyjna RODO (skrótowa wersja)</p>
+              <p className="text-xs text-gray-600">
+                AliMatrix przetwarza Twoje dane zgodnie z RODO – z pełnym
+                poszanowaniem prywatności. Dane kontaktowe i analityczne są od
+                siebie oddzielone. W każdej chwili możesz zażądać wglądu, korekty lub usunięcia wszystkich danych, które przekazałeś. Szczegóły znajdziesz w Polityce Prywatności i Regulaminie. (Linki do dodania)
+              </p>
+            </div>
+          </div>
+          <div className="mt-6 flex gap-3">
+            <button
+              onclick="prevStep()"
+              className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              Wstecz
+            </button>
+            <button
+              onclick="finishForm()"
+              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+            >
+              Zakończ
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 12: Thank you -->
+      <div id="step-12" className="step">
+        <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+          <div className="mb-4">
+            <div
+              className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4"
+            >
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold mb-4">
+            Dziękujemy za wypełnienie formularza AliMatrix!
+          </h2>
+          
+          <div className="bg-blue-50 p-4 rounded-lg mb-6">
+            <p className="font-semibold mb-2">ID Twojego zgłoszenia:</p>
+            <div className="flex items-center justify-center space-x-2">
+              <span id="submission-id" className="font-mono text-lg"></span>
+              <button onclick="copySubmissionId()" className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                Kopiuj
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-4 text-gray-700 mb-6">
+            <p>
+              Twoje odpowiedzi mają znaczenie – nie tylko dla Ciebie, ale również dla setek innych osób w podobnej sytuacji. Dzięki Tobie system AliMatrix staje się bardziej precyzyjny, a raporty – bardziej wiarygodne.
+            </p>
+             <p>
+              To ważny krok w kierunku większej przejrzystości i sprawiedliwości w sprawach dotyczących finansowania potrzeb dzieci.
+            </p>
+            <p>
+              Twój indywidualny raport zostanie przygotowany na podstawie
+              dostarczonych danych. Jeśli jesteś wśród pierwszych 1000 osób, które wypełniły formularz -
+              otrzymasz go bezpłatnie na podany adres e-mail.
+            </p>
+             <p>
+              W międzyczasie możesz śledzić postępy projektu i dowiedzieć się więcej o tym, jak Twoje dane przyczyniają się do budowy nowego standardu – odwiedzając naszą stronę lub wspierając projekt na Zrzutka.pl.
+            </p>
+          </div>
+          <div className="flex gap-4 justify-center mt-6">
+            <button onclick="resetForm()" className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition">
+              Zacznij od nowa
+            </button>
+            <button onclick="window.open('https://zrzutka.pl', '_blank')" className="bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-600 transition">
+              Wesprzyj projekt
+            </button>
+            </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let currentStep = 1;
+      const totalSteps = 12;
+      let selectedPath = "";
+      window.selectedLegalBasis = null; // Store legal basis for step 9
+      let formData = {};
+
+      // Map of step dependencies and conditions
+   const stepFlow = {
+  1: { next: 2 },
+  2: { 
+    next: (path) => path === "established" ? "3a" : "3b",
+    prev: 1
+  },
+  "3a": { next: 4, prev: 2 },
+  "3b": { next: 12, prev: 2 },
+  4: { next: 5, prev: "3a" },
+  5: { 
+    next: 6,  // Zawsze idziemy do kroku 6 (czas opieki), niezależnie od typu opieki
+    prev: 4
+  },
+  6: { 
+    next: 7,  // Zawsze idziemy do kroku 7 (koszty) po kroku 6, niezależnie od typu opieki
+    prev: 5 
+  },
+  7: { 
+    next: 8,  // Z kroku 7 (koszty) zawsze idziemy do kroku 8 (dochody)
+    prev: 6   // Wracamy do kroku 6 (czas opieki)
+  },
+  8: { 
+    next: 9, 
+    prev: 7   // Zawsze wracamy do kroku 7 (koszty), a nie bezpośrednio do 6
+  },
+  9: { next: 10, prev: 8 },
+  10: { next: 11, prev: 9 },
+  11: { next: 12, prev: 10 },
+  12: { prev: 11 }
+};
+
+      function showStep(step) {
+        try {
+          // Hide all steps
+          document.querySelectorAll('.step').forEach(s => {
+            s.style.display = 'none';
+            s.classList.remove('active');
+          });
+          
+          // Special handling for step 9 - instead of showing the base step-9,
+          // we'll directly show the relevant variant based on the selected legal basis
+          if (step === 9) {
+            console.log("Reached step 9, showing appropriate variant");
+            
+            // Make sure we still have the legal basis from step 4
+            if (!window.selectedLegalBasis) {
+              console.warn("Legal basis not found in window.selectedLegalBasis, trying to get it from the form");
+              window.selectedLegalBasis = document.querySelector('input[name="legal-basis"]:checked')?.value || 'inne';
+              console.log("Retrieved or defaulted legal basis:", window.selectedLegalBasis);
+            }
+            
+            // Get base step-9 to mark as active for state tracking
+            const baseStep9 = document.getElementById('step-9');
+            if (baseStep9) {
+              baseStep9.classList.add('active');
+            }
+            
+            // Handle the step-9 variants based on legal basis
+            handleStep9Variants();
+            
+            // Update progress bar and current step
+            updateProgress(step);
+            currentStep = step;
+            
+            // We've handled step 9 specially, so return early
+            return;
+          }
+          
+          // Show selected step for all other steps
+          const selectedStep = document.getElementById(`step-${step}`);
+          if (!selectedStep) {
+            console.error(`Step ${step} not found`);
+            return;
+          }
+
+          selectedStep.style.display = 'block';
+          selectedStep.classList.add('active');
+
+          // Update progress bar
+          updateProgress(step);
+
+          // Reinitialize tooltips for the current step
+          initializeTooltips();
+
+          // Save current step
+          currentStep = step;
+          console.log("Showing step:", step);
+        } catch (error) {
+          console.error('Error in showStep:', error);
+        }
+      }
+
+      function handleStep9Variants() {
+        try {
+          // Get the legal basis from the stored value first, then try to get it from the form
+          const legalBasis = window.selectedLegalBasis || document.querySelector('input[name="legal-basis"]:checked')?.value;
+          console.log("Legal basis for step 9:", legalBasis);
+
+          if (!legalBasis) {
+            console.error("No legal basis found, cannot determine which variant to show");
+            // Set a default to prevent errors
+            window.selectedLegalBasis = 'inne';
+          }
+          
+          // Hide all step 9 variants first
+          ['step-9-court', 'step-9-agreement', 'step-9-other'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+              element.style.display = 'none';
+              console.log(`Hiding ${id}`);
+            } else {
+              console.error(`Element ${id} not found`);
+            }
+          });
+
+          // Show appropriate section based on legal basis
+          let targetStep = null;
+          if (['zabezpieczenie', 'wyrok', 'ugoda-sad'].includes(legalBasis)) {
+            targetStep = 'step-9-court';
+          } else if (['mediacja', 'prywatne'].includes(legalBasis)) {
+            targetStep = 'step-9-agreement';
+          } else {
+            // Default to step-9-other if no legal basis was found or it's "inne"
+            targetStep = 'step-9-other';
+          }
+          
+          // Add explicit debug output
+          console.log(`Selected legal basis: ${legalBasis}, Target step: ${targetStep}`);
+
+          if (targetStep) {
+            const element = document.getElementById(targetStep);
+            if (element) {
+              element.style.display = 'block';
+              console.log(`Showing ${targetStep}`);
+              
+              // Extra verification to ensure other variants remain hidden
+              ['step-9-court', 'step-9-agreement', 'step-9-other'].forEach(id => {
+                if (id !== targetStep) {
+                  const otherElement = document.getElementById(id);
+                  if (otherElement && otherElement.style.display !== 'none') {
+                    console.warn(`WARNING: ${id} should be hidden but is visible. Hiding it.`);
+                    otherElement.style.display = 'none';
+                  }
+                }
+              });
+            } else {
+              console.error(`Element ${targetStep} not found`);
+            }
+          } else {
+            console.warn(`No target step determined for legal basis: ${legalBasis}`);
+          }
+        } catch (error) {
+          console.error("Error in handleStep9Variants:", error);
+        }
+      }
+
+      // Special function to handle transition from step 8 to step 9
+      function goToStep9FromStep8() {
+        try {
+          console.log("Special transition from step 8 to step 9");
+          
+          // First check if the current step validation passes
+          if (!validateStep(8)) {
+            alert('Proszę wypełnić wszystkie wymagane pola przed przejściem dalej.');
+            return;
+          }
+          
+          // Make sure to save the form data from step 8
+          saveFormData();
+          
+          // Ensure we have a valid legal basis from step 4
+          if (!window.selectedLegalBasis) {
+            console.warn("No legal basis found for step 9, checking form or defaulting to 'inne'");
+            // Try to get it from the form again
+            window.selectedLegalBasis = document.querySelector('input[name="legal-basis"]:checked')?.value || 'inne';
+          }
+          
+          console.log("Using legal basis for step 9:", window.selectedLegalBasis);
+          
+          // Update current step
+          currentStep = 9;
+          
+          // Call showStep with specific handling for step 9
+          showStep(9);
+          
+          console.log("Transition complete, now on step 9 with legal basis:", window.selectedLegalBasis);
+        } catch (error) {
+          console.error("Error in goToStep9FromStep8:", error);
+          alert("Wystąpił błąd przy przejściu do kolejnego kroku. Prosimy odświeżyć stronę i spróbować ponownie.");
+        }
+      }
+
+      function updateProgress(step) {
+        const progress = (step / totalSteps) * 100;
+        const progressBar = document.getElementById('progress');
+        if (progressBar) {
+          progressBar.style.width = `${progress}%`;
+        }
+      }
+
+      function validateStep(step) {
+        try {
+          const stepElement = document.getElementById(`step-${step}`);
+          if (!stepElement) return true;
+
+          let isValid = true;
+          const errors = [];
+
+          // Get all required fields in the current step
+          const requiredFields = stepElement.querySelectorAll('input[required], select[required]');
+          
+          // Validate each required field
+          requiredFields.forEach(field => {
+            if (!field.value) {
+              field.classList.add('border-red-500');
+              errors.push(`Pole ${field.name || 'wymagane'} jest wymagane`);
+              isValid = false;
+            } else {
+              field.classList.remove('border-red-500');
+            }
+          });
+
+          // Special validation for step 5 (children info)
+          if (step === 5) {
+            const childForms = document.querySelectorAll('#children-forms > div');
+            if (childForms.length === 0) {
+              errors.push('Proszę wybrać liczbę dzieci');
+              isValid = false;
+            }
+          }
+
+          // Special validation for step 11 (email and consent)
+          if (step === 11) {
+            const email = document.getElementById('final-email')?.value;
+            const consentData = document.getElementById('consent-data-processing')?.checked;
+            const consentContact = document.getElementById('consent-contact')?.checked;
+
+            if (!email) {
+              errors.push('Adres email jest wymagany');
+              isValid = false;
+            }
+            if (!consentData || !consentContact) {
+              errors.push('Wymagane jest wyrażenie wszystkich zgód');
+              isValid = false;
+            }
+          }
+
+          if (!isValid) {
+            alert(errors.join('\n'));
+          }
+
+          return isValid;
+        } catch (error) {
+          console.error('Error in validateStep:', error);
+          return false;
+        }
+      }
+
+      function nextStep() {
+        try {
+          if (!validateStep(currentStep)) {
+            alert('Proszę wypełnić wszystkie wymagane pola przed przejściem dalej.');
+            return;
+          }
+
+          // Get next step based on current step and conditions
+          let nextStepNumber;
+          const flow = stepFlow[currentStep];
+          
+          if (typeof flow.next === 'function') {
+            if (currentStep === 2) {
+              nextStepNumber = flow.next(selectedPath);
+            } else if (currentStep === 5) {
+              const careType = document.querySelector('select[name="care_type"]')?.value;
+              nextStepNumber = flow.next(careType);
+            } else {
+              nextStepNumber = flow.next(currentStep);
+            }
+          } else {
+            nextStepNumber = flow.next;
+          }
+
+          // If we're on step 4 (legal basis) and about to go to another step,
+          // store the legal basis for later use in step 9
+          if (currentStep === 4) {
+            window.selectedLegalBasis = document.querySelector('input[name="legal-basis"]:checked')?.value;
+            console.log("Stored legal basis:", window.selectedLegalBasis);
+            
+            // Check if a valid legal basis was selected
+            if (!window.selectedLegalBasis) {
+              alert('Proszę wybrać podstawę prawną przed przejściem dalej.');
+              return;
+            }
+          }
+
+          if (nextStepNumber) {
+            // If the next step is step 9, use the special function
+            if (nextStepNumber === 9) {
+              console.log("Using special function to transition to step 9");
+              goToStep9FromStep8();
+              return;
+            }
+            
+            showStep(nextStepNumber);
+          }
+        } catch (error) {
+          console.error('Error in nextStep:', error);
+        }
+      }
+
+      function prevStep() {
+        try {
+          const flow = stepFlow[currentStep];
+          if (flow && flow.prev) {
+            const prevStepNumber = typeof flow.prev === 'function' ? flow.prev(currentStep) : flow.prev;
+            if (prevStepNumber) {
+              showStep(prevStepNumber);
+            }
+          }
+        } catch (error) {
+          console.error('Error in prevStep:', error);
+        }
+      }
+
+      function handlePathSelection(radio) {
+        selectedPath = radio.value;
+        const nextButton = document.getElementById("path-next");
+        if (nextButton) {
+          nextButton.disabled = false;
+        }
+      }
+
+      function generateChildForms(count) {
+        const container = document.getElementById("children-forms");
+        if (!container) return;
+
+        container.innerHTML = "";
+        if (count === "5") count = 5;
+
+        for (let i = 1; i <= count; i++) {
+          const childForm = document.createElement('div');
+          childForm.className = 'p-4 border-2 border-gray-200 rounded-lg mb-4';
+          childForm.innerHTML = `
+            <h3 className="font-semibold mb-3">Dziecko ${i}</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-gray-700 mb-2">Rok urodzenia dziecka
+                  <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext">Wiek dziecka wpływa na ocenę adekwatności kosztów i stopnia zaangażowania opiekuńczego.</span>
+                  </span>
+                </label>
+                <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                       placeholder="RRRR" min="1900" max="${new Date().getFullYear()}" required>
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-2">Czy dziecko uczęszcza do placówki edukacyjnej?</label>
+                     <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext">Pamiętaj, by uwzględnić koszty edukacji w sekcji dotyczącej wydatków.</span>
+                  </span>
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg" required>
+                  <option value="">Wybierz...</option>
+                  <option value="dom">Nie – dziecko przebywa głównie w domu</option>
+                  <option value="zlobek">Tak: Żłobek</option>
+                  <option value="przedszkole">Tak: Przedszkole</option>
+                  <option value="podstawowa">Tak: Szkoła podstawowa</option>
+                  <option value="ponadpodstawowa">Tak: Szkoła ponadpodstawowa</option>
+                </select>
+      
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-2">Sposób sprawowania opieki</label>
+                                        <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext"> Jeśli wybierzesz „Inny układ”, przejdziesz do formularza, który pomoże określić procentowy podział opieki na podstawie rzeczywistego czasu spędzanego z dzieckiem.</span>
+                  </span>
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="care_type" required>
+                  <option value="">Wybierz...</option>
+                  <option value="naprzemienna">Opieka naprzemienna (50/50)</option>
+                  <option value="inny_uklad">Inny układ – np. dziecko przebywa większość czasu u jednego z rodziców</option>
+                </select>
+              </div>
+            </div>
+          `;
+          container.appendChild(childForm);
+        }
+
+        // Reinitialize tooltips after adding new elements
+        initializeTooltips();
+      }
+
+      function initializeTooltips() {
+        document.querySelectorAll('.info-icon').forEach(icon => {
+          icon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const tooltip = this.nextElementSibling;
+            if (tooltip) {
+              // Close all other tooltips first
+              document.querySelectorAll('.tooltiptext, .tooltiptext-wide').forEach(t => {
+                if (t !== tooltip) t.classList.remove('active');
+              });
+              
+              tooltip.classList.add('active');
+              
+              // Add close button if not exists
+              if (!tooltip.querySelector('.close-tooltip')) {
+                const closeBtn = document.createElement('span');
+                closeBtn.className = 'close-tooltip';
+                closeBtn.innerHTML = '×';
+                closeBtn.onclick = function(e) {
+                  e.stopPropagation();
+                  tooltip.classList.remove('active');
+                };
+                tooltip.appendChild(closeBtn);
+              }
+            }
+          });
+        });
+
+        // Close tooltips when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.tooltip')) {
+            document.querySelectorAll('.tooltiptext, .tooltiptext-wide').forEach(tooltip => {
+              tooltip.classList.remove('active');
+            });
+          }
+        });
+      }
+
+      // Initialize the form
+      document.addEventListener('DOMContentLoaded', function() {
+        showStep(1);
+        initializeTooltips();
+        
+        // Add listeners to legal basis radio buttons
+        document.querySelectorAll('input[name="legal-basis"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            console.log("Legal basis changed to:", this.value);
+            window.selectedLegalBasis = this.value;
+            
+            // If we're on step 9, update the display immediately
+            if (currentStep === 9) {
+              console.log("Currently on step 9, updating display...");
+              handleStep9Variants();
+            }
+          });
+        });
+      });
+
+      // Form submission functions
+      function finishForm() {
+        if (!validateStep(currentStep)) {
+          alert('Proszę wypełnić wszystkie wymagane pola i wyrazić zgody przed zakończeniem.');
+          return;
+        }
+
+        const email = document.getElementById('final-email').value;
+        const consentData = document.getElementById('consent-data-processing').checked;
+        const consentContact = document.getElementById('consent-contact').checked;
+
+        if (!email || !consentData || !consentContact) {
+          alert('Proszę wypełnić wszystkie wymagane pola i wyrazić zgody przed zakończeniem.');
+          return;
+        }
+
+        // Generate a random submission ID
+        const submissionId = 'AM-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        document.getElementById('submission-id').textContent = submissionId;
+
+        // Move to thank you step
+        currentStep = 12;
+        showStep(currentStep);
+      }
+
+      function finishAlternative() {
+        const email = document.querySelector('#step-3b input[type="email"]').value;
+        const consent = document.querySelector('#step-3b input[type="checkbox"]').checked;
+
+        if (!email || !consent) {
+          alert('Proszę wypełnić wszystkie wymagane pola i wyrazić zgodę przed zakończeniem.');
+          return;
+        }
+
+        // Generate a random submission ID
+        const submissionId = 'AM-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        document.getElementById('submission-id').textContent = submissionId;
+
+        // Move to thank you step
+        currentStep = 12;
+        showStep(currentStep);
+      }
+
+      function resetForm() {
+        // Reset all form fields
+        document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], input[type="date"], select').forEach(input => {
+          input.value = '';
+          input.classList.remove('border-red-500');
+        });
+        document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+          input.checked = false;
+        });
+
+        // Reset to first step
+        currentStep = 1;
+        selectedPath = "";
+        showStep(currentStep);
+      }
+
+      function copySubmissionId() {
+        const submissionId = document.getElementById('submission-id').textContent;
+        navigator.clipboard.writeText(submissionId).then(() => {
+          alert('ID zgłoszenia zostało skopiowane do schowka!');
+        }).catch(err => {
+          console.error('Nie udało się skopiować ID:', err);
+        });
+      }
+
+      // Form data handling
+      function saveFormData() {
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        if (!currentStepElement) return;
+
+        // Get all form elements in current step
+        const formElements = currentStepElement.querySelectorAll('input, select, textarea');
+        formElements.forEach(element => {
+          if (element.name) {
+            if (element.type === 'checkbox' || element.type === 'radio') {
+              formData[element.name] = element.checked;
+            } else {
+              formData[element.name] = element.value;
+            }
+          }
+        });
+      }
+
+      function loadFormData() {
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        if (!currentStepElement) return;
+
+        // Restore form data for current step
+        const formElements = currentStepElement.querySelectorAll('input, select, textarea');
+        formElements.forEach(element => {
+          if (element.name && formData[element.name] !== undefined) {
+            if (element.type === 'checkbox' || element.type === 'radio') {
+              element.checked = formData[element.name];
+            } else {
+              element.value = formData[element.name];
+            }
+          }
+        });
+      }
+
+      // Enhanced validation
+      function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      }
+
+      function validateNumber(value, min, max) {
+        const num = parseFloat(value);
+        return !isNaN(num) && num >= min && num <= max;
+      }
+
+      function validateStep(step) {
+        try {
+          const stepElement = document.getElementById(`step-${step}`);
+          if (!stepElement) return true;
+
+          let isValid = true;
+          const errors = [];
+
+          // Get all required fields in the current step
+          const requiredFields = stepElement.querySelectorAll('input[required], select[required]');
+          
+          // Validate each required field
+          requiredFields.forEach(field => {
+            if (!field.value) {
+              field.classList.add('border-red-500');
+              errors.push(`Pole ${field.name || 'wymagane'} jest wymagane`);
+              isValid = false;
+            } else {
+              field.classList.remove('border-red-500');
+            }
+          });
+
+          // Special validation for step 5 (children info)
+          if (step === 5) {
+            const childForms = document.querySelectorAll('#children-forms > div');
+            if (childForms.length === 0) {
+              errors.push('Proszę wybrać liczbę dzieci');
+              isValid = false;
+            }
+          }
+
+          // Special validation for step 11 (email and consent)
+          if (step === 11) {
+            const email = document.getElementById('final-email')?.value;
+            const consentData = document.getElementById('consent-data-processing')?.checked;
+            const consentContact = document.getElementById('consent-contact')?.checked;
+
+            if (!email) {
+              errors.push('Adres email jest wymagany');
+              isValid = false;
+            }
+            if (!consentData || !consentContact) {
+              errors.push('Wymagane jest wyrażenie wszystkich zgód');
+              isValid = false;
+            }
+          }
+
+          if (!isValid) {
+            alert(errors.join('\n'));
+          }
+
+          return isValid;
+        } catch (error) {
+          console.error('Error in validateStep:', error);
+          return false;
+        }
+      }
+
+      function nextStep() {
+        try {
+          // Save current step data
+          saveFormData();
+
+          if (!validateStep(currentStep)) {
+            return;
+          }
+
+          // Get next step based on current step and conditions
+          let nextStepNumber;
+          const flow = stepFlow[currentStep];
+          
+          if (typeof flow.next === 'function') {
+            if (currentStep === 2) {
+              nextStepNumber = flow.next(selectedPath);
+            } else if (currentStep === 5) {
+              const careType = document.querySelector('select[name="care_type"]')?.value;
+              nextStepNumber = flow.next(careType);
+            } else {
+              nextStepNumber = flow.next(currentStep);
+            }
+          } else {
+            nextStepNumber = flow.next;
+          }
+
+          if (nextStepNumber) {
+            showStep(nextStepNumber);
+            // Load saved data for the new step
+            loadFormData();
+          }
+        } catch (error) {
+          console.error('Error in nextStep:', error);
+        }
+      }
+
+      function prevStep() {
+        try {
+          // Save current step data
+          saveFormData();
+
+          const flow = stepFlow[currentStep];
+          if (flow && flow.prev) {
+            const prevStepNumber = typeof flow.prev === 'function' ? flow.prev(currentStep) : flow.prev;
+            if (prevStepNumber) {
+              showStep(prevStepNumber);
+              // Load saved data for the previous step
+              loadFormData();
+            }
+          }
+        } catch (error) {
+          console.error('Error in prevStep:', error);
+        }
+      }
+
+      function handlePathSelection(radio) {
+        selectedPath = radio.value;
+        const nextButton = document.getElementById("path-next");
+        if (nextButton) {
+          nextButton.disabled = false;
+        }
+      }
+
+      function generateChildForms(count) {
+        const container = document.getElementById("children-forms");
+        if (!container) return;
+
+        container.innerHTML = "";
+        if (count === "5") count = 5;
+
+        for (let i = 1; i <= count; i++) {
+          const childForm = document.createElement('div');
+          childForm.className = 'p-4 border-2 border-gray-200 rounded-lg mb-4';
+          childForm.innerHTML = `
+          <h3 className="font-semibold mb-3">Dziecko ${i}</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-gray-700 mb-2">Rok urodzenia dziecka
+                  <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext">Wiek dziecka wpływa na ocenę adekwatności kosztów i stopnia zaangażowania opiekuńczego.</span>
+                  </span>
+                </label>
+                <input type="number" className="w-full p-3 border-2 border-gray-200 rounded-lg" 
+                       placeholder="RRRR" min="1900" max="${new Date().getFullYear()}" required>
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-2">Czy dziecko uczęszcza do placówki edukacyjnej?</label>
+                     <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext">Pamiętaj, by uwzględnić koszty edukacji w sekcji dotyczącej wydatków.</span>
+                  </span>
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg" required>
+                  <option value="">Wybierz...</option>
+                  <option value="dom">Nie – dziecko przebywa głównie w domu</option>
+                  <option value="zlobek">Tak: Żłobek</option>
+                  <option value="przedszkole">Tak: Przedszkole</option>
+                  <option value="podstawowa">Tak: Szkoła podstawowa</option>
+                  <option value="ponadpodstawowa">Tak: Szkoła ponadpodstawowa</option>
+                </select>
+      
+              </div>
+              <div>
+                <label className="block text-gray-700 mb-2">Sposób sprawowania opieki</label>
+                                        <span className="tooltip">
+                    <span className="info-icon">i</span>
+                    <span className="tooltiptext"> Jeśli wybierzesz „Inny układ”, przejdziesz do formularza, który pomoże określić procentowy podział opieki na podstawie rzeczywistego czasu spędzanego z dzieckiem.</span>
+                  </span>
+                <select className="w-full p-3 border-2 border-gray-200 rounded-lg" name="care_type" required>
+                  <option value="">Wybierz...</option>
+                  <option value="naprzemienna">Opieka naprzemienna (50/50)</option>
+                  <option value="inny_uklad">Inny układ – np. dziecko przebywa większość czasu u jednego z rodziców</option>
+                </select>
+              </div>
+            </div>
+          `;
+          container.appendChild(childForm);
+        }
+
+        // Reinitialize tooltips after adding new elements
+        initializeTooltips();
+      }
+
+      function initializeTooltips() {
+        document.querySelectorAll('.info-icon').forEach(icon => {
+          icon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const tooltip = this.nextElementSibling;
+            if (tooltip) {
+              // Close all other tooltips first
+              document.querySelectorAll('.tooltiptext, .tooltiptext-wide').forEach(t => {
+                if (t !== tooltip) t.classList.remove('active');
+              });
+              
+              tooltip.classList.add('active');
+              
+              // Add close button if not exists
+              if (!tooltip.querySelector('.close-tooltip')) {
+                const closeBtn = document.createElement('span');
+                closeBtn.className = 'close-tooltip';
+                closeBtn.innerHTML = '×';
+                closeBtn.onclick = function(e) {
+                  e.stopPropagation();
+                  tooltip.classList.remove('active');
+                };
+                tooltip.appendChild(closeBtn);
+              }
+            }
+          });
+        });
+
+        // Close tooltips when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!e.target.closest('.tooltip')) {
+            document.querySelectorAll('.tooltiptext, .tooltiptext-wide').forEach(tooltip => {
+              tooltip.classList.remove('active');
+            });
+          }
+        });
+      }
+
+      // Initialize the form
+      document.addEventListener('DOMContentLoaded', function() {
+        showStep(1);
+        initializeTooltips();
+        
+        // Add listeners to legal basis radio buttons
+        document.querySelectorAll('input[name="legal-basis"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            console.log("Legal basis changed to:", this.value);
+            window.selectedLegalBasis = this.value;
+            
+            // If we're on step 9, update the display immediately
+            if (currentStep === 9) {
+              console.log("Currently on step 9, updating display...");
+              handleStep9Variants();
+            }
+          });
+        });
+      });
+
+      // Form submission functions
+      function finishForm() {
+        if (!validateStep(currentStep)) {
+          alert('Proszę wypełnić wszystkie wymagane pola i wyrazić zgody przed zakończeniem.');
+          return;
+        }
+
+        const email = document.getElementById('final-email').value;
+        const consentData = document.getElementById('consent-data-processing').checked;
+        const consentContact = document.getElementById('consent-contact').checked;
+
+        if (!email || !consentData || !consentContact) {
+          alert('Proszę wypełnić wszystkie wymagane pola i wyrazić zgody przed zakończeniem.');
+          return;
+        }
+
+        // Generate a random submission ID
+        const submissionId = 'AM-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        document.getElementById('submission-id').textContent = submissionId;
+
+        // Move to thank you step
+        currentStep = 12;
+        showStep(currentStep);
+      }
+
+      function finishAlternative() {
+        const email = document.querySelector('#step-3b input[type="email"]').value;
+        const consent = document.querySelector('#step-3b input[type="checkbox"]').checked;
+
+        if (!email || !consent) {
+          alert('Proszę wypełnić wszystkie wymagane pola i wyrazić zgodę przed zakończeniem.');
+          return;
+        }
+
+        // Generate a random submission ID
+        const submissionId = 'AM-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        document.getElementById('submission-id').textContent = submissionId;
+
+        // Move to thank you step
+        currentStep = 12;
+        showStep(currentStep);
+      }
+
+      function resetForm() {
+        // Reset all form fields
+        document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], input[type="date"], select').forEach(input => {
+          input.value = '';
+          input.classList.remove('border-red-500');
+        });
+        document.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
+          input.checked = false;
+        });
+
+        // Reset to first step
+        currentStep = 1;
+        selectedPath = "";
+        showStep(currentStep);
+      }
+
+      function copySubmissionId() {
+        const submissionId = document.getElementById('submission-id').textContent;
+        navigator.clipboard.writeText(submissionId).then(() => {
+          alert('ID zgłoszenia zostało skopiowane do schowka!');
+        }).catch(err => {
+          console.error('Nie udało się skopiować ID:', err);
+        });
+      }
+
+      // Form data handling
+      function saveFormData() {
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        if (!currentStepElement) return;
+
+        // Get all form elements in current step
+        const formElements = currentStepElement.querySelectorAll('input, select, textarea');
+        formElements.forEach(element => {
+          if (element.name) {
+            if (element.type === 'checkbox' || element.type === 'radio') {
+              formData[element.name] = element.checked;
+            } else {
+              formData[element.name] = element.value;
+            }
+          }
+        });
+      }
+
+      function loadFormData() {
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        if (!currentStepElement) return;
+
+        // Restore form data for current step
+        const formElements = currentStepElement.querySelectorAll('input, select, textarea');
+        formElements.forEach(element => {
+          if (element.name && formData[element.name] !== undefined) {
+            if (element.type === 'checkbox' || element.type === 'radio') {
+              element.checked = formData[element.name];
+            } else {
+              element.value = formData[element.name];
+            }
+          }
+        });
+      }
+
+      // Enhanced validation
+      function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      }
+
+      function validateNumber(value, min, max) {
+        const num = parseFloat(value);
+        return !isNaN(num) && num >= min && num <= max;
+      }
+
+      function validateStep(step) {
+        try {
+          const stepElement = document.getElementById(`step-${step}`);
+          if (!stepElement) return true;
+
+          let isValid = true;
+          const errors = [];
+
+          // Get all required fields in the current step
+          const requiredFields = stepElement.querySelectorAll('input[required], select[required]');
+          
+          // Validate each required field
+          requiredFields.forEach(field => {
+            if (!field.value) {
+              field.classList.add('border-red-500');
+              errors.push(`Pole ${field.name || 'wymagane'} jest wymagane`);
+              isValid = false;
+            } else {
+              field.classList.remove('border-red-500');
+            }
+          });
+
+          // Special validation for step 5 (children info)
+          if (step === 5) {
+            const childForms = document.querySelectorAll('#children-forms > div');
+            if (childForms.length === 0) {
+              errors.push('Proszę wybrać liczbę dzieci');
+              isValid = false;
+            }
+          }
+
+          // Special validation for step 11 (email and consent)
+          if (step === 11) {
+            const email = document.getElementById('final-email')?.value;
+            const consentData = document.getElementById('consent-data-processing')?.checked;
+            const consentContact = document.getElementById('consent-contact')?.checked;
+
+            if (!email) {
+              errors.push('Adres email jest wymagany');
+              isValid = false;
+            }
+            if (!consentData || !consentContact) {
+              errors.push('Wymagane jest wyrażenie wszystkich zgód');
+              isValid = false;
+            }
+          }
+
+          if (!isValid) {
+            alert(errors.join('\n'));
+          }
+
+          return isValid;
+        } catch (error) {
+          console.error('Error in validateStep:', error);
+          return false;
+        }
+      }
+
+      function nextStep() {
+        try {
+          // Save current step data
+          saveFormData();
+
+          if (!validateStep(currentStep)) {
+            return;
+          }
+
+          // Get next step based on current step and conditions
+          let nextStepNumber;
+          const flow = stepFlow[currentStep];
+          
+          if (typeof flow.next === 'function') {
+            if (currentStep === 2) {
+              nextStepNumber = flow.next(selectedPath);
+            } else if (currentStep === 5) {
+              const careType = document.querySelector('select[name="care_type"]')?.value;
+              nextStepNumber = flow.next(careType);
+            } else {
+              nextStepNumber = flow.next(currentStep);
+            }
+          } else {
+            nextStepNumber = flow.next;
+          }
+
+          if (nextStepNumber) {
+            showStep(nextStepNumber);
+            // Load saved data for the new step
+            loadFormData();
+          }
+        } catch (error) {
+          console.error('Error in nextStep:', error);
+        }
+      }
+
+      function prevStep() {
+        try {
+          // Save current step data
+          saveFormData();
+
+          const flow = stepFlow[currentStep];
+          if (flow && flow.prev) {
+            const prevStepNumber = typeof flow.prev === 'function' ? flow.prev(currentStep) : flow.prev;
+            if (prevStepNumber) {
+              showStep(prevStepNumber);
+              // Load saved data for the previous step
+              loadFormData();
+            }
+          }
+        } catch (error) {
+          console.error('Error in prevStep:', error);
+        }
+      }
+
+      function handlePathSelection(radio) {
+        selectedPath = radio.value;
+        const nextButton = document.getElementById("path-next");
+        if (nextButton) {
+          nextButton.disabled = false;
+        }
+      }
+      function nextStep() {
+  try {
+    // Save current step data
+    saveFormData();
+
+    // Przewiń na górę *przed* pokazaniem następnego kroku
+    window.scrollTo(0, 0);
+
+    const flow = stepFlow[currentStep];
+    if (flow && flow.next) {
+      let nextStepNumber;
+      if (typeof flow.next === 'function') {
+        if (currentStep === 2) {
+          nextStepNumber = flow.next(selectedPath);
+        } else if (currentStep === 5) {
+          const careType = document.querySelector('select[name="care_type"]')?.value;
+          nextStepNumber = flow.next(careType);
+        } else {
+          nextStepNumber = flow.next(currentStep);
+        }
+      } else {
+        nextStepNumber = flow.next;
+      }
+
+      if (nextStepNumber) {
+        showStep(nextStepNumber);
+        // Load saved data for the new step
+        loadFormData();
+      }
+    }
+  } catch (error) {
+    console.error('Error in nextStep:', error);
+  }
+}
+
+function prevStep() {
+  try {
+    // Save current step data
+    saveFormData();
+
+    // Przewiń na górę *przed* pokazaniem poprzedniego kroku
+    window.scrollTo(0, 0);
+
+    const flow = stepFlow[currentStep];
+    if (flow && flow.prev) {
+      const prevStepNumber = typeof flow.prev === 'function' ? flow.prev(currentStep) : flow.prev;
+      if (prevStepNumber) {
+        showStep(prevStepNumber);
+        // Load saved data for the previous step
+        loadFormData();
+      }
+    }
+  } catch (error) {
+    console.error('Error in prevStep:', error);
+  }
+}
+
+
+// Naprawione działanie tooltipów
+document.addEventListener('DOMContentLoaded', function() {
+  // Całkowicie nowa inicjalizacja tooltipów
+  function fixAllTooltips() {
+    // Najpierw usuń wszystkie istniejące listenery z ikon info
+    document.querySelectorAll('.info-icon').forEach(icon => {
+      const newIcon = icon.cloneNode(true);
+      if (icon.parentNode) {
+        icon.parentNode.replaceChild(newIcon, icon);
+      }
+    });
+    
+    // Teraz dodaj nowe listenery z izolacją zdarzeń
+    document.querySelectorAll('.info-icon').forEach(icon => {
+      icon.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const tooltip = this.nextElementSibling;
+        if (!tooltip) return;
+        
+        console.log('Tooltip clicked:', tooltip);
+        
+        // Zamknij wszystkie inne tooltipy
+        document.querySelectorAll('.tooltiptext, .tooltiptext-wide').forEach(t => {
+          if (t !== tooltip) {
+            t.classList.remove('active');
+            const closeBtn = t.querySelector('.close-tooltip');
+            if (closeBtn) closeBtn.remove();
+          }
+        });
+        
+        // Przełącz widoczność tego tooltipu
+        tooltip.classList.toggle('active');
+        
+        // Dodaj przycisk zamknięcia jeśli tooltip jest aktywny i jeszcze go nie ma
+        if (tooltip.classList.contains('active') && !tooltip.querySelector('.close-tooltip')) {
+          const closeBtn = document.createElement('span');
+          closeBtn.className = 'close-tooltip';
+          closeBtn.innerHTML = '×';
+          closeBtn.onclick = function(evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            tooltip.classList.remove('active');
+          };
+          tooltip.appendChild(closeBtn);
+        }
+      });
+    });
+    
+    // Dodaj również obsługę kliknięcia poza tooltipem aby go zamknąć
+    document.addEventListener('click', function(e) {
+      // Jeśli kliknięcie nie dotyczy elementu tooltip ani ikony info
+      if (!e.target.closest('.tooltiptext') && 
+          !e.target.closest('.tooltiptext-wide') && 
+          !e.target.matches('.info-icon')) {
+        document.querySelectorAll('.tooltiptext, .tooltiptext-wide').forEach(tooltip => {
+          tooltip.classList.remove('active');
+          const closeBtn = tooltip.querySelector('.close-tooltip');
+          if (closeBtn) closeBtn.remove();
+        });
+      }
+    }, { capture: true });
+  }
+  
+  // Wywołaj naprawę tooltipów po załadowaniu strony
+  fixAllTooltips();
+  
+  // Zastąp oryginalną funkcję naszą naprawioną wersją
+  window.initializeTooltips = fixAllTooltips;
+  
+  // Napraw showStep aby reinicjalizował tooltipy
+  const originalShowStep = window.showStep;
+  window.showStep = function(step) {
+    if (originalShowStep) {
+      originalShowStep(step);
+    }
+    
+    // Poczekaj aż DOM się zaktualizuje i napraw tooltipy
+    setTimeout(fixAllTooltips, 200);
+  };
+  
+  // Napraw generateChildForms aby reinicjalizował tooltipy
+  const originalGenerateChildForms = window.generateChildForms;
+  window.generateChildForms = function(count) {
+    if (originalGenerateChildForms) {
+      originalGenerateChildForms(count);
+    }
+    
+    // Poczekaj aż DOM się zaktualizuje i napraw tooltipy
+    setTimeout(fixAllTooltips, 200);
+  };
+  
+  // Upewnij się, że kliknięcie w div.tooltip nie propaguje się do elementu label
+  document.querySelectorAll('.tooltip').forEach(tooltip => {
+    tooltip.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+  });
+});
+    </script>
+  </body>
+</html>

@@ -122,14 +122,13 @@ export default function Dzieci() {
         ? d.opisSpecjalnychPotrzeb
         : undefined,
     }));
-
     updateFormData({
       liczbaDzieci,
       dzieci: dzieciDoZapisu,
     });
 
-    // Przekierowanie do następnego kroku
-    router.push("/dochody"); // Zakładam, że następny krok to dochody
+    // Przekierowanie do następnego kroku - teraz jest to strona postępowania
+    router.push("/postepowanie");
   };
 
   // Funkcja do obsługi powrotu do poprzedniego kroku
@@ -141,11 +140,11 @@ export default function Dzieci() {
     <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
       <Card className="w-full max-w-lg shadow-lg">
         <CardContent className="pt-6">
+          {" "}
           <div className="flex justify-center mb-6">
             <Logo size="medium" />
           </div>
-          <FormProgress currentStep={4} totalSteps={12} />
-
+          <FormProgress currentStep={5} totalSteps={12} />
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">Dzieci</h1>

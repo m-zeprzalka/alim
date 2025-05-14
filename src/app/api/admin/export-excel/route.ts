@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as ExcelJS from "exceljs";
 
 // Proste zabezpieczenie - w produkcji należałoby to zamienić na uwierzytelnianie
-const API_KEY = process.env.ADMIN_API_KEY || "tajny_klucz_admin";
+const API_KEY = process.env.ADMIN_API_KEY || "tajny_klucz_admin_2025";
 
 export async function GET(request: NextRequest) {
   try {

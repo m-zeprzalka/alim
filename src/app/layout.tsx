@@ -28,8 +28,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-sky-50`}
       >
-        <div className="bg-amber-500 text-white py-2 text-center text-sm font-medium">
-          ⚠️ Wersja demonstracyjna - AliMatrix działa na fikcyjnych danych ⚠️
+        <div className="bg-sky-950 text-white py-2 text-center text-sm font-medium">
+          ⚠️ Wersja demonstracyjna - AliMatrix ⚠️
         </div>
         {children}
       </body>

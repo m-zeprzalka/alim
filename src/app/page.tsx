@@ -5,9 +5,9 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex justify-center p-4">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardContent>
+    <main className="flex justify-center p-3">
+      <Card className="w-full max-w-lg shadow-lg border-sky-100">
+        <CardContent className="pt-2">
           <Logo size="medium" />
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-left text-sky-950">
@@ -31,11 +31,10 @@ export default function Home() {
                 budowę narzędzia opartego na danych, nie na opiniach.
               </p>
 
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                 <p className="font-semibold mb-2">Wypełniając ten formularz:</p>
                 <ul className="list-disc list-inside space-y-1">
                   <li>
-                    Wypełniając ten formularz:{" "}
                     <strong>otrzymasz spersonalizowany raport</strong>, który
                     pokaże, jak Twoja sytuacja wygląda na tle innych podobnych
                     przypadków (pierwsze 1000 osób – bezpłatnie)
@@ -49,7 +48,7 @@ export default function Home() {
                   </li>
                 </ul>
               </div>
-              <div className="bg-amber-50 p-4 rounded-lg">
+              <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
                 <p className="text-sm">
                   <strong>Uwaga:</strong> obecnie zbieramy dane do stworzenia
                   pierwszych raportów. Aby raporty były wiarygodne i naprawdę

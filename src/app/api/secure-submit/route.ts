@@ -77,8 +77,12 @@ export async function POST(request: NextRequest) {
         { status: 200, headers: securityHeaders }
       );
     }
-    const { contactEmail, zgodaPrzetwarzanie, zgodaKontakt, ...formData } =
-      sanitizedBody;
+    const {
+      contactEmail,
+      zgodaPrzetwarzanie,
+      zgodaKontakt,
+      ...formDataFields
+    } = sanitizedBody;
 
     console.log("Email from request:", contactEmail);
 

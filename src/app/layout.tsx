@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 // URL bazowy dla wszystkich względnych linków w metadanych
-const baseUrl = "https://alimatrix.pl";
+// baseUrl będzie używany w przyszłości do konfiguracji linków kanonicznych
+// const baseUrl = "https://alimatrix.pl";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"], // dodaj latin-ext dla polskich znaków

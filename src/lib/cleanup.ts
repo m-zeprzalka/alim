@@ -1,12 +1,13 @@
 // Server-side data cleanup utilities
-import { verifyCSRFToken } from "./csrf";
+// import { verifyCSRFToken } from "./csrf";
 
 // Keep track of the last cleanup time
 let lastCleanupTime = Date.now();
 
 // Cleanup intervals
 const CLEANUP_INTERVAL = 1000 * 60 * 15; // 15 minutes
-const TOKEN_MAX_AGE = 1000 * 60 * 60; // 1 hour
+// Token age for future implementation of token cleanup
+// const TOKEN_MAX_AGE = 1000 * 60 * 60; // 1 hour
 
 /**
  * Cleanup function for server-side data
@@ -24,7 +25,8 @@ export const cleanupServerData = (): void => {
 
   try {
     // Cleanup CSRF tokens - parse token to get timestamp
-    const tokensToRemove: string[] = [];
+    // In future implementation, we'll add proper token cleanup logic
+    // const tokensToRemove: string[] = [];
 
     // Clean up old tokens with timestamps
     // In a production environment, we would use a database or Redis for this
@@ -53,7 +55,7 @@ export const initScheduledCleanup = (): NodeJS.Timeout => {
 };
 
 // Clean up function to use at the end of a request
-export const cleanupRequestData = (token: string): void => {
+export const cleanupRequestData = (_unusedToken: string): void => {
   // Implement request-specific cleanup
   // This could include removing the used CSRF token
 };

@@ -30,7 +30,7 @@ const generateSimpleFingerprint = (): string => {
       50
     )}`;
     return btoa(encodeURIComponent(fingerprintData)).substring(0, 20);
-  } catch (e) {
+  } catch (_error) {
     // Fallback if fingerprinting fails
     return Math.random().toString(36).substring(2, 10);
   }
@@ -70,7 +70,7 @@ export const validateEmail = (email: string): boolean => {
   try {
     emailSchema.parse(email);
     return true;
-  } catch (error) {
+  } catch (_unusedError) {
     return false;
   }
 };

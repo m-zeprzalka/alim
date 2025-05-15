@@ -16,7 +16,8 @@ export default function CzasOpieki() {
   const { formData, updateFormData } = useFormStore();
 
   // Inicjalizacja stanu dla aktualnego dziecka i danych tabeli
-  const [aktualneDzieckoId, setAktualneDzieckoId] = useState<number | null>(
+  // setAktualneDzieckoId będzie używane w późniejszych aktualizacjach
+  const [aktualneDzieckoId] = useState<number | null>(
     formData.aktualneDzieckoWTabeliCzasu || null
   );
   const [cyklOpieki, setCyklOpieki] = useState<"1" | "2" | "4" | "custom">("1");

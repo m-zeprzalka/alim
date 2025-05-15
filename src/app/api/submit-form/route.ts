@@ -7,7 +7,8 @@ import {
   sanitizeFormData,
   checkRateLimit,
 } from "@/lib/form-validation";
-import { verifyCSRFToken, consumeCSRFToken } from "@/lib/csrf";
+// Import CSRF functions (to be used in future updates)
+// import { verifyCSRFToken, consumeCSRFToken } from "@/lib/csrf";
 
 export async function POST(request: NextRequest) {
   try {

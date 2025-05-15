@@ -55,7 +55,7 @@ export const initScheduledCleanup = (): NodeJS.Timeout => {
 };
 
 // Clean up function to use at the end of a request
-export const cleanupRequestData = (_unusedToken: string): void => {
+export const cleanupRequestData = (/* token */): void => {
   // Implement request-specific cleanup
   // This could include removing the used CSRF token
 };

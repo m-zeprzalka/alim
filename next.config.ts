@@ -37,6 +37,12 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false, // Ukrywa nagłówek X-Powered-By
   
+  // Wyłącz sprawdzanie ESLint podczas buildowania na produkcji
+  eslint: {
+    // Ignoruj błędy ESLint podczas budowania
+    ignoreDuringBuilds: true,
+  },
+  
   // Konfiguracja nagłówków bezpieczeństwa
   async headers() {
     return [

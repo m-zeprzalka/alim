@@ -81,7 +81,8 @@ export async function POST(request: NextRequest) {
       contactEmail,
       zgodaPrzetwarzanie,
       zgodaKontakt,
-      ...formDataFields
+      // Reszta danych formularza (obecnie nieużywana)
+      ..._unusedFormData
     } = sanitizedBody;
 
     console.log("Email from request:", contactEmail);

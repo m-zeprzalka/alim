@@ -22,15 +22,13 @@ const generateSimpleFingerprint = (): string => {
     const screenData = `${window.screen.width}x${window.screen.height}`;
     const timeZone =
       Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
-    const userAgent = navigator.userAgent;
-
-    // Create a hash of the combined data
+    const userAgent = navigator.userAgent;    // Create a hash of the combined data
     const fingerprintData = `${screenData}|${timeZone}|${userAgent.substring(
       0,
       50
     )}`;
     return btoa(encodeURIComponent(fingerprintData)).substring(0, 20);
-  } catch (_error) {
+  } catch (/* error */) {
     // Fallback if fingerprinting fails
     return Math.random().toString(36).substring(2, 10);
   }
@@ -70,7 +68,7 @@ export const validateEmail = (email: string): boolean => {
   try {
     emailSchema.parse(email);
     return true;
-  } catch (_unusedError) {
+  } catch (/* error */) {
     return false;
   }
 };

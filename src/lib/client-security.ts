@@ -22,13 +22,13 @@ const generateSimpleFingerprint = (): string => {
     const screenData = `${window.screen.width}x${window.screen.height}`;
     const timeZone =
       Intl.DateTimeFormat().resolvedOptions().timeZone || "unknown";
-    const userAgent = navigator.userAgent;    // Create a hash of the combined data
+    const userAgent = navigator.userAgent; // Create a hash of the combined data
     const fingerprintData = `${screenData}|${timeZone}|${userAgent.substring(
       0,
       50
     )}`;
     return btoa(encodeURIComponent(fingerprintData)).substring(0, 20);
-  } catch (_) {
+  } catch {
     // Fallback if fingerprinting fails
     return Math.random().toString(36).substring(2, 10);
   }
@@ -64,11 +64,10 @@ export const getCSRFToken = (): string | null => {
 // Client-side email validation
 export const validateEmail = (email: string): boolean => {
   const emailSchema = z.string().min(5).max(100).email();
-
   try {
     emailSchema.parse(email);
     return true;
-  } catch (_) {
+  } catch {
     return false;
   }
 };

@@ -116,9 +116,7 @@ export default function Dzieci() {
     if (hasError) {
       setError(errorMessage);
       return;
-    }
-
-    // Zapisujemy dane do store'a
+    } // Zapisujemy dane do store'a
     const dzieciDoZapisu = dzieci.map((d) => ({
       id: d.id,
       wiek: typeof d.wiek === "number" ? d.wiek : 0,
@@ -131,18 +129,19 @@ export default function Dzieci() {
     }));
     updateFormData({ liczbaDzieci, dzieci: dzieciDoZapisu });
 
-    // Sprawdzamy, czy któreś dziecko ma model opieki "inny" - jeśli tak, przechodzimy do strony czasu opieki
-    // W przeciwnym wypadku przechodzimy od razu do kosztów utrzymania
-    const dzieckoZModelemInny = dzieciDoZapisu.find(
-      (d) => d.modelOpieki === "inny"
-    );
-    if (dzieckoZModelemInny) {
-      // Ustawiamy pierwsze dziecko z modelem "inny" jako aktualne
-      updateFormData({
-        aktualneDzieckoWTabeliCzasu: dzieckoZModelemInny.id,
-      });
+    // Zawsze zaczynamy od pierwszego dziecka
+    const pierwsze_dziecko = dzieciDoZapisu[0];
+
+    // Zapisujemy informację o aktualnie przetwarzanym dziecku
+    updateFormData({
+      aktualneDzieckoWTabeliCzasu: pierwsze_dziecko.id,
+    });
+
+    if (pierwsze_dziecko.modelOpieki === "inny") {
+      // Jeśli pierwsze dziecko ma model opieki "inny", przechodzimy do wypełniania tabeli czasu
       router.push("/czas-opieki");
     } else {
+      // Jeśli nie ma modelu "inny", przechodzimy od razu do kosztów utrzymania dla pierwszego dziecka
       router.push("/koszty-utrzymania");
     }
   };

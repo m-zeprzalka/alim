@@ -159,110 +159,31 @@ export default function CzasOpieki() {
         dzieci: zaktualizowaneDzieci,
       });
 
-      // Sprawdzamy, czy są jeszcze dzieci z modelem "inny" do obsługi
-      const indexAktualnego = dzieciZModelemInnym.findIndex(
-        (d) => d.id === aktualneDzieckoId
-      );
-      const nastepneDziecko =
-        indexAktualnego < dzieciZModelemInnym.length - 1
-          ? dzieciZModelemInnym[indexAktualnego + 1]
-          : null;
-
-      if (nastepneDziecko) {
-        // Przejście do następnego dziecka z modelem "inny"
-        updateFormData({
-          aktualneDzieckoWTabeliCzasu: nastepneDziecko.id,
-        });
-        setAktualneDzieckoId(nastepneDziecko.id);
-
-        // Resetujemy tabelę czasu, jeśli następne dziecko nie ma jeszcze uzupełnionych danych
-        if (!nastepneDziecko.tabelaCzasu) {
-          setTabelaCzasu({
-            pn: {
-              poranek: 0,
-              placowkaEdukacyjna: 0,
-              czasPoEdukacji: 0,
-              senURodzica: 0,
-            },
-            wt: {
-              poranek: 0,
-              placowkaEdukacyjna: 0,
-              czasPoEdukacji: 0,
-              senURodzica: 0,
-            },
-            sr: {
-              poranek: 0,
-              placowkaEdukacyjna: 0,
-              czasPoEdukacji: 0,
-              senURodzica: 0,
-            },
-            cz: {
-              poranek: 0,
-              placowkaEdukacyjna: 0,
-              czasPoEdukacji: 0,
-              senURodzica: 0,
-            },
-            pt: {
-              poranek: 0,
-              placowkaEdukacyjna: 0,
-              czasPoEdukacji: 0,
-              senURodzica: 0,
-            },
-            sb: {
-              poranek: 0,
-              placowkaEdukacyjna: 0,
-              czasPoEdukacji: 0,
-              senURodzica: 0,
-            },
-            nd: {
-              poranek: 0,
-              placowkaEdukacyjna: 0,
-              czasPoEdukacji: 0,
-              senURodzica: 0,
-            },
-          });
-        }
-
-        // Resetujemy cykl opieki, jeśli następne dziecko nie ma jeszcze uzupełnionych danych
-        if (!nastepneDziecko.cyklOpieki) {
-          setCyklOpieki("1");
-        }
-      } else {
-        // Wszystkie dzieci obsłużone, przechodzimy do strony kosztów utrzymania
-        router.push("/koszty-utrzymania");
-      }
+      // Nowa logika - po wypełnieniu czasu opieki, przechodzimy do kosztów utrzymania dla tego samego dziecka
+      router.push("/koszty-utrzymania");
     }
-  };
-
-  // Funkcja do obsługi powrotu do poprzedniego kroku
+  }; // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = () => {
-    // Jeśli jesteśmy przy pierwszym dziecku, wracamy do strony dzieci
-    if (
-      dzieciZModelemInnym.length === 0 ||
-      dzieciZModelemInnym[0]?.id === aktualneDzieckoId
-    ) {
-      router.push("/dzieci");
-    } else {
-      // W przeciwnym razie wracamy do poprzedniego dziecka
-      const indexAktualnego = dzieciZModelemInnym.findIndex(
-        (d) => d.id === aktualneDzieckoId
-      );
-      if (indexAktualnego > 0) {
-        const poprzednieDziecko = dzieciZModelemInnym[indexAktualnego - 1];
-        updateFormData({
-          aktualneDzieckoWTabeliCzasu: poprzednieDziecko.id,
-        });
-        setAktualneDzieckoId(poprzednieDziecko.id);
+    // Zapisujemy aktualne dane dziecka
+    if (aktualneDzieckoId && formData.dzieci) {
+      const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
+        if (dziecko.id === aktualneDzieckoId) {
+          return {
+            ...dziecko,
+            cyklOpieki,
+            tabelaCzasu,
+          };
+        }
+        return dziecko;
+      });
 
-        // Wczytujemy dane poprzedniego dziecka
-        if (poprzednieDziecko.tabelaCzasu) {
-          setTabelaCzasu(poprzednieDziecko.tabelaCzasu);
-        }
-        if (poprzednieDziecko.cyklOpieki) {
-          setCyklOpieki(poprzednieDziecko.cyklOpieki);
-        }
-      }
+      updateFormData({
+        dzieci: zaktualizowaneDzieci,
+      });
     }
+
+    // Wracamy do strony dzieci
+    router.push("/dzieci");
   };
 
   // Pomocnicza funkcja do konwersji kodu dnia na pełną nazwę
@@ -382,19 +303,22 @@ export default function CzasOpieki() {
                   </div>
                 }
               />
-            </div>
-
+            </div>{" "}
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="font-medium">
                 Wypełniasz tabelę czasu opieki dla Dziecka {aktualneDziecko.id}{" "}
-                - {aktualneDziecko.wiek} lat
+                (
+                {aktualneDzieckoId &&
+                  formData.dzieci &&
+                  formData.dzieci.findIndex((d) => d.id === aktualneDzieckoId) +
+                    1}
+                /{formData.dzieci?.length || 0}) - {aktualneDziecko.wiek} lat
               </p>
               <p className="text-sm mt-1">
                 Ta część może zająć chwilę, ale jest ważna dla dokładnej analizy
                 czasu spędzanego z dzieckiem.
               </p>
             </div>
-
             <div className="bg-amber-50 p-4 rounded-lg">
               <p className="text-sm font-semibold">📌 Uwaga techniczna:</p>
               <ul className="list-disc list-inside text-sm space-y-1">
@@ -410,7 +334,6 @@ export default function CzasOpieki() {
                 </li>
               </ul>
             </div>
-
             <div>
               <Label htmlFor="care-cycle">Cykl opieki</Label>
               <select
@@ -431,7 +354,6 @@ export default function CzasOpieki() {
                 dla przykładowych 4 tygodni, żeby ustandaryzować analizę.
               </p>
             </div>
-
             {/* Tabela czasu - wersja na desktop */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm border-collapse">
@@ -481,7 +403,6 @@ export default function CzasOpieki() {
                 </tbody>
               </table>
             </div>
-
             {/* Tabela czasu - wersja mobilna (responsive) */}
             <div className="md:hidden">
               {dniTygodnia.map((dzien, index) => (
@@ -526,20 +447,13 @@ export default function CzasOpieki() {
                 </div>
               ))}
             </div>
-
             {error && <p className="text-red-500 text-sm">{error}</p>}
-
             <div className="flex gap-3 pt-4">
               <Button variant="outline" className="flex-1" onClick={handleBack}>
                 Wstecz
-              </Button>
+              </Button>{" "}
               <Button className="flex-1" onClick={handleNext}>
-                {dzieciZModelemInnym.findIndex(
-                  (d) => d.id === aktualneDzieckoId
-                ) <
-                dzieciZModelemInnym.length - 1
-                  ? "Następne dziecko"
-                  : "Dalej"}
+                Przejdź do kosztów utrzymania
               </Button>
             </div>
           </div>

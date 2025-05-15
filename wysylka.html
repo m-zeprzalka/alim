@@ -1,0 +1,103 @@
+<!-- Step 11: Email and consent -->
+<div id="step-11" class="step">
+  <div class="bg-white rounded-lg shadow-sm p-6">
+    <h2 class="text-xl font-bold mb-4">Podanie e-maila i zgody</h2>
+    <p class="text-gray-700 mb-2">
+      Zostaw swój adres e-mail, żebyśmy mogli przesłać Ci spersonalizowany
+      raport przygotowany na podstawie Twoich odpowiedzi.
+    </p>
+    <p class="text-sm text-gray-600 mb-6">
+      Potrzebujemy Twojego adresu e-mail – wyłącznie po to, żebyśmy mogli
+      bezpiecznie przesłać Ci Twój raport. Twój adres przechowujemy zgodnie z
+      RODO. Nie wykorzystujemy go do żadnych innych celów. Dane analityczne i
+      kontaktowe są przechowywane oddzielnie, choć na potrzeby przygotowania
+      raportu możliwe jest ich powiązanie. W każdej chwili możesz zażądać
+      wglądu, zmiany lub usunięcia wszystkich swoich danych.
+    </p>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-gray-700 mb-2"
+          >Twój adres e-mail (wymagane)
+          <span class="tooltip">
+            <span class="info-icon">i</span>
+            <span class="tooltiptext-wide"
+              >Twój e-mail będzie wykorzystany wyłącznie w celu przesłania Ci
+              spersonalizowanego raportu. Nie będziemy wysyłać żadnych reklam
+              ani udostępniać Twoich danych osobom trzecim. Adres e-mail będzie
+              przechowywany oddzielnie od danych analitycznych.</span
+            >
+          </span>
+        </label>
+        <input
+          type="email"
+          id="final-email"
+          class="w-full p-3 border-2 border-gray-200 rounded-lg"
+          placeholder="twoj@email.pl"
+          required
+        />
+      </div>
+      <div class="space-y-3 mt-6">
+        <h3 class="text-lg font-semibold text-gray-800">
+          Zgody i ochrona prywatności
+        </h3>
+        <p class="text-sm text-gray-600">
+          Zanim zakończysz wypełnianie formularza, prosimy Cię o wyrażenie zgód
+          niezbędnych do przygotowania i przesłania raportu.
+        </p>
+        <label class="flex items-start">
+          <input
+            type="checkbox"
+            id="consent-data-processing"
+            class="mt-1 mr-3"
+            required
+          />
+          <span class="text-sm"
+            >✅ Wyrażam zgodę na przetwarzanie przekazanych przeze mnie danych w
+            celu ich analizy statystycznej i wygenerowania spersonalizowanego
+            raportu w ramach projektu AliMatrix.</span
+          >
+        </label>
+        <label class="flex items-start">
+          <input
+            type="checkbox"
+            id="consent-contact"
+            class="mt-1 mr-3"
+            required
+          />
+          <span class="text-sm"
+            >✅ Wyrażam zgodę na kontakt mailowy w celu dostarczenia mojego
+            raportu oraz ewentualnej komunikacji związanej z dalszą realizacją
+            usługi. Mój adres e-mail będzie przechowywany oddzielnie od
+            pozostałych danych analitycznych.</span
+          >
+        </label>
+      </div>
+      <div class="bg-gray-100 p-4 rounded-lg mt-4">
+        <p class="text-sm text-gray-700 font-semibold">
+          🔒 Klauzula informacyjna RODO (skrótowa wersja)
+        </p>
+        <p class="text-xs text-gray-600">
+          AliMatrix przetwarza Twoje dane zgodnie z RODO – z pełnym
+          poszanowaniem prywatności. Dane kontaktowe i analityczne są od siebie
+          oddzielone. W każdej chwili możesz zażądać wglądu, korekty lub
+          usunięcia wszystkich danych, które przekazałeś. Szczegóły znajdziesz w
+          Polityce Prywatności i Regulaminie. (Linki do dodania)
+        </p>
+      </div>
+    </div>
+    <div class="mt-6 flex gap-3">
+      <button
+        onclick="prevStep()"
+        class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+      >
+        Wstecz
+      </button>
+      <button
+        onclick="finishForm()"
+        class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition"
+      >
+        Zakończ
+      </button>
+    </div>
+  </div>
+</div>

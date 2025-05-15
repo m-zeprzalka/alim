@@ -18,6 +18,44 @@ export type FormData = {
   ocenaAdekwatnosciPorozumienie?: number;
   ocenaAdekwatnosciInne?: number;
 
+  // Krok 9: Dane postępowania sądowego
+  dataDecyzjiSad?: string;
+  rodzajSaduSad?: string;
+  wojewodztwoSad?: string;
+  miejscowoscSad?: string;
+  liczbaSedzi?: string;
+  plecSedziego?: string;
+  inicjalySedziego?: string;
+  czyPozew?: string;
+  watekWiny?: string;
+
+  // Krok 9: Dane porozumienia
+  dataPorozumienia?: string;
+  sposobPorozumienia?: string;
+  formaPorozumienia?: string;
+  klauzulaWaloryzacyjna?: string;
+  // Krok 9: Dane ustaleń innych
+  dataUstalenInnych?: string;
+  uzgodnienieFinansowania?: string;
+  planyWystapieniaDoSadu?: string;
+
+  // Krok 10: Dane demograficzne - użytkownik
+  plecUzytkownika?: string;
+  wiekUzytkownika?: string;
+  wojewodztwoUzytkownika?: string;
+  miejscowoscUzytkownika?: string;
+  stanCywilnyUzytkownika?: string;
+  // Krok 10: Dane demograficzne - drugi rodzic
+  plecDrugiegoRodzica?: string;
+  wiekDrugiegoRodzica?: string;
+  wojewodztwoDrugiegoRodzica?: string;
+  miejscowoscDrugiegoRodzica?: string;
+
+  // Krok 11: Dane kontaktowe i zgody
+  contactEmail?: string;
+  zgodaPrzetwarzanie?: boolean;
+  zgodaKontakt?: boolean;
+
   // Krok 4: Dzieci
   liczbaDzieci?: number;
   dzieci?: {
@@ -58,6 +96,24 @@ export type FormData = {
       brakDodatkowychZrodel: boolean;
     };
   }[];
+
+  // Krok 8: Dochody i koszty życia rodziców
+  dochodyRodzicow?: {
+    wlasne: {
+      oficjalneDochodyNetto: number;
+      potencjalDochodowy: number;
+      kosztyUtrzymaniaSiebie: number;
+      kosztyUtrzymaniaInnychOsob: number;
+      dodatkoweZobowiazania: number;
+    };
+    drugiRodzic: {
+      oficjalneDochodyNetto: number;
+      potencjalDochodowy: number;
+      kosztyUtrzymaniaSiebie: number;
+      kosztyUtrzymaniaInnychOsob: number;
+      dodatkoweZobowiazania: number;
+    };
+  };
 };
 
 // Definicja interfejsu dla store'a

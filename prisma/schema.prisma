@@ -8,14 +8,31 @@ datasource db {
 }
 
 model EmailSubscription {
-  id                String    @id @default(cuid())
-  email             String    @unique
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  acceptedTerms     Boolean   @default(false)
-  status            String    @default("pending")
+  id                String           @id @default(cuid())
+  email             String           @unique
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  submittedAt       DateTime?
+  acceptedTerms     Boolean          @default(false)
+  acceptedContact   Boolean          @default(false)
+  status            String           @default("pending")
   verificationToken String?
   verifiedAt        DateTime?
+  formSubmissions   FormSubmission[]
 
   @@index([status])
+}
+
+model FormSubmission {
+  id                 String           @id @default(cuid())
+  emailSubscriptionId String
+  emailSubscription  EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
+  formData           Json
+  submittedAt        DateTime         @default(now())
+  processedAt        DateTime?
+  status             String           @default("pending")
+  reportUrl          String?
+
+  @@index([status])
+  @@index([emailSubscriptionId])
 }

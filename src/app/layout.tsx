@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// URL bazowy dla wszystkich względnych linków w metadanych
+const baseUrl = "https://alimatrix.pl";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const inter = Inter({
+  subsets: ["latin", "latin-ext"], // dodaj latin-ext dla polskich znaków
+  weight: ["400", "500", "600", "700"], // dostępne grubości fontu
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -25,9 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-sky-50`}
-      >
+      <body className={`${inter.className} antialiased bg-sky-50`}>
         <div className="bg-sky-950 text-white py-2 text-center text-sm font-medium">
           ⚠️ Wersja demonstracyjna - AliMatrix ⚠️
         </div>

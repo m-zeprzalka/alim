@@ -75,7 +75,7 @@ export const ClickableRadioOption = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "p-3 border-2 rounded-lg transition-colors cursor-pointer",
+          "p-4 border-2 rounded-lg transition-colors cursor-pointer",
           selected
             ? "border-blue-500 bg-blue-50"
             : "border-gray-200 hover:border-blue-300",

@@ -1,0 +1,85 @@
+<!-- Step 3A: Main form - Financing method -->
+<div id="step-3a" class="step">
+  <div class="bg-white rounded-lg shadow-sm p-6">
+    <h2 class="text-xl font-bold mb-4">
+      Sposób finansowania potrzeb dziecka
+      <span class="tooltip">
+        <span class="info-icon">i</span>
+        <span class="tooltiptext-wide"
+          >Pytamy o główne zasady finansowania potrzeb dziecka lub dzieci.
+          Wiemy, że w praktyce sytuacje bywają różne – ale ważne, żeby istniał
+          ustalony sposób dzielenia się kosztami, nawet nieformalny. Wskaż
+          odpowiedź, która najlepiej oddaje Waszą obecną sytuację.</span
+        >
+      </span>
+    </h2>
+    <p class="text-gray-700 mb-6">
+      Jak w Twojej sytuacji wygląda obecnie główne ustalenie dotyczące
+      finansowania potrzeb dziecka lub dzieci? (jeśli masz więcej niż jedno
+      dziecko, odpowiedz ogólnie – w kolejnych pytaniach będzie miejsce na
+      szczegóły)
+    </p>
+    <p class="text-gray-700 mb-2 font-semibold">
+      Wybierz opcję, która najlepiej oddaje Twoją sytuację:
+    </p>
+    <div class="space-y-3">
+      <label
+        class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+      >
+        <input type="radio" name="financing" value="i-pay" class="mr-3" />
+        <span class="font-semibold"
+          >Ja regularnie przekazuję środki na utrzymanie dziecka/dzieci drugiemu
+          rodzicowi</span
+        >
+        <p class="text-sm text-gray-600 mt-1">
+          (np. alimenty lub inne uzgodnienia – niezależnie od tego, czy ponoszę
+          jeszcze inne koszty podczas opieki.)
+        </p>
+      </label>
+      <label
+        class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+      >
+        <input type="radio" name="financing" value="i-receive" class="mr-3" />
+        <span class="font-semibold"
+          >Drugi rodzic regularnie przekazuje środki na utrzymanie
+          dziecka/dzieci mnie</span
+        >
+        <p class="text-sm text-gray-600 mt-1">
+          (nawet jeśli także sam pokrywa niektóre koszty podczas swojej opieki.)
+        </p>
+      </label>
+      <label
+        class="block p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition"
+      >
+        <input type="radio" name="financing" value="shared" class="mr-3" />
+        <span class="font-semibold"
+          >Koszty utrzymania dzieci dzielimy w miarę proporcjonalnie, bez
+          formalnego przekazywania pieniędzy między sobą</span
+        >
+        <p class="text-sm text-gray-600 mt-1">
+          (Każdy rodzic pokrywa swoje wydatki bezpośrednio lub finansujemy
+          wspólnie w określony sposób.)
+        </p>
+      </label>
+    </div>
+    <div class="mt-6 flex gap-3">
+      <button
+        onclick="prevStep()"
+        class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+      >
+        Wstecz
+      </button>
+      <button
+        onclick="nextStep()"
+        class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition tooltip"
+      >
+        Dalej
+        <span class="tooltiptext"
+          >Twoja odpowiedź pomoże dostosować dalsze pytania w formularzu do
+          Twojej sytuacji. Dzięki temu raport, który otrzymasz, będzie lepiej
+          odzwierciedlał Twoją rzeczywistość.</span
+        >
+      </button>
+    </div>
+  </div>
+</div>

@@ -14,6 +14,11 @@ import { useFormStore } from "@/lib/store/form-store";
 export default function CzasOpieki() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
+  
+  // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Inicjalizacja stanu dla aktualnego dziecka i danych tabeli
   // setAktualneDzieckoId będzie używane w późniejszych aktualizacjach
@@ -155,10 +160,12 @@ export default function CzasOpieki() {
         }
         return dziecko;
       });
-
       updateFormData({
         dzieci: zaktualizowaneDzieci,
       });
+
+      // Przewijamy stronę do góry przed przejściem do następnej strony
+      scrollToTop();
 
       // Nowa logika - po wypełnieniu czasu opieki, przechodzimy do kosztów utrzymania dla tego samego dziecka
       router.push("/koszty-utrzymania");
@@ -177,11 +184,13 @@ export default function CzasOpieki() {
         }
         return dziecko;
       });
-
       updateFormData({
         dzieci: zaktualizowaneDzieci,
       });
     }
+
+    // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+    scrollToTop();
 
     // Wracamy do strony dzieci
     router.push("/dzieci");

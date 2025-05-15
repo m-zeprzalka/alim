@@ -8,10 +8,15 @@ export type FormData = {
 
   // Dane dla ścieżki alternatywnej
   alternativeEmail?: string;
-  alternativeConsent?: boolean; // Krok 3: Podstawa ustaleń
+  alternativeConsent?: boolean;
+
+  // Krok 3: Podstawa ustaleń
   podstawaUstalen?: string;
   podstawaUstalenInne?: string;
   wariantPostepu?: "court" | "agreement" | "other"; // Kategoria dla kroku 9
+
+  // Krok 4: Sposób finansowania potrzeb dziecka
+  sposobFinansowania?: "i-pay" | "i-receive" | "shared";
 
   // Krok 9: Oceny adekwatności postępowania
   ocenaAdekwatnosciSad?: number;

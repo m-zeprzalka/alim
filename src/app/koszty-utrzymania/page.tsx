@@ -30,6 +30,11 @@ type KosztyDziecka = {
 export default function KosztyUtrzymania() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
+  
+  // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Stan dla aktualnego dziecka i danych kosztów
   const [aktualneDzieckoIndex, setAktualneDzieckoIndex] = useState<number>(0);
@@ -190,15 +195,18 @@ export default function KosztyUtrzymania() {
       if (nastepneDziecko) {
         updateFormData({
           aktualneDzieckoWTabeliCzasu: nastepneDziecko.id,
-        });
-
-        // Sprawdzamy, czy następne dziecko ma model opieki "inny"
+        }); // Sprawdzamy, czy następne dziecko ma model opieki "inny"
         if (nastepneDziecko.modelOpieki === "inny") {
+          // Przewijamy stronę do góry przed przejściem do następnej strony
+          scrollToTop();
+
           // Jeśli tak, przechodzimy do strony czasu opieki dla następnego dziecka
           router.push("/czas-opieki");
         } else {
           // Jeśli nie, zostajemy na tej samej stronie, ale zmieniamy indeks na następne dziecko
           setAktualneDzieckoIndex(aktualneDzieckoIndex + 1);
+          // Przewijamy stronę do góry, aby użytkownik wiedział, że zaczyna wypełniać dane dla nowego dziecka
+          scrollToTop();
         }
       }
     } else {
@@ -206,6 +214,9 @@ export default function KosztyUtrzymania() {
       updateFormData({
         kosztyDzieci: kosztyDoZapisu,
       });
+
+      // Przewijamy stronę do góry przed przejściem do następnego kroku
+      scrollToTop();
 
       // Przechodzimy do następnego kroku
       router.push("/dochody-i-koszty");
@@ -245,10 +256,11 @@ export default function KosztyUtrzymania() {
     });
 
     // Aktualnie przetwarzane dziecko
-    const aktualneDziecko = formData.dzieci?.[aktualneDzieckoIndex];
-
-    // Sprawdzamy czy aktualne dziecko ma model opieki "inny"
+    const aktualneDziecko = formData.dzieci?.[aktualneDzieckoIndex]; // Sprawdzamy czy aktualne dziecko ma model opieki "inny"
     if (aktualneDziecko?.modelOpieki === "inny") {
+      // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+      scrollToTop();
+
       // Jeśli tak, wracamy do strony czasu opieki dla tego dziecka
       router.push("/czas-opieki");
     } else if (aktualneDzieckoIndex > 0) {
@@ -262,15 +274,22 @@ export default function KosztyUtrzymania() {
 
         // Sprawdzamy model opieki poprzedniego dziecka
         if (poprzednieDziecko.modelOpieki === "inny") {
+          // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+          scrollToTop();
+
           // Jeśli poprzednie dziecko ma model "inny", wracamy do czasu opieki
           router.push("/czas-opieki");
         } else {
           // W przeciwnym razie zostajemy na stronie kosztów, ale zmieniamy indeks
           setAktualneDzieckoIndex(aktualneDzieckoIndex - 1);
+          // Przewijamy stronę do góry
+          scrollToTop();
         }
       }
     } else {
       // Jeśli to pierwsze dziecko i nie ma modelu "inny", wracamy do strony dzieci
+      // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+      scrollToTop();
       router.push("/dzieci");
     }
   };

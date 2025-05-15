@@ -10,12 +10,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { ClickableRadioOption } from "@/components/ui/custom/ClickableRadioOption";
 import { useFormStore } from "@/lib/store/form-store";
-import { useNavigation } from "@/lib/navigation-context";
 
 export default function Finansowanie() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
-  const { scrollToTop } = useNavigation();
+
+  // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // Inicjalizacja stanu wybranej opcji z danych formularza (jeśli istnieją)
   const [selectedOption, setSelectedOption] = useState<string>(
@@ -38,7 +41,6 @@ export default function Finansowanie() {
       router.push("/sciezka");
     }
   }, [formData.sciezkaWybor, router]);
-
   // Funkcja do obsługi przejścia do następnego kroku
   const handleNext = () => {
     if (!selectedOption) {

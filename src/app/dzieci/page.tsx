@@ -16,6 +16,11 @@ import { PlusCircle, MinusCircle } from "lucide-react";
 export default function Dzieci() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
+  
+  // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   // Inicjalizacja stanu dla liczby dzieci i ich danych z formStore
   const [liczbaDzieci, setLiczbaDzieci] = useState<number>(
     formData.liczbaDzieci || 1
@@ -127,15 +132,19 @@ export default function Dzieci() {
         : undefined,
       modelOpieki: d.modelOpieki as "50/50" | "inny",
     }));
-    updateFormData({ liczbaDzieci, dzieci: dzieciDoZapisu });
-
-    // Zawsze zaczynamy od pierwszego dziecka
+    updateFormData({ liczbaDzieci, dzieci: dzieciDoZapisu }); // Zawsze zaczynamy od pierwszego dziecka
     const pierwsze_dziecko = dzieciDoZapisu[0];
 
     // Zapisujemy informację o aktualnie przetwarzanym dziecku
     updateFormData({
       aktualneDzieckoWTabeliCzasu: pierwsze_dziecko.id,
     });
+
+    // Przewijamy stronę do góry przed przejściem do następnej strony
+    scrollToTop();
+
+    // Przewijamy stronę do góry przed przejściem do następnej strony
+    scrollToTop();
 
     if (pierwsze_dziecko.modelOpieki === "inny") {
       // Jeśli pierwsze dziecko ma model opieki "inny", przechodzimy do wypełniania tabeli czasu
@@ -145,20 +154,18 @@ export default function Dzieci() {
       router.push("/koszty-utrzymania");
     }
   };
-
   // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = () => {
+    // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+    scrollToTop();
     router.push("/podstawa-ustalen");
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardContent className="pt-6">
-          {" "}
-          <div className="flex justify-center mb-6">
-            <Logo size="medium" />
-          </div>
+    <main className="flex justify-center p-3">
+      <Card className="w-full max-w-lg shadow-lg border-sky-100">
+        <CardContent className="pt-2">
+          <Logo size="large" />
           <FormProgress currentStep={5} totalSteps={12} />
           <div className="space-y-6">
             <div className="flex items-center gap-2">

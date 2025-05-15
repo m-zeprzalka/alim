@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { Info } from "lucide-react";
-
+import { CircleEllipsis } from "lucide-react";
 interface InfoTooltipProps {
   content: React.ReactNode;
 }
@@ -26,7 +26,7 @@ export function InfoTooltip({ content }: InfoTooltipProps) {
             className="inline-flex items-center justify-center w-5 h-5 ml-1 text-xs font-bold text-white bg-blue-500 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             aria-label="Więcej informacji"
           >
-            <Info className="w-3 h-3" />
+            <CircleEllipsis />
           </button>
         </TooltipTrigger>
         <TooltipContent

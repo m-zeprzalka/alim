@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { InfoTooltip } from "@/components/ui/custom/InfoTooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { useFormStore } from "@/lib/store/form-store";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -43,34 +50,34 @@ export default function WyborSciezki() {
 
     // Przekierowanie w zależności od wybranej ścieżki
     if (selectedOption === "established") {
-      router.push("/podstawa-ustalen");
+      router.push("/finansowanie");
     } else {
       router.push("/alternatywna");
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardContent>
+    <main className="flex justify-center p-3">
+      <Card className="w-full max-w-lg shadow-lg border-sky-100">
+        <CardContent className="pt-2">
           <Logo size="medium" />
           <FormProgress currentStep={1} totalSteps={12} />
           <div className="space-y-6">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold text-left text-sky-950">
-                🔍 Na jakim etapie ustaleń dotyczących finansowania potrzeb
-                dziecka jesteś?
+                Na jakim etapie ustaleń dotyczących finansowania potrzeb dziecka
+                jesteś?
               </h1>
-              <p className="text-gray-600">
+              <p className="text-text-sky-950">
                 Zanim przejdziesz dalej, odpowiedz proszę na jedno pytanie:
               </p>
-              <p className="text-gray-600">
+              <p className="text-text-sky-950">
                 Czy w Twojej sytuacji zostało już ustalone, w jaki sposób
                 dzielicie się z drugim rodzicem kosztami wychowania dziecka lub
                 dzieci?
               </p>
 
-              <div className="mt-2 text-sm text-gray-500 bg-gray-50 p-3 rounded-md">
+              <div className="mt-2 text-sm text-sky-950 bg-gray-50 p-3 rounded-md">
                 <p>Takie ustalenia mogą przyjmować różne formy:</p>
                 <ul className="list-disc list-inside mt-1">
                   <li>
@@ -94,8 +101,8 @@ export default function WyborSciezki() {
             </div>
 
             <div>
-              <p className="font-semibold text-gray-700 mb-4">
-                📌 Wybierz ścieżkę, która najlepiej opisuje Twoją sytuację:
+              <p className="font-semibold text-sky-950 mb-4">
+                Wybierz ścieżkę, która najlepiej opisuje Twoją sytuację:
               </p>
 
               <div className="space-y-4">
@@ -103,7 +110,7 @@ export default function WyborSciezki() {
                 <div
                   className={`flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
                     selectedOption === "established"
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-blue-500"
                       : "border-gray-200 hover:border-blue-300"
                   }`}
                   onClick={() => setSelectedOption("established")}
@@ -161,7 +168,7 @@ export default function WyborSciezki() {
                 <div
                   className={`flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
                     selectedOption === "not-established"
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-blue-500"
                       : "border-gray-200 hover:border-blue-300"
                   }`}
                   onClick={() => setSelectedOption("not-established")}

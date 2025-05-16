@@ -88,27 +88,32 @@ export default function Finansowanie() {
                       ważne, żeby istniał ustalony sposób dzielenia się
                       kosztami, nawet nieformalny.
                     </p>
-                    <p>
-                      Twoja odpowiedź pomoże dostosować dalsze pytania w
-                      formularzu do Twojej sytuacji. Dzięki temu raport, który
-                      otrzymasz, będzie lepiej odzwierciedlał Twoją
-                      rzeczywistość.
-                    </p>
                   </div>
                 }
               />
             </div>
-            <p className="text-gray-700">
+            <p className="text-bold">
               Jak w Twojej sytuacji wygląda obecnie główne ustalenie dotyczące
-              finansowania potrzeb dziecka lub dzieci? (jeśli masz więcej niż
-              jedno dziecko, odpowiedz ogólnie – w kolejnych pytaniach będzie
-              miejsce na szczegóły)
+              finansowania potrzeb dziecka lub dzieci?
             </p>
-
-            <p className="font-semibold text-gray-700 mb-2">
-              Wybierz opcję, która najlepiej oddaje Twoją sytuację:
+            <p>
+              (jeśli masz więcej niż jedno dziecko, odpowiedz ogólnie – w
+              kolejnych pytaniach będzie miejsce na szczegóły)
             </p>
-
+            <p className="font-semibold mb-2">
+              Wybierz opcję, która najlepiej oddaje Twoją sytuację:{" "}
+            </p>
+            <InfoTooltip
+              content={
+                <div className="space-y-2 text-sm">
+                  <p>
+                    Twoja odpowiedź pomoże dostosować dalsze pytania w
+                    formularzu do Twojej sytuacji. Dzięki temu raport, który
+                    otrzymasz, będzie lepiej odzwierciedlał Twoją rzeczywistość.
+                  </p>
+                </div>
+              }
+            />
             <RadioGroup
               value={selectedOption}
               onValueChange={(value) => {

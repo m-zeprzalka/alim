@@ -51,11 +51,6 @@ export default function RootLayout({
   return (
     <html lang="pl" className={inter.variable}>
       <body className={`${inter.className} antialiased bg-sky-50`}>
-        {/* Banner informacyjny */}
-        <div className="bg-sky-950 text-white py-2 text-center text-sm font-medium">
-          ⚠️ Wersja demonstracyjna - AliMatrix ⚠️
-        </div>
-
         {/* Główna zawartość */}
         <main className="min-h-screen">{children}</main>
 

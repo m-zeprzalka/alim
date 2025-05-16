@@ -79,9 +79,12 @@ export default function PodstawaUstalen() {
           <Logo size="large" />
           <FormProgress currentStep={3} totalSteps={12} />
 
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">Podstawa ustaleń</h1>
+          <div className="space-y-6 text-sky-950">
+            <div className="flex items-start gap-2">
+              <h1 className="text-2xl font-bold">
+                Na jakiej podstawie zostały ustalone zasady finansowania potrzeb
+                dziecka lub dzieci?
+              </h1>
               <InfoTooltip
                 content={
                   <div className="space-y-2 text-sm">
@@ -97,11 +100,7 @@ export default function PodstawaUstalen() {
                 }
               />
             </div>
-            <p className="text-gray-700">
-              Na jakiej podstawie zostały ustalone zasady finansowania potrzeb
-              dziecka lub dzieci? (Wybierz opcję, która najlepiej oddaje Twoją
-              sytuację.)
-            </p>{" "}
+            <p>Wybierz opcję, która najlepiej oddaje Twoją sytuację.</p>{" "}
             <RadioGroup
               value={selectedOption}
               onValueChange={(value) => {

@@ -22,17 +22,19 @@ export type FormData = {
   ocenaAdekwatnosciSad?: number;
   ocenaAdekwatnosciPorozumienie?: number;
   ocenaAdekwatnosciInne?: number;
-
   // Krok 9: Dane postępowania sądowego
   dataDecyzjiSad?: string;
-  rodzajSaduSad?: string;
-  wojewodztwoSad?: string;
-  miejscowoscSad?: string;
-  liczbaSedzi?: string;
-  plecSedziego?: string;
+  rokDecyzjiSad?: string;
+  miesiacDecyzjiSad?: string;
+  rodzajSaduSad?: "rejonowy" | "okregowy" | "nie_pamietam";
+  apelacjaSad?: string;
+  sadOkregowyId?: string;
+  sadRejonowyId?: string;
+  liczbaSedzi?: "jeden" | "trzech";
+  plecSedziego?: "kobieta" | "mezczyzna";
   inicjalySedziego?: string;
-  czyPozew?: string;
-  watekWiny?: string;
+  czyPozew?: "tak" | "nie";
+  watekWiny?: "nie" | "tak-ja" | "tak-druga-strona" | "tak-oboje";
 
   // Krok 9: Dane porozumienia
   dataPorozumienia?: string;
@@ -60,15 +62,22 @@ export type FormData = {
   contactEmail?: string;
   zgodaPrzetwarzanie?: boolean;
   zgodaKontakt?: boolean;
-
   // Krok 4: Dzieci
   liczbaDzieci?: number;
   dzieci?: {
     id: number;
     wiek: number;
-    plec: "K" | "M";
+    plec: "K" | "M" | "I"; // Updated to include "I" (Inna / wolę nie podawać)
     specjalnePotrzeby: boolean;
     opisSpecjalnychPotrzeb?: string;
+    uczeszczeDoPlacowki?: boolean;
+    typPlacowki?:
+      | "zlobek"
+      | "przedszkole"
+      | "podstawowa"
+      | "ponadpodstawowa"
+      | "";
+    opiekaInnejOsoby?: boolean | null;
     modelOpieki?: "50/50" | "inny"; // Dane związane z tabelą czasu opieki (tylko dla modelu "inny")
     cyklOpieki?: "1" | "2" | "4" | "custom"; // co tydzień, co 2 tygodnie, co 4 tygodnie, brak stałego schematu
     procentCzasuOpieki?: number; // procentowy udział czasu opieki rodzica wypełniającego formularz

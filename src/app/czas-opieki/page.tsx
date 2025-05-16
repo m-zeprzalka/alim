@@ -311,7 +311,7 @@ export default function CzasOpieki() {
         <Card className="w-full max-w-lg shadow-lg border-sky-100">
           <CardContent className="pt-2">
             <Logo size="large" />
-            <FormProgress currentStep={6} totalSteps={12} />
+            <FormProgress currentStep={5} totalSteps={12} />
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold">Czas opieki</h1>
@@ -342,13 +342,16 @@ export default function CzasOpieki() {
           <FormProgress currentStep={6} totalSteps={12} />
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">Czas opieki</h1>
+              <h1 className="text-2xl font-bold">Tabela czasu opieki</h1>
               <InfoTooltip
                 content={
                   <div className="space-y-2 text-sm">
                     <p>
-                      Dane o czasie opieki są niezbędne do dokładnego obliczenia
-                      alimentów.
+                      Ta część może zająć chwilę – ale każda minuta ma sens.
+                      Wypełniając tę sekcję, nie tylko dostarczasz danych do
+                      raportu. Masz szansę przyjrzeć się uważnie codzienności –
+                      czasowi, który naprawdę spędzasz z dzieckiem, i temu, jak
+                      wygląda Wasz rytm tygodnia.
                     </p>
                   </div>
                 }
@@ -370,6 +373,9 @@ export default function CzasOpieki() {
               </p>
             </div>
             <div className="bg-amber-50 p-4 rounded-lg">
+              <p className="text-sm font-semibold">
+                🧠 To może być moment refleksji – i bardzo często jest.
+              </p>
               <p className="text-sm font-semibold">📌 Uwaga techniczna:</p>
               <ul className="list-disc list-inside text-sm space-y-1">
                 <li>Wypełniasz tylko czas, kiedy dziecko jest z Tobą.</li>
@@ -385,7 +391,14 @@ export default function CzasOpieki() {
               </ul>
             </div>
             <div>
-              <Label htmlFor="care-cycle">Cykl opieki</Label>
+              <Label htmlFor="care-cycle">
+                🔄 Cykl opieki – jak często powtarza się Wasz układ?
+              </Label>
+              <p>
+                Wskaż, w jakim rytmie powtarza się Wasz podział opieki nad
+                dzieckiem. To ważne, by system mógł dokładnie obliczyć, jak
+                wygląda proporcja czasu spędzanego z każdym z rodziców.
+              </p>
               <select
                 id="care-cycle"
                 value={cyklOpieki}

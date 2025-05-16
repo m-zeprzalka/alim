@@ -71,7 +71,7 @@ export default function WyborSciezki() {
               <p className="text-text-sky-950">
                 Zanim przejdziesz dalej, odpowiedz proszę na jedno pytanie:
               </p>
-              <p className="text-text-sky-950">
+              <p className="text-text-sky-950 font-bold">
                 Czy w Twojej sytuacji zostało już ustalone, w jaki sposób
                 dzielicie się z drugim rodzicem kosztami wychowania dziecka lub
                 dzieci?
@@ -95,7 +95,9 @@ export default function WyborSciezki() {
                   W formularzu będziemy używać słowa &quot;alimenty&quot;,
                   ponieważ takie określenie stosuje prawo i praktyka sądowa –
                   nawet jeśli sposób finansowania potrzeb dziecka został
-                  ustalony inaczej.
+                  ustalony inaczej. np. w wyniku porozumienia. Niezależnie od
+                  formy, chodzi o to samo: zapewnienie dziecku odpowiedniego
+                  wsparcia i zabezpieczenia jego potrzeb.
                 </p>
               </div>
             </div>
@@ -156,7 +158,7 @@ export default function WyborSciezki() {
                     <p className="text-sm text-gray-500 mt-1">
                       Chcę wypełnić formularz i podzielić się informacjami o
                       swojej sytuacji.
-                      <span className="block mt-1 text-blue-600 font-medium">
+                      <span className="block mt-1 text-sky-950 font-semibold">
                         ➡️ Jeśli wybierzesz tę opcję, przejdziesz do pełnego
                         formularza AliMatrix.
                       </span>
@@ -212,7 +214,7 @@ export default function WyborSciezki() {
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
                       Chciał(a)bym dowiedzieć się, jak to może wyglądać.
-                      <span className="block mt-1 text-blue-600 font-medium">
+                      <span className="block mt-1 text-sky-950 font-semibold">
                         ➡️ Jeśli wybierzesz tę opcję, przekierujemy Cię do
                         krótszego formularza zapisu na powiadomienie.
                       </span>

@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useFormStore } from "@/lib/store/form-store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { InfoTooltip } from "@/components/ui/custom/InfoTooltip";
 
 export default function Alternatywna() {
   const router = useRouter();
@@ -88,17 +89,15 @@ export default function Alternatywna() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardContent className="pt-6">
-          <div className="flex justify-center mb-6">
-            <Logo size="medium" />
-          </div>
+    <main className="flex justify-center p-3">
+      <Card className="w-full max-w-lg shadow-lg border-sky-100">
+        <CardContent className="pt-2">
+          <Logo size="medium" />
           <FormProgress currentStep={2} totalSteps={3} />
 
           <div className="space-y-6">
             <h1 className="text-2xl font-bold">
-              🔵 Gdzie jesteśmy i jak możemy Ci pomóc
+              Gdzie jesteśmy i jak możemy Ci pomóc
             </h1>
 
             {isSuccess ? (
@@ -132,7 +131,7 @@ export default function Alternatywna() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4 text-gray-700">
+              <div className="space-y-4 text-sky-950">
                 <p>Dziękujemy za Twoje zainteresowanie AliMatrixem!</p>
                 <p>
                   Aktualnie koncentrujemy się na zbieraniu danych od osób, które
@@ -149,13 +148,13 @@ export default function Alternatywna() {
 
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <p className="font-semibold mb-2">
-                    📩 Zostaw e-mail, aby otrzymać powiadomienie
+                    Zostaw e-mail, aby otrzymać powiadomienie
                   </p>
                   <p>
                     Jeśli chcesz otrzymać powiadomienie, gdy raporty dla Twojej
-                    sytuacji będą gotowe – zostaw swój adres e-mail. ➡️ Dzięki
-                    temu jako pierwszy(a) dowiesz się o możliwości skorzystania
-                    z wyników analizy.
+                    sytuacji będą gotowe – zostaw swój adres e-mail. Dzięki temu
+                    jako pierwszy(a) dowiesz się o możliwości skorzystania z
+                    wyników analizy.
                   </p>
                 </div>
 
@@ -163,12 +162,20 @@ export default function Alternatywna() {
                   <div className="space-y-2">
                     <Label htmlFor="email" className="flex items-center">
                       Adres e-mail
-                      <span
-                        className="inline-flex items-center justify-center w-5 h-5 ml-1 text-xs font-bold text-white bg-blue-500 rounded-full hover:bg-blue-600 cursor-help"
-                        title="Twój e-mail będzie używany wyłącznie do wysłania Ci powiadomienia o gotowości raportów. Nie będziemy przesyłać żadnych reklam ani udostępniać Twojego adresu osobom trzecim."
-                      >
-                        i
-                      </span>
+                      <InfoTooltip
+                        content={
+                          <div className="space-y-2 text-sm">
+                            <p>
+                              Twój e-mail będzie używany wyłącznie do wysłania
+                              Ci powiadomienia o gotowości raportów. Nie
+                              będziemy przesyłać żadnych reklam ani udostępniać
+                              Twojego adresu osobom trzecim. Dane kontaktowe
+                              przechowujemy oddzielnie od danych analitycznych,
+                              z zachowaniem zasad RODO.
+                            </p>
+                          </div>
+                        }
+                      />
                     </Label>
                     <Input
                       id="email"
@@ -203,7 +210,7 @@ export default function Alternatywna() {
 
                 <div className="bg-pink-50 p-4 rounded-lg">
                   <p className="font-semibold mb-2">
-                    ❤️ Chcesz dodatkowo wesprzeć rozwój AliMatrixa?
+                    Chcesz dodatkowo wesprzeć rozwój AliMatrixa?
                   </p>
                   <p className="text-sm mb-2">
                     Jeśli masz ochotę – możesz również pomóc nam przyspieszyć
@@ -213,10 +220,10 @@ export default function Alternatywna() {
                   </p>
                   <Button
                     variant="secondary"
-                    className="mt-2 bg-pink-500 hover:bg-pink-600 text-white"
+                    className="mt-2 bg-pink-500 hover:bg-pink-600 text-white w-full"
                     onClick={() => window.open("https://zrzutka.pl", "_blank")}
                   >
-                    ➡️ Przejdź do wsparcia na zrzutka.pl
+                    Przejdź do wsparcia na zrzutka.pl
                   </Button>
                 </div>
 

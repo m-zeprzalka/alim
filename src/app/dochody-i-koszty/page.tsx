@@ -217,8 +217,8 @@ export default function DochodyIKoszty() {
               />
             </div>
 
-            <div className="text-gray-700 space-y-2 mb-4">
-              <p>
+            <div className="space-y-2 mb-4">
+              <p className="font-bold">
                 To nie test ani osąd – to analiza, która ma pomóc lepiej
                 zrozumieć sytuację.
               </p>
@@ -231,6 +231,10 @@ export default function DochodyIKoszty() {
                 prowadził Cię krok po kroku. Dla wielu osób ta część formularza
                 bywa też momentem refleksji nad tym, jak naprawdę wygląda ich
                 codzienność finansowa.
+              </p>
+              <p>
+                Dla wielu osób ta część formularza bywa też momentem refleksji
+                nad tym, jak naprawdę wygląda ich codzienność finansowa.
               </p>
             </div>
 
@@ -281,8 +285,10 @@ export default function DochodyIKoszty() {
                       content={
                         <p className="text-sm">
                           Jeśli prowadzisz działalność i część kosztów firmowych
-                          dotyczy także życia prywatnego – oszacuj ich wartość i
-                          uwzględnij proporcjonalnie w swoich kosztach życia.
+                          (np. leasing, paliwo, telefon) dotyczy także życia
+                          prywatnego – oszacuj ich wartość i uwzględnij
+                          proporcjonalnie w swoich kosztach życia, a nie jako
+                          czystą stratę firmową.
                         </p>
                       }
                     />

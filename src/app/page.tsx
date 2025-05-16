@@ -8,7 +8,7 @@ export default function Home() {
     <main className="flex justify-center p-3">
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
         <CardContent className="pt-2">
-          <Logo size="medium" />
+          <Logo size="large" />
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-left text-sky-950">
               AliMatrix - Alimenty bez tajemnic
@@ -26,9 +26,10 @@ export default function Home() {
                 Rozwód, rozstanie, ustalanie sposobu finansowania potrzeb
                 dziecka – to momenty, które rodzą wiele pytań i niepewności. W
                 polskim systemie brakuje jasnych standardów, a decyzje sądowe
-                często znacząco się różnią. <strong>AliMatrix</strong> powstał
-                po to, by to zmienić – przez analizę rzeczywistych przypadków i
-                budowę narzędzia opartego na danych, nie na opiniach.
+                często znacząco się różnią.{" "}
+                <strong>AliMatrix powstał po to, by to zmienić</strong> – przez
+                analizę rzeczywistych przypadków i budowę narzędzia opartego na
+                danych, nie na opiniach.
               </p>
 
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
@@ -50,73 +51,102 @@ export default function Home() {
               </div>
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
                 <p className="text-sm">
-                  <strong>Uwaga:</strong> obecnie zbieramy dane do stworzenia
-                  pierwszych raportów. Aby raporty były wiarygodne i naprawdę
-                  użyteczne, potrzebujemy odpowiedniej liczby spójnych
-                  przypadków. Po osiągnięciu wymaganej liczby odpowiedzi,
-                  przygotujemy i bezpłatnie udostępnimy raporty pierwszym 1000
-                  osobom, które wypełniły formularz - Dostęp do raportów będzie
-                  w przyszłości odpłatny. O postępach i gotowości raportu
-                  będziemy Cię informować, jeśli zdecydujesz się zostawić swój
-                  adres e-mail.
+                  <strong>
+                    Uwaga: obecnie zbieramy dane do stworzenia pierwszych
+                    raportów.
+                  </strong>{" "}
+                  Aby raporty były wiarygodne i naprawdę użyteczne, potrzebujemy
+                  odpowiedniej liczby spójnych przypadków.{" "}
+                  <strong>
+                    Po osiągnięciu wymaganej liczby odpowiedzi, przygotujemy i
+                    bezpłatnie udostępnimy raporty pierwszym 1000 osobom
+                  </strong>
+                  , które wypełniły formularz - Dostęp do raportów będzie w
+                  przyszłości odpłatny.{" "}
+                  <strong>
+                    O postępach i gotowości raportu będziemy Cię informować,
+                    jeśli zdecydujesz się zostawić swój adres e-mail.
+                  </strong>
                 </p>
               </div>
 
-              <p className="text-sm text-gray-600">
+              <p className="font-bold">
                 Przewidywany czas wypełnienia: około 60 minut.
               </p>
             </div>
-            <p>
-              To nie jest zwykła ankieta – to proces, który może przynieść
-              wartość także Tobie. Odpowiadając na pytania, być może lepiej
-              zrozumiesz swoją sytuację, zobaczysz ją w szerszym kontekście i
-              zyskasz wskazówki, które pomogą w dalszych decyzjach. Twoje
-              odpowiedzi z kolei pozwolą AliMatrix tworzyć trafniejsze estymacje
-              – zarówno dla Ciebie, jak i dla innych osób w podobnej sytuacji.
-            </p>
-            <p className="font-semibold mt-4">
-              Formularz został podzielony na kilka przejrzystych części:
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>
-                Informacje o dzieciach, na które ustalane są zasady finansowania
-                potrzeb.
-              </li>
-              <li>
-                Dochody, koszty życia rodziców i wydatki związane z wychowaniem
-                dzieci.
-              </li>
-              <li>
-                Informacje o postępowaniu sądowym dotyczącym Twojej sytuacji.
-              </li>
-              <li>
-                Dane użytkownika potrzebne do bardziej miarodajnej analizy.
-              </li>
-            </ul>
-            <p className="text-sm mt-2">
-              Po zakończeniu wypełniania formularza poprosimy Cię o wyrażenie
-              osobnej zgody na przetwarzanie danych w celu przygotowania
-              spersonalizowanego raportu. Jeśli zdecydujesz się podać adres
-              e‑mail, będzie on przechowywany oddzielnie od pozostałych
-              informacji. Twoje dane będą pseudonimizowane i nie będą powiązane
-              z Twoją tożsamością. Możesz je w każdej chwili edytować lub
-              usunąć. Przetwarzamy je zgodnie z RODO, stosując nowoczesne
-              technologie ochrony prywatności i bezpieczeństwa.
-            </p>
-            <p className="text-sm mt-2">
-              Wiemy, że odpowiedzi na pytania dotyczące sytuacji rodzinnej i
-              finansowej mogą wymagać chwili zastanowienia. Dlatego formularz
-              został zaprojektowany tak, by automatycznie zapisywać Twoje
-              postępy. Możesz wypełniać go we własnym tempie – wracać do
-              wcześniejszych odpowiedzi, poprawiać je lub uzupełniać, kiedy
-              będziesz gotowy.
-            </p>
-            <p className="text-sm mt-2">
-              Dokładne odpowiedzi pomogą zbudować obraz Twojej sytuacji tak, aby
-              raport był dla Ciebie naprawdę użytecznym drogowskazem. Każda
-              precyzyjna informacja to krok ku większej przejrzystości – dla
-              Ciebie i dla tych, którzy pójdą Twoim śladem.
-            </p>
+            <div className="text-sky-950">
+              <p>
+                To nie jest zwykła ankieta – to proces, który może przynieść
+                wartość także Tobie.{" "}
+                <strong>
+                  Odpowiadając na pytania, być może lepiej zrozumiesz swoją
+                  sytuację
+                </strong>
+                , zobaczysz ją w szerszym kontekście i zyskasz wskazówki, które
+                pomogą w dalszych decyzjach.{" "}
+                <strong>
+                  Twoje odpowiedzi z kolei pozwolą AliMatrix tworzyć trafniejsze
+                  estymacje
+                </strong>{" "}
+                – zarówno dla Ciebie, jak i dla innych osób w podobnej sytuacji.
+              </p>
+              <p className="font-semibold mt-4">
+                Formularz został podzielony na kilka przejrzystych części:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                <li>
+                  <strong>Informacje o dzieciach</strong>, na które ustalane są
+                  zasady finansowania potrzeb.
+                </li>
+                <li>
+                  <strong>
+                    Dochody, koszty życia rodziców i wydatki związane z
+                    wychowaniem dzieci.
+                  </strong>
+                </li>
+                <li>
+                  <strong>
+                    Informacje o postępowaniu sądowym dotyczącym Twojej
+                    sytuacji.
+                  </strong>
+                </li>
+                <li>
+                  <strong>
+                    Dane użytkownika potrzebne do bardziej miarodajnej analizy.
+                  </strong>
+                </li>
+              </ul>
+              <p className="text-sm mt-2">
+                Po zakończeniu wypełniania formularza poprosimy Cię o wyrażenie
+                <strong>osobnej zgody na przetwarzanie danych</strong> w celu
+                przygotowania spersonalizowanego raportu.{" "}
+                <strong>Jeśli zdecydujesz się podać adres e‑mail</strong>,
+                będzie on przechowywany oddzielnie od pozostałych informacji.
+                Twoje dane będą{" "}
+                <strong>
+                  pseudonimizowane i nie będą powiązane z Twoją tożsamością.
+                  Możesz je w każdej chwili edytować lub usunąć.
+                </strong>{" "}
+                Przetwarzamy je zgodnie z <strong>RODO</strong>, stosując
+                nowoczesne technologie ochrony prywatności i bezpieczeństwa.
+              </p>
+              <p className="text-sm mt-2">
+                Wiemy, że odpowiedzi na pytania dotyczące sytuacji rodzinnej i
+                finansowej mogą wymagać chwili zastanowienia. Dlatego formularz
+                został zaprojektowany tak, by automatycznie zapisywać Twoje
+                postępy. <strong>Możesz wypełniać go we własnym tempie</strong>{" "}
+                – wracać do wcześniejszych odpowiedzi, poprawiać je lub
+                uzupełniać, kiedy będziesz gotowy.
+              </p>
+              <p className="text-sm mt-2">
+                Dokładne odpowiedzi pomogą zbudować obraz Twojej sytuacji tak,
+                aby raport był dla Ciebie naprawdę użytecznym drogowskazem.{" "}
+                <strong>
+                  Każda precyzyjna informacja to krok ku większej przejrzystości
+                  – dla Ciebie i dla tych, którzy pójdą Twoim śladem.
+                </strong>
+              </p>
+            </div>
             <div className="pt-4">
               <Link href="/sciezka" passHref>
                 <Button className="w-full">Rozpocznij</Button>

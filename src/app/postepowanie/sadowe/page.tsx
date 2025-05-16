@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/custom/Logo";
 import { FormProgress } from "@/components/ui/custom/FormProgress";
@@ -18,6 +18,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import {
+  APPELATIONS,
+  REGIONAL_COURTS,
+  getRegionalCourts,
+} from "@/lib/court-data";
 
 export default function PostepowanieSadowe() {
   const router = useRouter();
@@ -28,41 +33,81 @@ export default function PostepowanieSadowe() {
     formData.ocenaAdekwatnosciSad || 3
   );
 
-  // Stany dla pozostałych pól formularza
-  const [dataDecyzji, setDataDecyzji] = useState<string>(
-    formData.dataDecyzjiSad || ""
+  // Stany dla daty decyzji
+  const [rokDecyzji, setRokDecyzji] = useState<string>(
+    formData.rokDecyzjiSad || ""
   );
-  const [rodzajSadu, setRodzajSadu] = useState<string>(
-    formData.rodzajSaduSad || ""
+  const [miesiacDecyzji, setMiesiacDecyzji] = useState<string>(
+    formData.miesiacDecyzjiSad || ""
   );
-  const [wojewodztwo, setWojewodztwo] = useState<string>(
-    formData.wojewodztwoSad || ""
+
+  // Stany dla sądu
+  const [rodzajSadu, setRodzajSadu] = useState<
+    "rejonowy" | "okregowy" | "nie_pamietam"
+  >(formData.rodzajSaduSad || "nie_pamietam");
+  const [apelacjaSad, setApelacjaSad] = useState<string>(
+    formData.apelacjaSad || ""
   );
-  const [miejscowosc, setMiejscowosc] = useState<string>(
-    formData.miejscowoscSad || ""
+  const [sadOkregowyId, setSadOkregowyId] = useState<string>(
+    formData.sadOkregowyId || ""
   );
-  const [liczbaSedzi, setLiczbaSedzi] = useState<string>(
-    formData.liczbaSedzi || ""
+  const [sadRejonowyId, setSadRejonowyId] = useState<string>(
+    formData.sadRejonowyId || ""
   );
-  const [plecSedziego, setPlecSedziego] = useState<string>(
-    formData.plecSedziego || ""
+
+  // Stany dostępnych sądów rejonowych
+  const [dostepneSadyRejonowe, setDostepneSadyRejonowe] = useState<any[]>([]);
+
+  // Aktualizacja dostępnych sądów rejonowych przy zmianie sądu okręgowego
+  useEffect(() => {
+    if (sadOkregowyId) {
+      const rejonowe = getRegionalCourts(sadOkregowyId);
+      setDostepneSadyRejonowe(rejonowe);
+    } else {
+      setDostepneSadyRejonowe([]);
+    }
+  }, [sadOkregowyId]);
+
+  // Inne stany
+  const [liczbaSedzi, setLiczbaSedzi] = useState<"jeden" | "trzech">(
+    (formData.liczbaSedzi as "jeden" | "trzech") || "jeden"
+  );
+  const [plecSedziego, setPlecSedziego] = useState<"kobieta" | "mezczyzna">(
+    (formData.plecSedziego as "kobieta" | "mezczyzna") || "kobieta"
   );
   const [inicjalySedziego, setInicjalySedziego] = useState<string>(
     formData.inicjalySedziego || ""
   );
-  const [czyPozew, setCzyPozew] = useState<string>(formData.czyPozew || "");
-  const [watekWiny, setWatekWiny] = useState<string>(formData.watekWiny || "");
+  const [czyPozew, setCzyPozew] = useState<"tak" | "nie">(
+    (formData.czyPozew as "tak" | "nie") || "nie"
+  );
+  const [watekWiny, setWatekWiny] = useState<
+    "nie" | "tak-ja" | "tak-druga-strona" | "tak-oboje"
+  >(
+    (formData.watekWiny as
+      | "nie"
+      | "tak-ja"
+      | "tak-druga-strona"
+      | "tak-oboje") || "nie"
+  );
 
+  // Generowanie opcji lat
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 20 }, (_, i) =>
+    (currentYear - i).toString()
+  );
   // Funkcja obsługująca przejście do następnego kroku
   const handleNext = () => {
     // Zapisujemy dane do store'a
     updateFormData({
       ocenaAdekwatnosciSad: ocenaAdekwatnosci,
       wariantPostepu: "court", // Upewniamy się, że wariant jest zapisany
-      dataDecyzjiSad: dataDecyzji,
+      rokDecyzjiSad: rokDecyzji,
+      miesiacDecyzjiSad: miesiacDecyzji,
       rodzajSaduSad: rodzajSadu,
-      wojewodztwoSad: wojewodztwo,
-      miejscowoscSad: miejscowosc,
+      apelacjaSad: apelacjaSad,
+      sadOkregowyId: sadOkregowyId,
+      sadRejonowyId: sadRejonowyId,
       liczbaSedzi: liczbaSedzi,
       plecSedziego: plecSedziego,
       inicjalySedziego: inicjalySedziego,
@@ -84,7 +129,6 @@ export default function PostepowanieSadowe() {
         <CardContent className="pt-2">
           <Logo size="large" />
           <FormProgress currentStep={9} totalSteps={12} />
-
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">
@@ -108,11 +152,26 @@ export default function PostepowanieSadowe() {
                 }
               />
             </div>
-
+            <p>
+              W tej części zbieramy informacje o decyzji, która określiła zasady
+              finansowania potrzeb dziecka – może to być wyrok, postanowienie
+              zabezpieczające, ugoda lub inne rozstrzygnięcie.
+            </p>
+            <p>
+              <strong>
+                Chcemy lepiej zrozumieć kontekst tej decyzji – kiedy zapadła,
+                przez jaki sąd została wydana, w jakim składzie, oraz jak
+                oceniasz jej adekwatność względem rzeczywistości.
+              </strong>{" "}
+              Dzięki temu możliwe będzie trafniejsze porównanie Twojej sytuacji
+              z innymi oraz lepsze uchwycenie różnic między praktyką różnych
+              sądów.
+            </p>
             <div className="space-y-4">
+              {" "}
               <div>
                 <Label className="block mb-2">
-                  Data decyzji lub zatwierdzenia porozumienia
+                  Rok i miesiąc decyzji lub zatwierdzenia porozumienia
                   <InfoTooltip
                     content={
                       <div className="text-sm">
@@ -124,77 +183,238 @@ export default function PostepowanieSadowe() {
                     }
                   />
                 </Label>
-                <Input
-                  type="date"
-                  value={dataDecyzji}
-                  onChange={(e) => setDataDecyzji(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-
-              <div>
-                <Label className="block mb-2">Sąd, który wydał decyzję</Label>
-                <div className="space-y-3">
-                  <Select value={rodzajSadu} onValueChange={setRodzajSadu}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Rodzaj sądu" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="rejonowy">Sąd Rejonowy</SelectItem>
-                      <SelectItem value="okregowy">Sąd Okręgowy</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={wojewodztwo} onValueChange={setWojewodztwo}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Województwo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dolnoslaskie">Dolnośląskie</SelectItem>
-                      <SelectItem value="kujawsko-pomorskie">
-                        Kujawsko-Pomorskie
-                      </SelectItem>
-                      <SelectItem value="lubelskie">Lubelskie</SelectItem>
-                      <SelectItem value="lubuskie">Lubuskie</SelectItem>
-                      <SelectItem value="lodzkie">Łódzkie</SelectItem>
-                      <SelectItem value="malopolskie">Małopolskie</SelectItem>
-                      <SelectItem value="mazowieckie">Mazowieckie</SelectItem>
-                      <SelectItem value="opolskie">Opolskie</SelectItem>
-                      <SelectItem value="podkarpackie">Podkarpackie</SelectItem>
-                      <SelectItem value="podlaskie">Podlaskie</SelectItem>
-                      <SelectItem value="pomorskie">Pomorskie</SelectItem>
-                      <SelectItem value="slaskie">Śląskie</SelectItem>
-                      <SelectItem value="swietokrzyskie">
-                        Świętokrzyskie
-                      </SelectItem>
-                      <SelectItem value="warminsko-mazurskie">
-                        Warmińsko-Mazurskie
-                      </SelectItem>
-                      <SelectItem value="wielkopolskie">
-                        Wielkopolskie
-                      </SelectItem>
-                      <SelectItem value="zachodniopomorskie">
-                        Zachodniopomorskie
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Input
-                    type="text"
-                    placeholder="Miejscowość sądu"
-                    value={miejscowosc}
-                    onChange={(e) => setMiejscowosc(e.target.value)}
-                  />
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <Select value={rokDecyzji} onValueChange={setRokDecyzji}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Wybierz rok" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {years.map((year) => (
+                          <SelectItem key={year} value={year}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex-1">
+                    <Select
+                      value={miesiacDecyzji}
+                      onValueChange={setMiesiacDecyzji}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Wybierz miesiąc" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="01">Styczeń</SelectItem>
+                        <SelectItem value="02">Luty</SelectItem>
+                        <SelectItem value="03">Marzec</SelectItem>
+                        <SelectItem value="04">Kwiecień</SelectItem>
+                        <SelectItem value="05">Maj</SelectItem>
+                        <SelectItem value="06">Czerwiec</SelectItem>
+                        <SelectItem value="07">Lipiec</SelectItem>
+                        <SelectItem value="08">Sierpień</SelectItem>
+                        <SelectItem value="09">Wrzesień</SelectItem>
+                        <SelectItem value="10">Październik</SelectItem>
+                        <SelectItem value="11">Listopad</SelectItem>
+                        <SelectItem value="12">Grudzień</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
+              </div>
+              <div className="mt-8">
+                <h3 className="text-lg font-medium mb-4">
+                  📍 Sąd, który wydał decyzję dotyczącą alimentów
+                </h3>
+
+                <p className="mb-4 text-sm text-gray-700">
+                  W Polsce decyzje alimentacyjne (np. w formie wyroku
+                  rozwodowego, zabezpieczenia alimentów lub postanowienia w
+                  sprawie rodzinnej) mogą być wydawane przez różne sądy – w
+                  zależności od rodzaju sprawy. Aby właściwie przypisać Twoje
+                  zgłoszenie do regionu i zapewnić wysoką jakość analizy danych,
+                  prosimy o wskazanie:
+                </p>
+
+                <div className="space-y-6">
+                  <div>
+                    <Label className="block mb-2">
+                      1. Rodzaju sądu, który wydał decyzję
+                    </Label>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Zaznacz, przez jaki sąd została wydana decyzja dotycząca
+                      alimentów w Twojej sprawie:
+                    </p>
+
+                    <RadioGroup
+                      value={rodzajSadu}
+                      onValueChange={(value) => setRodzajSadu(value as any)}
+                    >
+                      <div className="flex items-center space-x-2 mb-2">
+                        <RadioGroupItem value="rejonowy" id="sad-rejonowy" />
+                        <Label htmlFor="sad-rejonowy">Sąd rejonowy</Label>
+                      </div>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <RadioGroupItem value="okregowy" id="sad-okregowy" />
+                        <Label htmlFor="sad-okregowy">Sąd okręgowy</Label>
+                      </div>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <RadioGroupItem
+                          value="nie_pamietam"
+                          id="sad-nie-pamietam"
+                        />
+                        <Label htmlFor="sad-nie-pamietam">Nie pamiętam</Label>
+                      </div>
+                    </RadioGroup>
+
+                    <div className="mt-2 p-3 bg-blue-50 rounded-md">
+                      <p className="text-sm text-blue-700 flex items-start">
+                        <span className="text-blue-500 mr-2">ℹ️</span>
+                        Jeśli nie masz pewności – najczęściej:
+                        <br />- sprawy o zabezpieczenie alimentów prowadzi sąd
+                        rejonowy,
+                        <br />- sprawy rozwodowe (w tym wyrok alimentacyjny)
+                        prowadzi sąd okręgowy.
+                      </p>
+                    </div>
+
+                    <div className="mt-3">
+                      <InfoTooltip
+                        content={
+                          <div className="text-sm space-y-2">
+                            <p className="font-bold">Nie pamiętasz?</p>
+                            <p>
+                              Jeśli nie jesteś pewien, jak nazywał się sąd:
+                              <br />- wybierz opcję „Nie pamiętam" i wpisz nazwę
+                              miejscowości, w której toczyła się sprawa.
+                              <br />- lub skorzystaj z zewnętrznej wyszukiwarki:
+                            </p>
+                            <a
+                              href="https://www.gov.pl/web/sprawiedliwosc/struktura-sadow-powszechnych"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Sprawdź właściwość sądu dla miejscowości
+                            </a>
+                          </div>
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="block mb-2">2. Obszar apelacji</Label>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Wybierz obszar apelacji, do którego należy sąd
+                      rozpatrujący Twoją sprawę:
+                    </p>
+
+                    <Select
+                      value={apelacjaSad}
+                      onValueChange={(value) => {
+                        setApelacjaSad(value);
+                        setSadOkregowyId("");
+                        setSadRejonowyId("");
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Wybierz apelację" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {APPELATIONS.map((apelacja) => (
+                          <SelectItem key={apelacja.id} value={apelacja.id}>
+                            {apelacja.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {apelacjaSad && (
+                    <div>
+                      <Label className="block mb-2">
+                        3. Sąd, który wydał decyzję
+                      </Label>
+                      <p className="text-sm text-gray-600 mb-3">
+                        {rodzajSadu === "rejonowy"
+                          ? "Najpierw wskaż sąd okręgowy, a następnie sąd rejonowy podlegający pod ten okręg"
+                          : "Wskaż sąd okręgowy z listy"}
+                      </p>
+
+                      {/* Wybór sądu okręgowego */}
+                      <div className="mb-4">
+                        <Select
+                          value={sadOkregowyId}
+                          onValueChange={(value) => {
+                            setSadOkregowyId(value);
+                            setSadRejonowyId("");
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Wybierz sąd okręgowy" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {APPELATIONS.find(
+                              (a) => a.id === apelacjaSad
+                            )?.districtCourts.map((sad) => (
+                              <SelectItem key={sad.id} value={sad.id}>
+                                {sad.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Wybór sądu rejonowego (tylko gdy wybrany sąd rejonowy) */}
+                      {rodzajSadu === "rejonowy" && sadOkregowyId && (
+                        <div className="mb-4">
+                          <Select
+                            value={sadRejonowyId}
+                            onValueChange={setSadRejonowyId}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Wybierz sąd rejonowy" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {dostepneSadyRejonowe.map((sad) => (
+                                <SelectItem key={sad.id} value={sad.id}>
+                                  {sad.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-4 p-3 bg-green-50 rounded-md">
+                  <p className="text-sm text-green-700 flex items-start">
+                    <span className="mr-2">✅</span>
+                    Dzięki tym informacjom Twój przypadek zostanie właściwie
+                    przypisany regionalnie i uwzględniony w analizach, które
+                    służą tworzeniu bardziej przejrzystego systemu
+                    alimentacyjnego w Polsce.
+                  </p>
+                </div>
+
+                <p className="text-sm text-gray-500 mt-3">
                   Pozwoli to na mapowanie lokalnych różnic w orzecznictwie.
                 </p>
-              </div>
-
-              <div>
+              </div>{" "}
+              <div className="mt-8">
                 <Label className="block mb-2">Skład orzekający</Label>
                 <div className="space-y-3">
-                  <Select value={liczbaSedzi} onValueChange={setLiczbaSedzi}>
+                  <Select
+                    value={liczbaSedzi}
+                    onValueChange={(val: "jeden" | "trzech") =>
+                      setLiczbaSedzi(val)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Liczba sędziów" />
                     </SelectTrigger>
@@ -204,7 +424,12 @@ export default function PostepowanieSadowe() {
                     </SelectContent>
                   </Select>
 
-                  <Select value={plecSedziego} onValueChange={setPlecSedziego}>
+                  <Select
+                    value={plecSedziego}
+                    onValueChange={(val: "kobieta" | "mezczyzna") =>
+                      setPlecSedziego(val)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Płeć sędziego przewodniczącego" />
                     </SelectTrigger>
@@ -222,12 +447,14 @@ export default function PostepowanieSadowe() {
                   />
                 </div>
               </div>
-
-              <div>
+              <div className="mt-6">
                 <Label className="block mb-2">
                   Czy to Ty złożyłeś/łaś pozew?
                 </Label>
-                <RadioGroup value={czyPozew} onValueChange={setCzyPozew}>
+                <RadioGroup
+                  value={czyPozew}
+                  onValueChange={(val: "tak" | "nie") => setCzyPozew(val)}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="tak" id="pozew-tak" />
                     <Label htmlFor="pozew-tak">Tak</Label>
@@ -238,40 +465,62 @@ export default function PostepowanieSadowe() {
                   </div>
                 </RadioGroup>
               </div>
-
-              <div>
+              <div className="mt-6">
                 <Label className="block mb-2">
                   Czy w pozwie pojawił się wątek winy?
                 </Label>
-                <RadioGroup value={watekWiny} onValueChange={setWatekWiny}>
-                  <div className="flex items-center space-x-2">
+                <RadioGroup
+                  value={watekWiny}
+                  onValueChange={(
+                    val: "nie" | "tak-ja" | "tak-druga-strona" | "tak-oboje"
+                  ) => setWatekWiny(val)}
+                >
+                  <div className="flex items-center space-x-2 mb-2">
+                    <RadioGroupItem value="nie" id="wina-nie" />
+                    <Label htmlFor="wina-nie">Nie</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 mb-2">
                     <RadioGroupItem value="tak-ja" id="wina-ja" />
                     <Label htmlFor="wina-ja">
                       Tak – domagałem/am się orzeczenia o winie
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 mb-2">
                     <RadioGroupItem value="tak-druga-strona" id="wina-druga" />
                     <Label htmlFor="wina-druga">
                       Tak – druga strona domagała się orzeczenia o winie
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="nie" id="wina-nie" />
-                    <Label htmlFor="wina-nie">Nie</Label>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <RadioGroupItem value="tak-oboje" id="wina-oboje" />
+                    <Label htmlFor="wina-oboje">
+                      Tak – oboje domagaliśmy się orzeczenia o winie
+                    </Label>
                   </div>
                 </RadioGroup>
               </div>
-
-              <label className="block">
-                <span className="block mb-2">
-                  Jak oceniasz adekwatność postępowania sądowego w Twojej
-                  sprawie?
-                </span>
+              <div className="mt-8">
+                <Label className="block mb-2">
+                  Subiektywna ocena adekwatności decyzji sądu odnośnie wysokości
+                  alimentów
+                </Label>
                 <div className="text-sm text-gray-600 mb-2">
                   Oceń w skali 1–5, gdzie 1 oznacza &ldquo;zupełnie
                   nieadekwatny&rdquo;, a 5 &ldquo;w pełni adekwatny&rdquo;
                 </div>
+
+                <InfoTooltip
+                  content={
+                    <div className="text-sm">
+                      <p>
+                        Ta odpowiedź nie wpływa na raport – służy do analizy
+                        zbiorczej i identyfikacji potencjalnych schematów
+                        orzeczniczych.
+                      </p>
+                    </div>
+                  }
+                />
+
                 <div className="relative py-5">
                   <div className="flex justify-between mb-1">
                     <span className="text-sm text-gray-600">
@@ -307,7 +556,7 @@ export default function PostepowanieSadowe() {
                     </span>
                   </div>
                 </div>
-              </label>
+              </div>
             </div>
 
             <div className="flex gap-3 pt-4">

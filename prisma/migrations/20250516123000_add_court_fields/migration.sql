@@ -16,15 +16,14 @@ CREATE INDEX "FormSubmission_rokDecyzjiSad_idx" ON "FormSubmission"("rokDecyzjiS
 CREATE OR REPLACE FUNCTION update_court_fields() RETURNS void AS $$
 DECLARE
     r record;
-BEGIN
-    FOR r IN SELECT id, formData FROM "FormSubmission" LOOP
+BEGIN    FOR r IN SELECT id, "formData" FROM "FormSubmission" LOOP
         UPDATE "FormSubmission"
         SET
-            "rodzajSaduSad" = formData->>'rodzajSaduSad',
-            "apelacjaSad" = formData->>'apelacjaSad',
-            "sadOkregowyId" = formData->>'sadOkregowyId',
-            "rokDecyzjiSad" = formData->>'rokDecyzjiSad',
-            "watekWiny" = formData->>'watekWiny'
+            "rodzajSaduSad" = r."formData"->>'rodzajSaduSad',
+            "apelacjaSad" = r."formData"->>'apelacjaSad',
+            "sadOkregowyId" = r."formData"->>'sadOkregowyId',
+            "rokDecyzjiSad" = r."formData"->>'rokDecyzjiSad',
+            "watekWiny" = r."formData"->>'watekWiny'
         WHERE id = r.id;
     END LOOP;
 END;

@@ -102,10 +102,12 @@ export default function Wysylka() {
     // Ustaw stan przesyłania
     setIsSubmitting(true);
     setErrorMessage(null);
-
     try {
       // Dodaj opóźnienie anty-spamowe
       await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Wyświetl informację o przygotowaniu danych
+      setErrorMessage("Przygotowywanie danych do wysyłki...");
 
       // Sprawdź, czy nie jest to próba zbyt szybkiego ponownego wysłania formularza
       if (!safeToSubmit()) {
@@ -117,7 +119,12 @@ export default function Wysylka() {
       }
 
       // Zapisz czas wysłania formularza
-      recordSubmission(); // Przygotuj dane do wysyłki
+      recordSubmission();
+
+      // Wyświetl informację o validacji danych
+      setErrorMessage("Validacja danych formularza...");
+
+      // Przygotuj dane do wysyłki z uwzględnieniem nowych pól
       const submissionData = {
         ...formData,
         contactEmail: trimmedEmail,
@@ -128,7 +135,21 @@ export default function Wysylka() {
         notHuman: "", // Puste pole honeypot do wykrywania botów
       };
 
+      // Log dla developerów - jakie dane sądowe są wysyłane
+      console.log("Dane sądu do wysyłki:", {
+        rokDecyzjiSad: submissionData.rokDecyzjiSad,
+        miesiacDecyzjiSad: submissionData.miesiacDecyzjiSad,
+        rodzajSaduSad: submissionData.rodzajSaduSad,
+        apelacjaSad: submissionData.apelacjaSad,
+        sadOkregowyId: submissionData.sadOkregowyId,
+        sadRejonowyId: submissionData.sadRejonowyId,
+      });
+
       console.log("Submission data:", JSON.stringify(submissionData));
+
+      // Wyświetl informację o wysyłaniu
+      setErrorMessage("Zapisywanie danych do systemu...");
+
       // Wysyłka danych na serwer
       const response = await fetch("/api/secure-submit", {
         method: "POST",

@@ -140,18 +140,57 @@ export async function POST(request: NextRequest) {
           email: cleanEmail,
           acceptedTerms: zgodaPrzetwarzanie === true,
         },
-      });
-
-      // Create a new form submission with reference to the email subscription
+      }); // Create a new form submission with reference to the email subscription
       const formData = { ...sanitizedBody };
+
+      // Usunięcie pól, które są zapisywane osobno
       delete formData.contactEmail;
       delete formData.zgodaPrzetwarzanie;
       delete formData.zgodaKontakt;
+      delete formData.notHuman;
+      delete formData.csrfToken;
+
+      // Aktualizacja daty formularza dla spójności
+      formData.submissionDate = new Date().toISOString();
+
+      // Dodanie informacji o polach sądowych
+      console.log("Zapisywane dane sądu:", {
+        rokDecyzjiSad: formData.rokDecyzjiSad,
+        miesiacDecyzjiSad: formData.miesiacDecyzjiSad,
+        rodzajSaduSad: formData.rodzajSaduSad,
+        apelacjaSad: formData.apelacjaSad,
+        sadOkregowyId: formData.sadOkregowyId,
+        sadRejonowyId: formData.sadRejonowyId,
+      }); // Wyodrębnienie kluczowych pól do indeksowania
+      const rodzajSaduSad = formData.rodzajSaduSad || null;
+      const apelacjaSad = formData.apelacjaSad || null;
+      const sadOkregowyId = formData.sadOkregowyId || null;
+      const rokDecyzjiSad = formData.rokDecyzjiSad || null;
+      const watekWiny = formData.watekWiny || null;
+
       const submission = (await prisma.$queryRaw`
-        INSERT INTO "FormSubmission" ("id", "emailSubscriptionId", "formData", "status")
-        VALUES (gen_random_uuid(), ${subscription.id}, ${JSON.stringify(
-        formData
-      )}::jsonb, 'pending')
+        INSERT INTO "FormSubmission" (
+          "id", 
+          "emailSubscriptionId", 
+          "formData", 
+          "status",
+          "rodzajSaduSad",
+          "apelacjaSad",
+          "sadOkregowyId",
+          "rokDecyzjiSad",
+          "watekWiny"
+        )
+        VALUES (
+          gen_random_uuid(), 
+          ${subscription.id}, 
+          ${JSON.stringify(formData)}::jsonb, 
+          'pending',
+          ${rodzajSaduSad},
+          ${apelacjaSad},
+          ${sadOkregowyId},
+          ${rokDecyzjiSad},
+          ${watekWiny}
+        )
         RETURNING "id"
       `) as { id: string }[]; // Return success response with security headers
       return NextResponse.json(

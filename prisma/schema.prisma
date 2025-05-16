@@ -32,7 +32,18 @@ model FormSubmission {
   processedAt        DateTime?
   status             String           @default("pending")
   reportUrl          String?
+  
+  // Indeksowane pola dla łatwiejszego wyszukiwania
+  rodzajSaduSad      String?          // Typ sądu (rejonowy, okregowy, nie_pamietam)
+  apelacjaSad        String?          // Apelacja
+  sadOkregowyId      String?          // ID sądu okręgowego
+  rokDecyzjiSad      String?          // Rok decyzji sądu
+  watekWiny          String?          // Wątek winy
 
   @@index([status])
   @@index([emailSubscriptionId])
+  @@index([rodzajSaduSad])
+  @@index([apelacjaSad])
+  @@index([sadOkregowyId])
+  @@index([rokDecyzjiSad])
 }

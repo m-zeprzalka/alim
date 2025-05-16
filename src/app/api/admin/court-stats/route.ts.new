@@ -1,0 +1,75 @@
+import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+
+// Set security headers for API responses
+const securityHeaders = {
+  "Content-Security-Policy": "default-src 'self'",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+};
+
+export async function GET(request: NextRequest) {
+  try {
+    // W prawdziwej implementacji tutaj powinna być weryfikacja uprawnień administratora
+
+    // Używamy raw query do odczytu danych z JSON, ponieważ Prisma nie zna jeszcze naszych nowych kolumn
+    const formSubmissionData = await prisma.$queryRaw`
+      SELECT 
+        form_data->>'rodzajSaduSad' as "rodzajSadu",
+        form_data->>'apelacjaSad' as "apelacja",
+        form_data->>'sadOkregowyId' as "sadOkregowy",
+        form_data->>'rokDecyzjiSad' as "rokDecyzji",
+        form_data->>'watekWiny' as "watekWiny"
+      FROM "FormSubmission"
+    `;
+
+    // Przygotuj statystyki
+    const submissions = formSubmissionData as any[];
+    const total = submissions.length;
+    
+    const bySadType: Record<string, number> = {};
+    const byApelacja: Record<string, number> = {};
+    const byYear: Record<string, number> = {};
+    
+    submissions.forEach(submission => {
+      // Rodzaj sądu
+      const sadType = submission.rodzajSadu || 'nieznany';
+      bySadType[sadType] = (bySadType[sadType] || 0) + 1;
+      
+      // Apelacja
+      const apelacja = submission.apelacja || 'nieznana';
+      byApelacja[apelacja] = (byApelacja[apelacja] || 0) + 1;
+      
+      // Rok
+      const year = submission.rokDecyzji || 'nieznany';
+      byYear[year] = (byYear[year] || 0) + 1;
+    });
+    
+    return NextResponse.json(
+      {
+        total,
+        bySadType,
+        byApelacja,
+        byYear
+      },
+      {
+        status: 200,
+        headers: securityHeaders,
+      }
+    );
+  } catch (error) {
+    console.error("Error fetching court statistics:", error);
+    
+    return NextResponse.json(
+      {
+        error: "Wystąpił błąd podczas pobierania statystyk sądowych."
+      },
+      {
+        status: 500,
+        headers: securityHeaders,
+      }
+    );
+  }
+}

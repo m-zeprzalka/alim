@@ -1,0 +1,102 @@
+// Script to check database connection and structure
+import { PrismaClient, Prisma } from "@prisma/client";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+const prisma = new PrismaClient();
+
+// Type for form data stored in JSON
+type FormDataJson = {
+  rodzajSaduSad?: string;
+  apelacjaSad?: string;
+  sadOkregowyId?: string;
+  rokDecyzjiSad?: string;
+  watekWiny?: string;
+  [key: string]: any;
+};
+
+async function main() {
+  try {
+    console.log("🔌 Sprawdzam połączenie z bazą danych...");
+
+    // Check connection
+    const connectionTest = await prisma.$queryRaw`SELECT 1 as connected`;
+    console.log("✅ Połączenie z bazą danych działa poprawnie!");
+
+    // Check table structure
+    console.log("🔍 Sprawdzam strukturę tabeli FormSubmission...");
+    const tableInfo = await prisma.$queryRaw`
+      SELECT column_name, data_type
+      FROM information_schema.columns
+      WHERE table_name = 'FormSubmission'
+      ORDER BY ordinal_position;
+    `;
+
+    console.log("📋 Struktura tabeli FormSubmission:");
+    console.table(tableInfo);
+
+    // Get record counts
+    const subscriptionsCount = await prisma.emailSubscription.count();
+    console.log(`📊 Liczba subskrypcji w bazie: ${subscriptionsCount}`);
+
+    const submissionsCount = await prisma.formSubmission.count();
+    console.log(`📊 Liczba przesłanych formularzy: ${submissionsCount}`);
+
+    if (submissionsCount > 0) {
+      // Check recent form submissions
+      console.log("📝 Ostatnio przesłane formularze:");
+      
+      // Use raw query to avoid TypeScript errors until Prisma client is regenerated
+      const recentSubmissions = await prisma.$queryRaw`
+        SELECT 
+          fs.id, 
+          fs.status, 
+          fs.submitted_at as "submittedAt", 
+          fs.form_data as "formData",
+          es.email
+        FROM "FormSubmission" fs
+        JOIN "EmailSubscription" es ON fs.email_subscription_id = es.id
+        ORDER BY fs.submitted_at DESC
+        LIMIT 5
+      `;
+
+      // Format and display results
+      console.table(
+        (recentSubmissions as any[]).map((sub: any) => {
+          const formData = typeof sub.formData === 'object' ? sub.formData : {};
+          return {
+            id: sub.id,
+            email: sub.email,
+            submittedAt: sub.submittedAt,
+            status: sub.status,
+            rodzajSadu: formData?.rodzajSaduSad || "nie podano",
+            apelacja: formData?.apelacjaSad || "nie podano",
+            rok: formData?.rokDecyzjiSad || "nie podano",
+          };
+        })
+      );
+      
+      // Check court data distribution
+      console.log("\n📊 Rozkład rodzajów sądów:");
+      const courtTypeDistribution = await prisma.$queryRaw`
+        SELECT 
+          form_data->>'rodzajSaduSad' as "type",
+          COUNT(*) as "count"
+        FROM "FormSubmission"
+        GROUP BY form_data->>'rodzajSaduSad'
+      `;
+      console.table(courtTypeDistribution);
+    }
+  } catch (error) {
+    console.error("❌ Wystąpił błąd podczas sprawdzania bazy danych:", error);
+    process.exit(1);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+main().catch((e) => {
+  console.error("❌ Nieoczekiwany błąd:", e);
+  process.exit(1);
+});

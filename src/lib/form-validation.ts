@@ -21,6 +21,17 @@ export const formSubmissionSchema = z.object({
   submissionDate: z.string(),
   // Optional honeypot field to catch bots - should be empty
   notHuman: z.string().max(0).optional(),
+
+  // Nowe pola dla sądu
+  rokDecyzjiSad: z.string().optional(),
+  miesiacDecyzjiSad: z.string().optional(),
+  rodzajSaduSad: z.enum(["rejonowy", "okregowy", "nie_pamietam"]).optional(),
+  apelacjaSad: z.string().optional(),
+  sadOkregowyId: z.string().optional(),
+  sadRejonowyId: z.string().optional(),
+  watekWiny: z
+    .enum(["nie", "tak-ja", "tak-druga-strona", "tak-oboje"])
+    .optional(),
 });
 
 // Sanitize email address

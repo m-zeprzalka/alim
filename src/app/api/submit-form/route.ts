@@ -92,13 +92,42 @@ export async function POST(request: NextRequest) {
         email: cleanEmail,
         acceptedTerms: zgodaPrzetwarzanie === true,
       },
-    }); // Then save the form submission with reference to the email subscription
+    });
+
+    // Przygotuj dane formularza
     const formDataObj = { ...formData };
+
+    // Wyodrębnij pola dotyczące sądu do osobnych kolumn dla lepszego indeksowania
+    const rodzajSaduSad = formDataObj.rodzajSaduSad || null;
+    const apelacjaSad = formDataObj.apelacjaSad || null;
+    const sadOkregowyId = formDataObj.sadOkregowyId || null;
+    const rokDecyzjiSad = formDataObj.rokDecyzjiSad || null;
+    const watekWiny = formDataObj.watekWiny || null;
+
+    // Zapisz formularz z nowymi polami
     const submission = (await prisma.$queryRaw`
-      INSERT INTO "FormSubmission" ("id", "emailSubscriptionId", "formData", "status")
-      VALUES (gen_random_uuid(), ${subscription.id}, ${JSON.stringify(
-      formDataObj
-    )}::jsonb, 'pending')
+      INSERT INTO "FormSubmission" (
+        "id", 
+        "emailSubscriptionId", 
+        "formData", 
+        "status",
+        "rodzajSaduSad",
+        "apelacjaSad",
+        "sadOkregowyId",
+        "rokDecyzjiSad",
+        "watekWiny"
+      )
+      VALUES (
+        gen_random_uuid(), 
+        ${subscription.id}, 
+        ${JSON.stringify(formDataObj)}::jsonb, 
+        'pending',
+        ${rodzajSaduSad},
+        ${apelacjaSad},
+        ${sadOkregowyId},
+        ${rokDecyzjiSad},
+        ${watekWiny}
+      )
       RETURNING "id"
     `) as { id: string }[]; // Return success response
     return NextResponse.json(

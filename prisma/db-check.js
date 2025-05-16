@@ -1,8 +1,13 @@
-const { prisma } = require("../src/lib/prisma");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 async function main() {
   try {
     console.log("Połączono z bazą danych");
+    console.log(
+      "Używana baza danych: ",
+      process.env.DATABASE_URL || "nie skonfigurowano"
+    );
 
     // Sprawdź liczbę rekordów w tabelach
     const subscriptionCount = await prisma.emailSubscription.count();
@@ -22,7 +27,7 @@ async function main() {
 
       console.log("\nPrzykładowe formularze:");
 
-      formSubmissions.forEach((form: any, index: number) => {
+      formSubmissions.forEach((form, index) => {
         console.log(`\n--- Formularz #${index + 1} ---`);
         console.log(`ID: ${form.id}`);
         console.log(`Email: ${form.emailSubscription.email}`);
@@ -42,7 +47,7 @@ async function main() {
 
         // Sprawdź formData (jako JSON)
         console.log(`\nZawartość formData:`);
-        const formData = form.formData as Record<string, any>;
+        const formData = form.formData;
         console.log(`- sciezkaWybor: ${formData.sciezkaWybor || "brak"}`);
         console.log(`- podstawaUstalen: ${formData.podstawaUstalen || "brak"}`);
         console.log(`- liczbaDzieci: ${formData.liczbaDzieci || "brak"}`);
@@ -59,7 +64,7 @@ async function main() {
         console.log(`\nDzieci:`);
         if (formData.dzieci && Array.isArray(formData.dzieci)) {
           console.log(`Liczba dzieci w formularzu: ${formData.dzieci.length}`);
-          formData.dzieci.forEach((dziecko: any, idx: number) => {
+          formData.dzieci.forEach((dziecko, idx) => {
             console.log(`  Dziecko #${idx + 1}:`);
             console.log(`  - ID: ${dziecko.id || "brak"}`);
             console.log(`  - Wiek: ${dziecko.wiek || "brak"}`);
@@ -69,6 +74,26 @@ async function main() {
           console.log("Brak danych o dzieciach");
         }
       });
+    }
+
+    // Sprawdź zawartość kolumn z danych sądu
+    if (formSubmissionCount > 0) {
+      console.log("\n--- Sprawdzanie kolumn sądowych ---");
+
+      const formSadData = await prisma.$queryRaw`
+                SELECT 
+                  id, 
+                  "rodzajSaduSad", 
+                  "apelacjaSad", 
+                  "sadOkregowyId", 
+                  "rokDecyzjiSad", 
+                  "watekWiny"
+                FROM "FormSubmission"
+                LIMIT 5
+            `;
+
+      console.log("Dane z kolumn sądowych:");
+      console.log(formSadData);
     }
 
     console.log("\nSprawdzanie zakończone");

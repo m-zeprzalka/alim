@@ -74,16 +74,44 @@ Kluczowe foldery:
 
 ```prisma
 model EmailSubscription {
-  id                String    @id @default(cuid())
-  email             String    @unique
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  acceptedTerms     Boolean   @default(false)
-  status            String    @default("pending")
+  id                String           @id @default(cuid())
+  email             String           @unique
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  submittedAt       DateTime?
+  acceptedTerms     Boolean          @default(false)
+  acceptedContact   Boolean          @default(false)
+  status            String           @default("pending")
   verificationToken String?
   verifiedAt        DateTime?
+  formSubmissions   FormSubmission[]
 
   @@index([status])
+}
+
+model FormSubmission {
+  id                 String           @id @default(cuid())
+  emailSubscriptionId String
+  emailSubscription  EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
+  formData           Json
+  submittedAt        DateTime         @default(now())
+  processedAt        DateTime?
+  status             String           @default("pending")
+  reportUrl          String?
+
+  // Indeksowane pola dla łatwiejszego wyszukiwania
+  rodzajSaduSad      String?          // Typ sądu (rejonowy, okregowy, nie_pamietam)
+  apelacjaSad        String?          // Apelacja
+  sadOkregowyId      String?          // ID sądu okręgowego
+  rokDecyzjiSad      String?          // Rok decyzji sądu
+  watekWiny          String?          // Wątek winy
+
+  @@index([status])
+  @@index([emailSubscriptionId])
+  @@index([rodzajSaduSad])
+  @@index([apelacjaSad])
+  @@index([sadOkregowyId])
+  @@index([rokDecyzjiSad])
 }
 ```
 
@@ -134,18 +162,48 @@ Aplikacja wykorzystuje zestaw spójnych komponentów UI, w tym:
 Aplikacja udostępnia następujące endpointy API:
 
 - **`/api/subscribe`**: Zapisanie użytkownika na powiadomienia
+- **`/api/submit-form`**: Zapisanie danych formularza w bazie danych
+- **`/api/secure-submit`**: Bezpieczne przesyłanie danych formularza z CSRF protection
+- **`/api/register-csrf`**: Generowanie tokenów CSRF do zabezpieczenia formularzy
+- **`/api/test-db`**: Testowanie połączenia z bazą danych
 - **`/api/admin/subscriptions`**: Pobieranie listy subskrypcji (wymaga klucza API)
-- **`/api/admin/export-excel`**: Eksport subskrypcji do Excela (wymaga klucza API)
+- **`/api/admin/export-excel`**: Eksport wszystkich danych do Excela (wymaga klucza API)
+- **`/api/admin/court-stats`**: Pobieranie statystyk dotyczących postępowań sądowych (wymaga klucza API)
 
 ## Panel administracyjny
 
 Panel administracyjny umożliwia:
 
 1. **Przeglądanie subskrypcji**: Lista osób zapisanych na powiadomienia
-2. **Statystyki**: Liczba wszystkich, oczekujących i zweryfikowanych subskrypcji
-3. **Eksport danych**: Możliwość pobrania danych w formacie Excel
+2. **Statystyki formularzy**: Szczegółowe dane o zgłoszeniach, w tym:
+   - Podział według rodzaju sądów
+   - Podział według apelacji
+   - Statystyki według lat decyzji
+   - Statystyki wątku winy
+   - Statystyki statusów zgłoszeń
+3. **Statystyki sądowe**: Wizualizacja i analiza danych sądowych
+4. **Eksport danych**: Możliwość pobrania kompleksowych danych w formacie Excel z wieloma arkuszami:
+   - Podsumowanie
+   - Formularze
+   - Subskrypcje
+   - Dane sądowe
+   - Dzieci
+   - Finansowanie
+   - Dochody
+   - Pełne dane JSON
 
-Dostęp do panelu jest chroniony prostym mechanizmem autoryzacji przez klucz API.
+Dostęp do panelu jest chroniony prostym mechanizmem autoryzacji przez klucz API, który jest przechowywany lokalnie w przeglądarce administratora po pierwszym wprowadzeniu.
+
+### Narzędzia diagnostyczne
+
+Aplikacja zawiera również narzędzia diagnostyczne do monitorowania i utrzymania:
+
+1. **Script check-db.ts**: Testowanie połączenia z bazą danych
+2. **Script db-check.js**: Analiza zawartości bazy danych
+3. **Script check-tables.js**: Sprawdzanie struktury tabel w bazie
+4. **SQL check-form-submission.sql**: Zapytanie do inspekcji danych formularzy
+
+Te narzędzia są pomocne przy diagnozowaniu problemów z bazą danych i sprawdzaniu integralności danych.
 
 ## Zabezpieczenia
 
@@ -211,6 +269,43 @@ Na podstawie analizy aktualnego stanu aplikacji, proponuję następujące ulepsz
 4. Rozbudowa panelu administracyjnego
 5. Optymalizacja UX formularza
 
+## Rozwiązane problemy techniczne
+
+### 1. Eksport danych do Excela
+
+W maju 2025 roku rozwiązano problem z eksportem danych do plików Excel, gdzie niektóre kolumny pozostawały puste mimo dostępności danych w bazie. Główną przyczyną był konflikt pomiędzy konwencjami nazewnictwa:
+
+- **Problem**: PostgreSQL automatycznie konwertuje nazwy kolumn i aliasy do formatu lowercase (małe litery), natomiast kod obsługujący export do Excela używał konwencji camelCase, co powodowało niedopasowanie kluczy.
+
+- **Rozwiązanie**:
+  - Wprowadzono spójną konwencję nazewnictwa w zapytaniach SQL z wykorzystaniem aliasów lowercase
+  - Zaktualizowano definicje kluczy kolumn we wszystkich arkuszach Excel
+  - Dostosowano wszystkie wywołania `addRow()` do używania tych samych, spójnych kluczy lowercase
+
+Przykład zmiany:
+
+```typescript
+// Przed zmianą:
+const courtSheet.columns = [
+  { header: "ID Formularza", key: "formId", width: 40 },
+  // ...inne kolumny...
+];
+
+// Po zmianie:
+const courtSheet.columns = [
+  { header: "ID Formularza", key: "formid", width: 40 },
+  // ...inne kolumny...
+];
+```
+
+Wprowadzono również dodatkowe narzędzia diagnostyczne do sprawdzania poprawności danych w bazie:
+
+- Script `db-check.js` do sprawdzania zawartości bazy danych
+- Zapytanie SQL `check-form-submission.sql` do inspekcji danych formularza
+- Walidacja danych podczas zapisywania i eksportowania
+
+Ta optymalizacja znacząco poprawiła jakość eksportowanych danych, zapewniając, że wszystkie kolumny w arkuszu Excel zawierają odpowiednie dane z bazy.
+
 ## Podsumowanie
 
 Aplikacja AliMatrix jest dobrze zaprojektowanym narzędziem do zbierania danych o alimentach w Polsce. Aktualna wersja koncentruje się na gromadzeniu danych, a kolejnym krokiem powinno być wdrożenie funkcji generowania raportów i analiz.
@@ -218,3 +313,5 @@ Aplikacja AliMatrix jest dobrze zaprojektowanym narzędziem do zbierania danych 
 Projekt ma duży potencjał, aby stać się wartościowym narzędziem zarówno dla rodziców ustalających zasady finansowania potrzeb dzieci, jak i dla osób profesjonalnie zajmujących się tą tematyką (prawnicy, mediatorzy).
 
 Proponowane ulepszenia pozwolą przekształcić obecną wersję demonstracyjną w pełnowartościowe narzędzie analityczne, które może realnie wpłynąć na praktykę ustalania alimentów w Polsce.
+
+Ostatnie usprawnienia techniczne, w szczególności naprawa funkcji eksportu do Excela, sprawiają, że aplikacja jest bardziej stabilna i gotowa do przetwarzania większych ilości danych bez utraty informacji podczas eksportu.

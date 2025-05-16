@@ -72,7 +72,7 @@ export default function Finansowanie() {
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
         <CardContent className="pt-2">
           <Logo size="medium" />
-          <FormProgress currentStep={4} totalSteps={12} />
+          <FormProgress currentStep={2} totalSteps={12} />
 
           <div className="space-y-6">
             <div className="flex items-center gap-2">
@@ -146,11 +146,7 @@ export default function Finansowanie() {
               <Button variant="outline" className="flex-1" onClick={handleBack}>
                 Wstecz
               </Button>
-              <Button
-                variant="alimatrix"
-                className="flex-1"
-                onClick={handleNext}
-              >
+              <Button className="flex-1" onClick={handleNext}>
                 Dalej
               </Button>
             </div>

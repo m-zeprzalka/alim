@@ -83,12 +83,10 @@ export default function InformacjeOTobie() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardContent className="pt-6">
-          <div className="flex justify-center mb-6">
-            <Logo size="medium" />
-          </div>
+    <main className="flex justify-center p-3">
+      <Card className="w-full max-w-lg shadow-lg border-sky-100">
+        <CardContent className="pt-2">
+          <Logo size="large" />
           <FormProgress currentStep={10} totalSteps={12} />
 
           <div className="space-y-6">

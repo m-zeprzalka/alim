@@ -69,9 +69,9 @@ export type FormData = {
     plec: "K" | "M";
     specjalnePotrzeby: boolean;
     opisSpecjalnychPotrzeb?: string;
-    modelOpieki?: "50/50" | "inny";
-    // Dane związane z tabelą czasu opieki (tylko dla modelu "inny")
+    modelOpieki?: "50/50" | "inny"; // Dane związane z tabelą czasu opieki (tylko dla modelu "inny")
     cyklOpieki?: "1" | "2" | "4" | "custom"; // co tydzień, co 2 tygodnie, co 4 tygodnie, brak stałego schematu
+    procentCzasuOpieki?: number; // procentowy udział czasu opieki rodzica wypełniającego formularz
     tabelaCzasu?: {
       [dzienTygodnia: string]: {
         // "pn", "wt", "sr", "cz", "pt", "sb", "nd"

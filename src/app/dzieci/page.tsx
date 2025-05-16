@@ -16,7 +16,7 @@ import { PlusCircle, MinusCircle } from "lucide-react";
 export default function Dzieci() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
-  
+
   // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -166,10 +166,10 @@ export default function Dzieci() {
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
         <CardContent className="pt-2">
           <Logo size="large" />
-          <FormProgress currentStep={5} totalSteps={12} />
+          <FormProgress currentStep={4} totalSteps={12} />
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">Dzieci</h1>
+              <h1 className="text-2xl font-bold">Informacje o dzieciach</h1>
               <InfoTooltip
                 content={
                   <div className="space-y-2 text-sm">
@@ -185,8 +185,31 @@ export default function Dzieci() {
                 }
               />
             </div>
-
             <div className="space-y-4">
+              <p className="text-sky-950">
+                Ta część formularza dotyczy dzieci, których sytuacja
+                alimentacyjna lub sposób dzielenia się kosztami utrzymania
+                została już w jakiś sposób ustalona .{" "}
+              </p>
+              <p className="text-sky-950">
+                W AliMatrix wierzymy, że rzetelna analiza zaczyna się od
+                zrozumienia konkretu – a potrzeby dziecka są jednym z jego
+                najważniejszych wymiarów. W kolejnych krokach poprosimy Cię o
+                informacje, które pomogą określić, jak wygląda Wasza codzienność
+                – opieka, czas spędzany z dzieckiem, jego wiek, edukacja oraz
+                rzeczywiste wydatki.{" "}
+              </p>
+              <p className="text-sky-950">
+                Te dane są nie tylko potrzebne do przygotowania raportu – mogą
+                pomóc również Tobie, by lepiej zobaczyć strukturę codzienności i
+                odpowiedzialności. Wiele osób dopiero w trakcie tego etapu
+                uświadamia sobie, jak naprawdę wygląda podział czasu i kosztów
+                związanych z wychowaniem.{" "}
+              </p>
+              <p className="text-sky-950">
+                Liczba dzieci: Ile dzieci objętych jest ustaleniami dotyczącymi
+                alimentów lub współfinansowania kosztów życia?{" "}
+              </p>
               <div>
                 <Label htmlFor="liczbaDzieci">Liczba dzieci</Label>
                 <div className="flex items-center mt-2">

@@ -14,7 +14,7 @@ import { useFormStore } from "@/lib/store/form-store";
 export default function CzasOpieki() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
-  
+
   // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -77,8 +77,35 @@ export default function CzasOpieki() {
       senURodzica: 0,
     },
   });
+  // Dodany stan dla śledzenia procentowego udziału czasu opieki - domyślnie 0% (100% dla drugiego rodzica)
+  const [czasOpiekiProcentowo, setCzasOpiekiProcentowo] = useState<number>(0);
 
   const [error, setError] = useState<string | null>(null);
+
+  // Funkcja do obliczania procentowego udziału czasu opieki rodzica
+  const obliczProcentCzasuOpieki = (tabela: typeof tabelaCzasu) => {
+    // Łączna liczba godzin w tygodniu
+    const totalGodzinWTygodniu = 7 * 24; // 168 godzin
+
+    // Suma godzin opieki rodzica wypełniającego formularz
+    let sumaGodzinOpieki = 0;
+
+    Object.values(tabela).forEach((dzien) => {
+      sumaGodzinOpieki +=
+        dzien.poranek +
+        dzien.placowkaEdukacyjna +
+        dzien.czasPoEdukacji +
+        dzien.senURodzica;
+    });
+
+    // Obliczenie procentu
+    const procentRodzica = Math.round(
+      (sumaGodzinOpieki / totalGodzinWTygodniu) * 100
+    );
+
+    // Aktualizacja stanu
+    setCzasOpiekiProcentowo(procentRodzica);
+  };
 
   // Wczytaj dane dziecka i tabeli z store'a, jeśli istnieją
   useEffect(() => {
@@ -89,6 +116,12 @@ export default function CzasOpieki() {
       }
       if (dziecko && dziecko.tabelaCzasu) {
         setTabelaCzasu(dziecko.tabelaCzasu);
+        // Oblicz procent czasu opieki na podstawie wczytanej tabeli
+        obliczProcentCzasuOpieki(dziecko.tabelaCzasu);
+      }
+      // Jeśli dziecko ma już zapisany procent czasu opieki, użyj go
+      if (dziecko && dziecko.procentCzasuOpieki !== undefined) {
+        setCzasOpiekiProcentowo(dziecko.procentCzasuOpieki);
       }
     }
   }, [formData.dzieci, aktualneDzieckoId]);
@@ -108,13 +141,20 @@ export default function CzasOpieki() {
     kategoria: string,
     wartosc: number
   ) => {
-    setTabelaCzasu((prev) => ({
-      ...prev,
-      [dzien]: {
-        ...prev[dzien],
-        [kategoria]: wartosc,
-      },
-    }));
+    setTabelaCzasu((prev) => {
+      const newTabelaCzasu = {
+        ...prev,
+        [dzien]: {
+          ...prev[dzien],
+          [kategoria]: wartosc,
+        },
+      };
+
+      // Po aktualizacji tabeli, oblicz procentowy udział czasu opieki
+      obliczProcentCzasuOpieki(newTabelaCzasu);
+
+      return newTabelaCzasu;
+    });
   };
 
   // Funkcja do obsługi zmiany cyklu opieki
@@ -148,14 +188,15 @@ export default function CzasOpieki() {
       return;
     }
 
-    // Zapisujemy dane do store'a
+    // Zapisujemy dane do store'a - teraz tylko procentowy udział czasu opieki zamiast całej tabeli
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {
           return {
             ...dziecko,
             cyklOpieki,
-            tabelaCzasu,
+            procentCzasuOpieki: czasOpiekiProcentowo, // Zapisanie tylko wartości procentowej
+            tabelaCzasu, // Opcjonalnie możemy zachować tabelę dla referencji, ale w API będziemy wysyłać tylko procent
           };
         }
         return dziecko;
@@ -170,7 +211,9 @@ export default function CzasOpieki() {
       // Nowa logika - po wypełnieniu czasu opieki, przechodzimy do kosztów utrzymania dla tego samego dziecka
       router.push("/koszty-utrzymania");
     }
-  }; // Funkcja do obsługi powrotu do poprzedniego kroku
+  };
+
+  // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = () => {
     // Zapisujemy aktualne dane dziecka
     if (aktualneDzieckoId && formData.dzieci) {
@@ -179,6 +222,7 @@ export default function CzasOpieki() {
           return {
             ...dziecko,
             cyklOpieki,
+            procentCzasuOpieki: czasOpiekiProcentowo,
             tabelaCzasu,
           };
         }
@@ -221,16 +265,16 @@ export default function CzasOpieki() {
     }
   }, [dzieciZModelemInnym.length, formData.dzieci, router]);
 
-  // Tabela dni tygodnia
-  const dniTygodnia = ["pn", "wt", "sr", "cz", "pt", "sb", "nd"];
+  // Tabela dni tygodnia - zaczynamy od piątku zgodnie z wytycznymi klienta
+  const dniTygodnia = ["pt", "sb", "nd", "pn", "wt", "sr", "cz"];
   const dniTygodniaPelne = [
+    "Piątek",
+    "Sobota",
+    "Niedziela",
     "Poniedziałek",
     "Wtorek",
     "Środa",
     "Czwartek",
-    "Piątek",
-    "Sobota",
-    "Niedziela",
   ];
 
   // Kategorie czasu
@@ -263,12 +307,10 @@ export default function CzasOpieki() {
 
   if (!aktualneDziecko) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-        <Card className="w-full max-w-lg shadow-lg">
-          <CardContent className="pt-6">
-            <div className="flex justify-center mb-6">
-              <Logo size="medium" />
-            </div>
+      <main className="flex justify-center p-3">
+        <Card className="w-full max-w-lg shadow-lg border-sky-100">
+          <CardContent className="pt-2">
+            <Logo size="large" />
             <FormProgress currentStep={6} totalSteps={12} />
             <div className="space-y-6">
               <div className="flex items-center gap-2">
@@ -293,12 +335,10 @@ export default function CzasOpieki() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <Card className="w-full max-w-4xl shadow-lg">
-        <CardContent className="pt-6">
-          <div className="flex justify-center mb-6">
-            <Logo size="medium" />
-          </div>
+    <main className="flex justify-center p-3">
+      <Card className="w-full max-w-lg shadow-lg border-sky-100">
+        <CardContent className="pt-2">
+          <Logo size="large" />
           <FormProgress currentStep={6} totalSteps={12} />
           <div className="space-y-6">
             <div className="flex items-center gap-2">
@@ -364,15 +404,41 @@ export default function CzasOpieki() {
                 dla przykładowych 4 tygodni, żeby ustandaryzować analizę.
               </p>
             </div>
-            {/* Tabela czasu - wersja na desktop */}
-            <div className="hidden md:block overflow-x-auto">
+            {/* Wizualizacja procentowego podziału czasu opieki */}
+            <div className="mt-6 p-4 rounded-lg bg-blue-50">
+              <h3 className="font-medium mb-3">Podział czasu opieki</h3>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">Ty</span>
+                <span className="text-sm font-medium">Drugi rodzic</span>
+              </div>
+
+              <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="absolute top-0 left-0 h-full bg-sky-600 transition-all duration-500"
+                  style={{ width: `${czasOpiekiProcentowo}%` }}
+                ></div>
+                <div className="absolute inset-0 flex items-center justify-center text-sm font-medium">
+                  {czasOpiekiProcentowo}% / {100 - czasOpiekiProcentowo}%
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-500 mt-2">
+                Powyższe wartości pokazują procentowy podział czasu opieki
+                między rodzicami na podstawie wypełnionej tabeli.
+              </p>
+            </div>
+            {/* Jednolita responsywna tabela czasu opieki */}
+            <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="p-2 text-left border">Czas</th>
-                    {dniTygodniaPelne.map((dzien) => (
-                      <th key={dzien} className="p-2 border">
-                        {dzien}
+                    {dniTygodnia.map((dzien, index) => (
+                      <th key={dzien} className="p-2 text-center border">
+                        <span className="hidden sm:inline">
+                          {dniTygodniaPelne[index]}
+                        </span>
+                        <span className="sm:hidden">{dzien.toUpperCase()}</span>
                       </th>
                     ))}
                   </tr>
@@ -395,7 +461,7 @@ export default function CzasOpieki() {
                             value={
                               tabelaCzasu[dzien]?.[
                                 kategoria.id as keyof (typeof tabelaCzasu)[typeof dzien]
-                              ] || 0
+                              ] || ""
                             }
                             onChange={(e) =>
                               updateTabelaCzasu(
@@ -412,50 +478,6 @@ export default function CzasOpieki() {
                   ))}
                 </tbody>
               </table>
-            </div>
-            {/* Tabela czasu - wersja mobilna (responsive) */}
-            <div className="md:hidden">
-              {dniTygodnia.map((dzien, index) => (
-                <div
-                  key={dzien}
-                  className="mb-6 p-4 border rounded-lg bg-white"
-                >
-                  <h3 className="font-medium mb-3">
-                    {dniTygodniaPelne[index]}
-                  </h3>
-                  <div className="space-y-4">
-                    {kategorieTabeli.map((kategoria) => (
-                      <div
-                        key={kategoria.id}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-1">
-                          <span>{kategoria.nazwa}</span>
-                          <InfoTooltip content={kategoria.tooltip} />
-                        </div>
-                        <Input
-                          type="number"
-                          min="0"
-                          max="24"
-                          value={
-                            tabelaCzasu[dzien]?.[
-                              kategoria.id as keyof (typeof tabelaCzasu)[typeof dzien]
-                            ] || 0
-                          }
-                          onChange={(e) =>
-                            updateTabelaCzasu(
-                              dzien,
-                              kategoria.id,
-                              parseInt(e.target.value) || 0
-                            )
-                          }
-                          className="w-20 h-10 text-center"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="flex gap-3 pt-4">

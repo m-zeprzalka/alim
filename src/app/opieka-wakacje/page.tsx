@@ -84,12 +84,9 @@ export default function OpiekaWakacje() {
     }
 
     // Przewiń stronę do góry
-    scrollToTop();
-
-    // Przejdź do następnego kroku
-    router.push("/dochody-i-koszty");
-  };
-  // Funkcja do powrotu do poprzedniego kroku
+    scrollToTop(); // Przejdź do następnego kroku
+    router.push("/koszty-utrzymania");
+  }; // Funkcja do powrotu do poprzedniego kroku
   const handleBack = () => {
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
@@ -115,7 +112,7 @@ export default function OpiekaWakacje() {
     // Przewiń stronę do góry
     scrollToTop();
 
-    // Wróć do poprzedniego kroku
+    // Wróć do strony czasu opieki
     router.push("/czas-opieki");
   };
 
@@ -261,9 +258,9 @@ export default function OpiekaWakacje() {
             <div className="flex gap-3 pt-4">
               <Button variant="outline" className="flex-1" onClick={handleBack}>
                 Wstecz
-              </Button>
+              </Button>{" "}
               <Button className="flex-1" onClick={handleNext}>
-                Dalej
+                Przejdź do kosztów utrzymania
               </Button>
             </div>
           </div>

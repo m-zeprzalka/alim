@@ -95,25 +95,24 @@ export default function Home() {
               </p>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>
-                  <strong>Informacje o dzieciach</strong>, na które ustalane są
-                  zasady finansowania potrzeb.
+                  <strong>Informacje o dzieciach</strong> – obejmujące m.in.
+                  opiekę, edukację oraz miesięczne wydatki związane z
+                  wychowaniem.
                 </li>
                 <li>
-                  <strong>
-                    Dochody, koszty życia rodziców i wydatki związane z
-                    wychowaniem dzieci.
-                  </strong>
+                  <strong>Finanse rodziców</strong> – dane o dochodach, kosztach
+                  utrzymania i innych zobowiązaniach po stronie każdego z
+                  rodziców
                 </li>
                 <li>
-                  <strong>
-                    Informacje o postępowaniu sądowym dotyczącym Twojej
-                    sytuacji.
-                  </strong>
+                  <strong>Kontekst ustaleń finansowych</strong> - informacje o
+                  tym, kiedy i w jaki sposób ustalono zasady finansowania
+                  potrzeb dziecka (np. wyrok sądu, porozumienie, mediacje).
                 </li>
                 <li>
-                  <strong>
-                    Dane użytkownika potrzebne do bardziej miarodajnej analizy.
-                  </strong>
+                  <strong>Dane użytkownika</strong> - podstawowe informacje,
+                  które pomagają lepiej osadzić Twoją sytuację w analizach
+                  statystycznych (np. wiek, województwo, stan cywilny).
                 </li>
               </ul>
               <p className="text-sm mt-2">

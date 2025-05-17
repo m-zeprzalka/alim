@@ -431,7 +431,7 @@ export default function Dzieci() {
 
                     {/* Wybór typu placówki edukacyjnej */}
                     {dziecko.uczeszczeDoPlacowki && (
-                      <div className="mt-3 pl-4 border-l-2 border-gray-200">
+                      <div className="mt-3">
                         <p className="text-sm text-gray-600 mb-2">
                           Wybierz typ placówki:
                         </p>
@@ -474,7 +474,7 @@ export default function Dzieci() {
 
                     {/* Opieka innej osoby, jeśli nie uczęszcza do placówki */}
                     {dziecko.uczeszczeDoPlacowki === false && (
-                      <div className="mt-3 pl-4 border-l-2 border-gray-200">
+                      <div className="mt-3">
                         <div className="flex items-center gap-2 mb-2">
                           <p className="text-sm font-medium text-gray-700">
                             Czy ktoś inny niż rodzice sprawuje nad dzieckiem
@@ -561,7 +561,7 @@ export default function Dzieci() {
                     </div>
 
                     {dziecko.specjalnePotrzeby && (
-                      <div className="mt-3 pl-8">
+                      <div className="mt-3">
                         <Label htmlFor={`opis-${dziecko.id}`}>
                           Opisz krótko specjalne potrzeby
                         </Label>
@@ -618,13 +618,11 @@ export default function Dzieci() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="50/50">
-                            Opieka naprzemienna (50/50) - Dziecko spędza równy
-                            czas pod opieką każdego z rodziców
+                            Opieka naprzemienna (50/50)
                           </SelectItem>
                           <SelectItem value="inny">
-                            Inny układ - Dziecko spędza różną ilość czasu pod
-                            opieką każdego rodzica (wymagane wypełnienie tabeli
-                            czasu)
+                            Inny układ – np. dziecko spędza większość czasu u
+                            jednego z rodziców
                           </SelectItem>
                         </SelectContent>
                       </Select>

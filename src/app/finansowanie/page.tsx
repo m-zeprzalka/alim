@@ -131,14 +131,14 @@ export default function Finansowanie() {
               <ClickableRadioOption
                 value="i-receive"
                 id="i-receive"
-                label="Drugi rodzic regularnie przekazuje środki na utrzymanie dziecka/dzieci mnie"
+                label="Drugi rodzic regularnie przekazuje środki na utrzymanie dziecka/dzieci mi"
                 description="(nawet jeśli także sam pokrywa niektóre koszty podczas swojej opieki.)"
                 selected={selectedOption === "i-receive"}
               />
               <ClickableRadioOption
                 value="shared"
                 id="shared"
-                label="Koszty utrzymania dzieci dzielimy w miarę proporcjonalnie, bez formalnego przekazywania pieniędzy między sobą"
+                label="Koszty utrzymania dzieci dzielimy w miarę proporcjonalnie, bez systematycznego i formalnego przekazywania pieniędzy między sobą"
                 description="(Każdy rodzic pokrywa swoje wydatki bezpośrednio lub finansujemy wspólnie w określony sposób.)"
                 selected={selectedOption === "shared"}
               />

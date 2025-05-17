@@ -77,14 +77,14 @@ export const ClickableRadioOption = React.forwardRef<
         className={cn(
           "p-4 border-2 rounded-lg transition-colors cursor-pointer",
           selected
-            ? "border-blue-500 bg-blue-50"
-            : "border-gray-200 hover:border-blue-300",
+            ? "border-sky-950 bg-sky-50"
+            : "border-gray-200 hover:borde-sky-500",
           className
         )}
         {...props}
         onClick={handleDivClick}
       >
-        <div className="flex items-start gap-3 cursor-pointer">
+        <div className="flex items-start cursor-pointer">
           {/* We'll hide the actual radio visually but keep it in the DOM for accessibility */}
           <div className="relative mt-1">
             {" "}
@@ -99,7 +99,7 @@ export const ClickableRadioOption = React.forwardRef<
               {label}
             </Label>
             {description && (
-              <p className="text-xs text-gray-500 mt-1">{description}</p>
+              <p className="text-xs text-gray-500 mt-2">{description}</p>
             )}
             {hasInput && selected && (
               <div className="mt-2">

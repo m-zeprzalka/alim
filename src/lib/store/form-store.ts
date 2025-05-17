@@ -88,7 +88,13 @@ export type FormData = {
         placowkaEdukacyjna: number;
         czasPoEdukacji: number;
         senURodzica: number;
+        senUDrugiegoRodzica: number;
       };
+    };
+    wskaznikiCzasuOpieki?: {
+      czasOpiekiBezEdukacji: number;
+      czasAktywnejOpieki: number;
+      czasSnu: number;
     };
   }[];
 

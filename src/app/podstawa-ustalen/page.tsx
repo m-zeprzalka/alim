@@ -92,10 +92,6 @@ export default function PodstawaUstalen() {
                       Dlaczego o to pytamy? Typ ustaleń wpływa na trwałość i
                       pewność sytuacji prawnej.
                     </p>
-                    <p>
-                      Twoja odpowiedź pozwoli dopasować dalsze pytania do Twojej
-                      sytuacji oraz zwiększyć precyzję Twojego raportu.
-                    </p>
                   </div>
                 }
               />

@@ -10,10 +10,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFormStore } from "@/lib/store/form-store";
+import { Dziecko, TabelaCzasu, WskaznikiCzasuOpieki } from "./typings";
 
 export default function CzasOpieki() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
+
+  // Style CSS dla ukrycia strzałek w polach numerycznych w tabeli
+  const hideSpinnersStyle = `
+    .czas-opieki-input::-webkit-inner-spin-button,
+    .czas-opieki-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .czas-opieki-input[type=number] {
+      -moz-appearance: textfield;
+    }
+  `;
 
   // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
   const scrollToTop = () => {
@@ -32,6 +45,7 @@ export default function CzasOpieki() {
       placowkaEdukacyjna: number;
       czasPoEdukacji: number;
       senURodzica: number;
+      senUDrugiegoRodzica: number;
     };
   }>({
     pn: {
@@ -39,74 +53,120 @@ export default function CzasOpieki() {
       placowkaEdukacyjna: 0,
       czasPoEdukacji: 0,
       senURodzica: 0,
+      senUDrugiegoRodzica: 0,
     },
     wt: {
       poranek: 0,
       placowkaEdukacyjna: 0,
       czasPoEdukacji: 0,
       senURodzica: 0,
+      senUDrugiegoRodzica: 0,
     },
     sr: {
       poranek: 0,
       placowkaEdukacyjna: 0,
       czasPoEdukacji: 0,
       senURodzica: 0,
+      senUDrugiegoRodzica: 0,
     },
     cz: {
       poranek: 0,
       placowkaEdukacyjna: 0,
       czasPoEdukacji: 0,
       senURodzica: 0,
+      senUDrugiegoRodzica: 0,
     },
     pt: {
       poranek: 0,
       placowkaEdukacyjna: 0,
       czasPoEdukacji: 0,
       senURodzica: 0,
+      senUDrugiegoRodzica: 0,
     },
     sb: {
       poranek: 0,
       placowkaEdukacyjna: 0,
       czasPoEdukacji: 0,
       senURodzica: 0,
+      senUDrugiegoRodzica: 0,
     },
     nd: {
       poranek: 0,
       placowkaEdukacyjna: 0,
       czasPoEdukacji: 0,
       senURodzica: 0,
+      senUDrugiegoRodzica: 0,
     },
-  });
-  // Dodany stan dla śledzenia procentowego udziału czasu opieki - domyślnie 0% (100% dla drugiego rodzica)
-  const [czasOpiekiProcentowo, setCzasOpiekiProcentowo] = useState<number>(0);
+  }); // Stany dla trzech wskaźników procentowych
+  const [czasOpiekiBezEdukacji, setCzasOpiekiBezEdukacji] = useState<number>(0);
+  const [czasAktywnejOpieki, setCzasAktywnejOpieki] = useState<number>(0);
+  const [czasSnu, setCzasSnu] = useState<number>(0);
 
   const [error, setError] = useState<string | null>(null);
-
-  // Funkcja do obliczania procentowego udziału czasu opieki rodzica
-  const obliczProcentCzasuOpieki = (tabela: typeof tabelaCzasu) => {
-    // Łączna liczba godzin w tygodniu
+  // Funkcja do obliczania wskaźników procentowych podziału czasu opieki
+  const obliczWskaznikiCzasuOpieki = (
+    tabela: TabelaCzasu
+  ): WskaznikiCzasuOpieki => {
+    // Stałe - łączna liczba godzin w tygodniu
     const totalGodzinWTygodniu = 7 * 24; // 168 godzin
 
-    // Suma godzin opieki rodzica wypełniającego formularz
+    // Zmienne do obliczania wskaźników
     let sumaGodzinOpieki = 0;
+    let sumaGodzinPlacowki = 0;
+    let sumaGodzinSnu = 0;
+    let sumaGodzinSnuDrugiegoRodzica = 0;
 
+    // Sumowanie godzin z tabeli
     Object.values(tabela).forEach((dzien) => {
+      // Suma godzin opieki bez placówki
       sumaGodzinOpieki +=
-        dzien.poranek +
-        dzien.placowkaEdukacyjna +
-        dzien.czasPoEdukacji +
-        dzien.senURodzica;
+        dzien.poranek + dzien.czasPoEdukacji + dzien.senURodzica;
+
+      // Suma godzin w placówce edukacyjnej
+      sumaGodzinPlacowki += dzien.placowkaEdukacyjna || 0;
+
+      // Suma godzin snu u wypełniającego rodzica
+      sumaGodzinSnu += dzien.senURodzica || 0;
+
+      // Suma godzin snu u drugiego rodzica
+      sumaGodzinSnuDrugiegoRodzica += dzien.senUDrugiegoRodzica || 0;
     });
 
-    // Obliczenie procentu
-    const procentRodzica = Math.round(
-      (sumaGodzinOpieki / totalGodzinWTygodniu) * 100
+    // 1. Łączny czas opieki (bez placówki edukacyjnej)
+    const totalCzasBezPlacowki = Math.max(
+      1,
+      totalGodzinWTygodniu - sumaGodzinPlacowki
+    );
+    const wskaznikCzasuBezEdukacji = Math.round(
+      (sumaGodzinOpieki / totalCzasBezPlacowki) * 100
     );
 
-    // Aktualizacja stanu
-    setCzasOpiekiProcentowo(procentRodzica);
-  };
+    // 2. Czas aktywnej opieki (bez placówki i bez snu)
+    const totalCzasAktywny = Math.max(
+      1,
+      totalCzasBezPlacowki - sumaGodzinSnu - sumaGodzinSnuDrugiegoRodzica
+    );
+    const wskaznikAktywnejOpieki = Math.round(
+      ((sumaGodzinOpieki - sumaGodzinSnu) / totalCzasAktywny) * 100
+    );
 
+    // 3. Czas nocnego snu pod opieką (procentowo)
+    const totalCzasSnu = sumaGodzinSnu + sumaGodzinSnuDrugiegoRodzica;
+    const wskaznikSnu =
+      totalCzasSnu > 0 ? Math.round((sumaGodzinSnu / totalCzasSnu) * 100) : 0;
+
+    // Aktualizacja stanów
+    setCzasOpiekiBezEdukacji(wskaznikCzasuBezEdukacji);
+    setCzasAktywnejOpieki(wskaznikAktywnejOpieki);
+    setCzasSnu(wskaznikSnu);
+
+    // Zwróć obliczone wskaźniki
+    return {
+      czasOpiekiBezEdukacji: wskaznikCzasuBezEdukacji,
+      czasAktywnejOpieki: wskaznikAktywnejOpieki,
+      czasSnu: wskaznikSnu,
+    };
+  };
   // Wczytaj dane dziecka i tabeli z store'a, jeśli istnieją
   useEffect(() => {
     if (formData.dzieci && aktualneDzieckoId) {
@@ -116,12 +176,30 @@ export default function CzasOpieki() {
       }
       if (dziecko && dziecko.tabelaCzasu) {
         setTabelaCzasu(dziecko.tabelaCzasu);
-        // Oblicz procent czasu opieki na podstawie wczytanej tabeli
-        obliczProcentCzasuOpieki(dziecko.tabelaCzasu);
+        // Oblicz wskaźniki czasu opieki na podstawie wczytanej tabeli
+        obliczWskaznikiCzasuOpieki(dziecko.tabelaCzasu);
       }
-      // Jeśli dziecko ma już zapisany procent czasu opieki, użyj go
-      if (dziecko && dziecko.procentCzasuOpieki !== undefined) {
-        setCzasOpiekiProcentowo(dziecko.procentCzasuOpieki);
+      // Jeśli dziecko ma już zapisane wskaźniki czasu opieki, użyj ich      // Sprawdź czy istnieją zapisane wskaźniki czasu opieki
+      if (
+        dziecko &&
+        "wskaznikiCzasuOpieki" in dziecko &&
+        dziecko.wskaznikiCzasuOpieki
+      ) {
+        const wskazniki = dziecko.wskaznikiCzasuOpieki as {
+          czasOpiekiBezEdukacji?: number;
+          czasAktywnejOpieki?: number;
+          czasSnu?: number;
+        };
+
+        if (wskazniki.czasOpiekiBezEdukacji !== undefined) {
+          setCzasOpiekiBezEdukacji(wskazniki.czasOpiekiBezEdukacji);
+        }
+        if (wskazniki.czasAktywnejOpieki !== undefined) {
+          setCzasAktywnejOpieki(wskazniki.czasAktywnejOpieki);
+        }
+        if (wskazniki.czasSnu !== undefined) {
+          setCzasSnu(wskazniki.czasSnu);
+        }
       }
     }
   }, [formData.dzieci, aktualneDzieckoId]);
@@ -134,7 +212,6 @@ export default function CzasOpieki() {
   const aktualneDziecko = formData.dzieci?.find(
     (d) => d.id === aktualneDzieckoId
   );
-
   // Funkcja do aktualizacji danych w tabeli czasu
   const updateTabelaCzasu = (
     dzien: string,
@@ -150,8 +227,22 @@ export default function CzasOpieki() {
         },
       };
 
-      // Po aktualizacji tabeli, oblicz procentowy udział czasu opieki
-      obliczProcentCzasuOpieki(newTabelaCzasu);
+      // Po aktualizacji tabeli, oblicz wskaźniki czasu opieki
+      const wskazniki = obliczWskaznikiCzasuOpieki(newTabelaCzasu);
+
+      // Weryfikacja sum godzin dziennych - nie może przekraczać 24h
+      const suma = Object.values(newTabelaCzasu[dzien]).reduce(
+        (acc, val) => acc + (val || 0),
+        0
+      );
+
+      if (suma > 24) {
+        setError(
+          `Suma godzin dla ${getDzienNazwa(dzien)} przekracza 24 godziny.`
+        );
+      } else {
+        setError(null);
+      }
 
       return newTabelaCzasu;
     });
@@ -161,7 +252,6 @@ export default function CzasOpieki() {
   const handleCyklOpiekiChange = (value: string) => {
     setCyklOpieki(value as "1" | "2" | "4" | "custom");
   };
-
   // Funkcja do zapisania danych i przejścia do następnego dziecka lub następnego kroku
   const handleNext = () => {
     // Walidacja danych
@@ -170,11 +260,10 @@ export default function CzasOpieki() {
 
     // Sprawdzamy czy suma godzin w każdym dniu nie przekracza 24
     Object.entries(tabelaCzasu).forEach(([dzien, dane]) => {
-      const suma =
-        dane.poranek +
-        dane.placowkaEdukacyjna +
-        dane.czasPoEdukacji +
-        dane.senURodzica;
+      const suma = Object.values(dane).reduce(
+        (acc, val) => acc + (val || 0),
+        0
+      );
       if (suma > 24) {
         hasError = true;
         errorMessage = `Suma godzin dla ${getDzienNazwa(
@@ -188,19 +277,23 @@ export default function CzasOpieki() {
       return;
     }
 
-    // Zapisujemy dane do store'a - teraz tylko procentowy udział czasu opieki zamiast całej tabeli
+    // Obliczamy aktualne wskaźniki przed zapisaniem
+    const wskaznikiDoZapisu = obliczWskaznikiCzasuOpieki(tabelaCzasu);
+
+    // Zapisujemy dane do store'a - teraz zapisujemy trzy wskaźniki procentowe
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {
           return {
             ...dziecko,
             cyklOpieki,
-            procentCzasuOpieki: czasOpiekiProcentowo, // Zapisanie tylko wartości procentowej
-            tabelaCzasu, // Opcjonalnie możemy zachować tabelę dla referencji, ale w API będziemy wysyłać tylko procent
+            wskaznikiCzasuOpieki: wskaznikiDoZapisu,
+            tabelaCzasu, // Zachowanie tabeli dla referencji
           };
         }
         return dziecko;
       });
+
       updateFormData({
         dzieci: zaktualizowaneDzieci,
       });
@@ -212,9 +305,11 @@ export default function CzasOpieki() {
       router.push("/koszty-utrzymania");
     }
   };
-
   // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = () => {
+    // Obliczamy aktualne wskaźniki przed zapisaniem
+    const wskaznikiDoZapisu = obliczWskaznikiCzasuOpieki(tabelaCzasu);
+
     // Zapisujemy aktualne dane dziecka
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
@@ -222,7 +317,7 @@ export default function CzasOpieki() {
           return {
             ...dziecko,
             cyklOpieki,
-            procentCzasuOpieki: czasOpiekiProcentowo,
+            wskaznikiCzasuOpieki: wskaznikiDoZapisu,
             tabelaCzasu,
           };
         }
@@ -275,33 +370,61 @@ export default function CzasOpieki() {
     "Wtorek",
     "Środa",
     "Czwartek",
-  ];
-
-  // Kategorie czasu
+  ]; // Kategorie czasu
   const kategorieTabeli = [
     {
       id: "poranek",
-      nazwa: "Poranek",
+      nazwa: <span>Poranek</span>,
       tooltip:
         "Godziny, w których rodzic ma opiekę nad dzieckiem rano (np. od momentu wstania do wyjścia z domu).",
     },
     {
       id: "placowkaEdukacyjna",
-      nazwa: "Placówka edukacyjna",
+      nazwa: (
+        <span>
+          Placówka
+          <br />
+          edukacyjna
+        </span>
+      ),
       tooltip:
         "Czas, który dziecko spędza w placówce edukacyjnej (np. szkoła, przedszkole, żłobek).",
     },
     {
       id: "czasPoEdukacji",
-      nazwa: "Czas po edukacji",
+      nazwa: (
+        <span>
+          Czas po
+          <br />
+          edukacji
+        </span>
+      ),
       tooltip:
         "Czas spędzany z dzieckiem po powrocie z placówki edukacyjnej (np. zabawa, zajęcia w domu).",
     },
     {
       id: "senURodzica",
-      nazwa: "Sen u Ciebie",
+      nazwa: (
+        <span>
+          Sen u<br />
+          Ciebie
+        </span>
+      ),
       tooltip:
         "Czas, który dziecko spędza na spaniu, gdy jest pod Twoją opieką.",
+    },
+    {
+      id: "senUDrugiegoRodzica",
+      nazwa: (
+        <span>
+          Sen u<br />
+          drugiego
+          <br />
+          rodzica
+        </span>
+      ),
+      tooltip:
+        "Szacunkowe godziny, które dziecko spędza na spaniu, gdy jest pod opieką drugiego rodzica.",
     },
   ];
 
@@ -343,19 +466,6 @@ export default function CzasOpieki() {
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">Tabela czasu opieki</h1>
-              <InfoTooltip
-                content={
-                  <div className="space-y-2 text-sm">
-                    <p>
-                      Ta część może zająć chwilę – ale każda minuta ma sens.
-                      Wypełniając tę sekcję, nie tylko dostarczasz danych do
-                      raportu. Masz szansę przyjrzeć się uważnie codzienności –
-                      czasowi, który naprawdę spędzasz z dzieckiem, i temu, jak
-                      wygląda Wasz rytm tygodnia.
-                    </p>
-                  </div>
-                }
-              />
             </div>{" "}
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="font-medium">
@@ -367,26 +477,49 @@ export default function CzasOpieki() {
                     1}
                 /{formData.dzieci?.length || 0}) - {aktualneDziecko.wiek} lat
               </p>
-              <p className="text-sm mt-1">
-                Ta część może zająć chwilę, ale jest ważna dla dokładnej analizy
-                czasu spędzanego z dzieckiem.
+            </div>
+            <div>
+              <p>Zanim zaczniesz: kilka słów od nas</p>
+              <p>
+                Ta część może zająć chwilę – ale każda minuta ma znaczenie. Nie
+                tylko dostarczasz danych do raportu. Masz też okazję uważnie
+                przyjrzeć się swojej codzienności – temu, ile realnie czasu
+                spędzasz z dzieckiem i jak wygląda Wasz rytm tygodnia
+                spostrzeżenia.
+              </p>
+              <p>To często moment refleksji – i bardzo często przynosi ważne</p>
+              <p className="text-sm">
+                Wypełnienie tabeli zajmie około 10-15 minut. Pamiętaj, że zawsze
+                możesz wrócić do poprzednich sekcji i skorygować swoje
+                odpowiedzi.
               </p>
             </div>
             <div className="bg-amber-50 p-4 rounded-lg">
               <p className="text-sm font-semibold">
                 🧠 To może być moment refleksji – i bardzo często jest.
               </p>
-              <p className="text-sm font-semibold">📌 Uwaga techniczna:</p>
+              <p className="text-sm font-semibold">
+                Uwaga techniczna – jak wypełniać
+              </p>
               <ul className="list-disc list-inside text-sm space-y-1">
-                <li>Wypełniasz tylko czas, kiedy dziecko jest z Tobą.</li>
-                <li>Sen przypisujemy do dnia, w którym dziecko zasnęło.</li>
                 <li>
-                  Jeśli dziecko chodzi do szkoły lub przedszkola, podaj liczbę
-                  godzin w placówce.
+                  Wpisujesz tylko godziny, kiedy:{" "}
+                  <ol>
+                    <li>dziecko jest z Tobą</li>
+                    <li>przebywa w placówce edukacyjnej</li>
+                    <li>śpi u Ciebie lub u drugiego rodzica</li>
+                  </ol>
                 </li>
                 <li>
-                  Pozostałe godziny formularz przypisze automatycznie drugiemu
-                  rodzicowi.
+                  Cały czas snu przypisujemy do dnia, w którym dziecko zasnęło.
+                </li>
+                <li>
+                  Jeśli dziecko uczęszcza do żłobka, przedszkola lub szkoły –
+                  wpisz liczbę godzin spędzonych w placówce.
+                </li>
+                <li>
+                  Pozostałe godziny formularz automatycznie przypisze drugiemu
+                  rodzicowi – na podstawie tego, co Ty wpiszesz.
                 </li>
               </ul>
             </div>
@@ -416,36 +549,16 @@ export default function CzasOpieki() {
                 Jeśli wybierzesz &quot;Brak stałego schematu&quot;, podaj dane
                 dla przykładowych 4 tygodni, żeby ustandaryzować analizę.
               </p>
-            </div>
-            {/* Wizualizacja procentowego podziału czasu opieki */}
-            <div className="mt-6 p-4 rounded-lg bg-blue-50">
-              <h3 className="font-medium mb-3">Podział czasu opieki</h3>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Ty</span>
-                <span className="text-sm font-medium">Drugi rodzic</span>
-              </div>
-
-              <div className="relative h-8 bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="absolute top-0 left-0 h-full bg-sky-600 transition-all duration-500"
-                  style={{ width: `${czasOpiekiProcentowo}%` }}
-                ></div>
-                <div className="absolute inset-0 flex items-center justify-center text-sm font-medium">
-                  {czasOpiekiProcentowo}% / {100 - czasOpiekiProcentowo}%
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-500 mt-2">
-                Powyższe wartości pokazują procentowy podział czasu opieki
-                między rodzicami na podstawie wypełnionej tabeli.
-              </p>
-            </div>
-            {/* Jednolita responsywna tabela czasu opieki */}
-            <div className="overflow-x-auto">
+            </div>{" "}
+            {/* Jednolita responsywna tabela czasu opieki zostanie tutaj */}
+            {/* Jednolita responsywna tabela czasu opieki */}{" "}
+            <div className="overflow-x-auto relative">
               <table className="w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="p-2 text-left border">Czas</th>
+                    <th className="p-2 text-left border sticky left-0 z-10 bg-gray-50">
+                      Czas
+                    </th>
                     {dniTygodnia.map((dzien, index) => (
                       <th key={dzien} className="p-2 text-center border">
                         <span className="hidden sm:inline">
@@ -459,7 +572,7 @@ export default function CzasOpieki() {
                 <tbody>
                   {kategorieTabeli.map((kategoria) => (
                     <tr key={kategoria.id} className="border-b">
-                      <td className="p-2 border">
+                      <td className="p-2 border sticky left-0 bg-white z-10">
                         <div className="flex items-center gap-1">
                           {kategoria.nazwa}
                           <InfoTooltip content={kategoria.tooltip} />
@@ -483,7 +596,7 @@ export default function CzasOpieki() {
                                 parseInt(e.target.value) || 0
                               )
                             }
-                            className="w-16 h-10 text-center mx-auto"
+                            className="w-10 h-10 text-center mx-auto czas-opieki-input min-w-[60px]"
                           />
                         </td>
                       ))}
@@ -493,6 +606,88 @@ export default function CzasOpieki() {
               </table>
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
+            {/* Podsumowanie podziału czasu opieki */}
+            <div className="mt-8 p-4 rounded-lg bg-blue-50">
+              <h3 className="text-lg font-semibold mb-3">
+                📊 Podsumowanie podziału standardowego czasu opieki nad
+                dzieckiem
+              </h3>
+              <p className="text-sm mb-4">
+                Poniżej przedstawiamy, jak – na podstawie wypełnionych danych –
+                kształtuje się udział Twojego czasu opiekuńczego w analizowanym
+                okresie.
+              </p>
+
+              {/* Wskaźnik 1 - Łączny czas opieki */}
+              <div className="mb-4">
+                <h4 className="font-medium">
+                  🔹 1. Łączny czas opieki (bez placówki edukacyjnej):
+                </h4>
+                <div className="flex items-center mt-1">
+                  <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden flex-1 mr-2">
+                    <div
+                      className="absolute top-0 left-0 h-full bg-sky-600 transition-all duration-500"
+                      style={{ width: `${czasOpiekiBezEdukacji}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-sm font-medium w-16 text-right">
+                    {czasOpiekiBezEdukacji}%
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">
+                  Tyle wynosi Twój udział w czasie, kiedy dziecko nie przebywa w
+                  placówce edukacyjnej.
+                  <InfoTooltip content="Obejmuje wszystkie godziny czuwania – bez względu na to, czy dziecko aktywnie korzysta z Twojej obecności (np. zabawa, opieka), czy np. ogląda bajkę obok Ciebie." />
+                </p>
+              </div>
+
+              {/* Wskaźnik 2 - Aktywna opieka */}
+              <div className="mb-4">
+                <h4 className="font-medium">
+                  🔹 2. Czas aktywnej opieki (bez placówki edukacyjnej i bez
+                  snu):
+                </h4>
+                <div className="flex items-center mt-1">
+                  <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden flex-1 mr-2">
+                    <div
+                      className="absolute top-0 left-0 h-full bg-sky-600 transition-all duration-500"
+                      style={{ width: `${czasAktywnejOpieki}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-sm font-medium w-16 text-right">
+                    {czasAktywnejOpieki}%
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">
+                  Tyle wynosi Twój udział w czasie, kiedy dziecko nie śpi i nie
+                  przebywa w placówce edukacyjnej.
+                  <InfoTooltip content="To ten czas, w którym najczęściej trzeba faktycznie zaopiekować się dzieckiem – zorganizować dzień, ugotować, zawieźć, porozmawiać." />
+                </p>
+              </div>
+
+              {/* Wskaźnik 3 - Sen */}
+              <div>
+                <h4 className="font-medium">
+                  🔹 3. Czas nocnego snu pod Twoją opieką (procentowo):
+                </h4>
+                <div className="flex items-center mt-1">
+                  <div className="relative h-6 bg-gray-200 rounded-full overflow-hidden flex-1 mr-2">
+                    <div
+                      className="absolute top-0 left-0 h-full bg-sky-600 transition-all duration-500"
+                      style={{ width: `${czasSnu}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-sm font-medium w-16 text-right">
+                    {czasSnu}%
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">
+                  Tyle nocy dziecko spędza z Tobą (sen przypisujemy do dnia, w
+                  którym dziecko zasnęło).
+                  <InfoTooltip content="To informacja o tym, gdzie dziecko faktycznie nocuje – często istotna w sprawach sądowych." />
+                </p>
+              </div>
+            </div>
             <div className="flex gap-3 pt-4">
               <Button variant="outline" className="flex-1" onClick={handleBack}>
                 Wstecz

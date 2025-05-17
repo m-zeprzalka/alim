@@ -112,7 +112,7 @@ export default function WyborSciezki() {
                 <div
                   className={`flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
                     selectedOption === "established"
-                      ? "border-blue-500"
+                      ? "border-sky-950 bg-sky-50"
                       : "border-gray-200 hover:border-blue-300"
                   }`}
                   onClick={() => setSelectedOption("established")}
@@ -159,7 +159,7 @@ export default function WyborSciezki() {
                       Chcę wypełnić formularz i podzielić się informacjami o
                       swojej sytuacji.
                       <span className="block mt-1 text-sky-950 font-semibold">
-                        ➡️ Jeśli wybierzesz tę opcję, przejdziesz do pełnego
+                        Jeśli wybierzesz tę opcję, przejdziesz do pełnego
                         formularza AliMatrix.
                       </span>
                     </p>
@@ -170,7 +170,7 @@ export default function WyborSciezki() {
                 <div
                   className={`flex items-start space-x-3 p-4 border-2 rounded-lg cursor-pointer transition-colors ${
                     selectedOption === "not-established"
-                      ? "border-blue-500"
+                      ? "border-sky-950 bg-sky-50"
                       : "border-gray-200 hover:border-blue-300"
                   }`}
                   onClick={() => setSelectedOption("not-established")}
@@ -215,7 +215,7 @@ export default function WyborSciezki() {
                     <p className="text-sm text-gray-500 mt-1">
                       Chciał(a)bym dowiedzieć się, jak to może wyglądać.
                       <span className="block mt-1 text-sky-950 font-semibold">
-                        ➡️ Jeśli wybierzesz tę opcję, przekierujemy Cię do
+                        Jeśli wybierzesz tę opcję, przekierujemy Cię do
                         krótszego formularza zapisu na powiadomienie.
                       </span>
                     </p>

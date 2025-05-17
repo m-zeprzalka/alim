@@ -2,13 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as ExcelJS from "exceljs";
-import {
-  Child,
-  Dochody,
-  EmailSubscription,
-  FormSubmission,
-  Prisma,
-} from "@prisma/client";
+import { Child, Dochody, EmailSubscription, FormSubmission, Prisma } from "@prisma/client";
 
 // Proste zabezpieczenie - w produkcji należałoby to zamienić na uwierzytelnianie
 const API_KEY = process.env.ADMIN_API_KEY || "tajny_klucz_admin_2025";
@@ -20,17 +14,17 @@ export async function GET(request: NextRequest) {
     if (apiKey !== API_KEY) {
       return NextResponse.json({ error: "Brak autoryzacji" }, { status: 401 });
     }
-
+    
     // Pobieranie wszystkich danych z bazy (wykorzystanie nowego schematu)
     const formSubmissions = await prisma.formSubmission.findMany({
       include: {
         emailSubscription: true,
         dzieci: true,
-        dochodyRodzicow: true,
+        dochodyRodzicow: true
       },
       orderBy: {
-        submittedAt: "desc",
-      },
+        submittedAt: 'desc'
+      }
     });
 
     // Tworzenie workbooka Excel
@@ -81,11 +75,7 @@ export async function GET(request: NextRequest) {
       { header: "URL raportu", key: "reporturl", width: 40 },
       { header: "Ścieżka wybór", key: "sciezkaWybor", width: 20 },
       { header: "Podstawa ustaleń", key: "podstawaUstalen", width: 25 },
-      {
-        header: "Szczeg.podstawy ustaleń",
-        key: "podstawaUstalenInne",
-        width: 25,
-      },
+      { header: "Szczeg.podstawy ustaleń", key: "podstawaUstalenInne", width: 25 },
       { header: "Sposób finansowania", key: "sposobFinansowania", width: 25 },
       { header: "Wariant postępu", key: "wariantPostepu", width: 20 },
     ];
@@ -207,29 +197,17 @@ export async function GET(request: NextRequest) {
         width: 20,
       },
       { header: "Renta rodzinna", key: "rentaRodzinna", width: 15 },
-      {
-        header: "Renta rodzinna - kwota",
-        key: "rentaRodzinnaKwota",
-        width: 15,
-      },
+      { header: "Renta rodzinna - kwota", key: "rentaRodzinnaKwota", width: 15 },
       {
         header: "Świadczenie pielęgnacyjne",
         key: "swiadczeniePielegnacyjne",
         width: 20,
       },
-      {
-        header: "Świadczenie pielęgnacyjne - kwota",
-        key: "swiadczeniePielegnacyjneKwota",
-        width: 20,
-      },
+      { header: "Świadczenie pielęgnacyjne - kwota", key: "swiadczeniePielegnacyjneKwota", width: 20 },
       { header: "Inne źródła", key: "inneZrodla", width: 15 },
       { header: "Inne źródła - kwota", key: "inneZrodlaKwota", width: 15 },
       { header: "Opis innych źródeł", key: "inneZrodlaOpis", width: 30 },
-      {
-        header: "Brak dodatkowych źródeł",
-        key: "brakDodatkowychZrodel",
-        width: 20,
-      },
+      { header: "Brak dodatkowych źródeł", key: "brakDodatkowychZrodel", width: 20 },
     ];
 
     financeSheet.getRow(1).font = { bold: true };
@@ -320,8 +298,8 @@ export async function GET(request: NextRequest) {
 
     // Wypełnianie arkuszy danymi
     formSubmissions.forEach((submission) => {
-      const formData = (submission.formData as Record<string, any>) || {};
-
+      const formData = submission.formData as Record<string, any> || {}; 
+      
       // Dane podstawowe formularza
       formsSheet.addRow({
         formid: submission.id,
@@ -340,41 +318,29 @@ export async function GET(request: NextRequest) {
         sposobFinansowania: formData.sposobFinansowania,
         wariantPostepu: formData.wariantPostepu,
       });
-
+      
       // Dane subskrypcji
       subscriptionsSheet.addRow({
         subscriptionid: submission.emailSubscription.id,
         email: submission.emailSubscription.email,
         subscriptionstatus: submission.emailSubscription.status,
         createdat: submission.emailSubscription.createdAt
-          ? new Date(submission.emailSubscription.createdAt).toLocaleString(
-              "pl-PL"
-            )
+          ? new Date(submission.emailSubscription.createdAt).toLocaleString("pl-PL")
           : null,
         updatedat: submission.emailSubscription.updatedAt
-          ? new Date(submission.emailSubscription.updatedAt).toLocaleString(
-              "pl-PL"
-            )
+          ? new Date(submission.emailSubscription.updatedAt).toLocaleString("pl-PL")
           : null,
         subscriptionsubmittedat: submission.emailSubscription.submittedAt
-          ? new Date(submission.emailSubscription.submittedAt).toLocaleString(
-              "pl-PL"
-            )
+          ? new Date(submission.emailSubscription.submittedAt).toLocaleString("pl-PL")
           : null,
         verifiedat: submission.emailSubscription.verifiedAt
-          ? new Date(submission.emailSubscription.verifiedAt).toLocaleString(
-              "pl-PL"
-            )
+          ? new Date(submission.emailSubscription.verifiedAt).toLocaleString("pl-PL")
           : null,
         verificationtoken: submission.emailSubscription.verificationToken,
-        acceptedterms: submission.emailSubscription.acceptedTerms
-          ? "Tak"
-          : "Nie",
-        acceptedcontact: submission.emailSubscription.acceptedContact
-          ? "Tak"
-          : "Nie",
+        acceptedterms: submission.emailSubscription.acceptedTerms ? "Tak" : "Nie",
+        acceptedcontact: submission.emailSubscription.acceptedContact ? "Tak" : "Nie",
       });
-
+      
       // Dane sądowe
       courtSheet.addRow({
         formid: submission.id,
@@ -395,8 +361,7 @@ export async function GET(request: NextRequest) {
       });
 
       // Dane o liczbie dzieci do wykorzystania w tabelach
-      const liczbaDzieci =
-        formData.liczbaDzieci || submission.dzieci?.length || 0;
+      const liczbaDzieci = formData.liczbaDzieci || (submission.dzieci?.length || 0);
 
       // Dane dzieci z relacji
       if (submission.dzieci && submission.dzieci.length > 0) {
@@ -417,12 +382,10 @@ export async function GET(request: NextRequest) {
             cyklOpieki: dziecko.cyklOpieki,
             procentCzasuOpieki: dziecko.procentCzasuOpieki,
             wakacjeProcentCzasu: dziecko.wakacjeProcentCzasu,
-            wakacjeSzczegolowyPlan: dziecko.wakacjeSzczegolowyPlan
-              ? "Tak"
-              : "Nie",
+            wakacjeSzczegolowyPlan: dziecko.wakacjeSzczegolowyPlan ? "Tak" : "Nie",
             wakacjeOpisPlan: dziecko.wakacjeOpisPlan,
           });
-
+          
           // Dane finansowania dla każdego dziecka
           financeSheet.addRow({
             formid: submission.id,
@@ -434,17 +397,12 @@ export async function GET(request: NextRequest) {
             kosztyUznanePrzezSad: dziecko.kosztyUznanePrzezSad,
             rentaRodzinna: dziecko.rentaRodzinna ? "Tak" : "Nie",
             rentaRodzinnaKwota: dziecko.rentaRodzinnaKwota,
-            swiadczeniePielegnacyjne: dziecko.swiadczeniePielegnacyjne
-              ? "Tak"
-              : "Nie",
-            swiadczeniePielegnacyjneKwota:
-              dziecko.swiadczeniePielegnacyjneKwota,
+            swiadczeniePielegnacyjne: dziecko.swiadczeniePielegnacyjne ? "Tak" : "Nie",
+            swiadczeniePielegnacyjneKwota: dziecko.swiadczeniePielegnacyjneKwota,
             inneZrodla: dziecko.inneZrodla ? "Tak" : "Nie",
             inneZrodlaOpis: dziecko.inneZrodlaOpis,
             inneZrodlaKwota: dziecko.inneZrodlaKwota,
-            brakDodatkowychZrodel: dziecko.brakDodatkowychZrodel
-              ? "Tak"
-              : "Nie",
+            brakDodatkowychZrodel: dziecko.brakDodatkowychZrodel ? "Tak" : "Nie",
           });
         });
       } else if (formData.dzieci && Array.isArray(formData.dzieci)) {
@@ -466,13 +424,11 @@ export async function GET(request: NextRequest) {
             cyklOpieki: dziecko.cyklOpieki,
             procentCzasuOpieki: dziecko.procentCzasuOpieki,
             wakacjeProcentCzasu: dziecko.wakacjeProcentCzasu,
-            wakacjeSzczegolowyPlan: dziecko.wakacjeSzczegolowyPlan
-              ? "Tak"
-              : "Nie",
+            wakacjeSzczegolowyPlan: dziecko.wakacjeSzczegolowyPlan ? "Tak" : "Nie",
             wakacjeOpisPlan: dziecko.wakacjeOpisPlan,
           });
         });
-
+        
         // Dane finansowania z JSON dla istniejących danych
         if (formData.kosztyDzieci && Array.isArray(formData.kosztyDzieci)) {
           formData.kosztyDzieci.forEach((koszt: any) => {
@@ -484,19 +440,11 @@ export async function GET(request: NextRequest) {
               twojeMiesieczneWydatki: koszt.twojeMiesieczneWydatki,
               wydatkiDrugiegoRodzica: koszt.wydatkiDrugiegoRodzica,
               kosztyUznanePrzezSad: koszt.kosztyUznanePrzezSad,
-              rentaRodzinna: koszt.inneZrodlaUtrzymania?.rentaRodzinna
-                ? "Tak"
-                : "Nie",
-              swiadczeniePielegnacyjne: koszt.inneZrodlaUtrzymania
-                ?.swiadczeniePielegnacyjne
-                ? "Tak"
-                : "Nie",
+              rentaRodzinna: koszt.inneZrodlaUtrzymania?.rentaRodzinna ? "Tak" : "Nie",
+              swiadczeniePielegnacyjne: koszt.inneZrodlaUtrzymania?.swiadczeniePielegnacyjne ? "Tak" : "Nie",
               inneZrodla: koszt.inneZrodlaUtrzymania?.inne ? "Tak" : "Nie",
               inneZrodlaOpis: koszt.inneZrodlaUtrzymania?.inneOpis,
-              brakDodatkowychZrodel: koszt.inneZrodlaUtrzymania
-                ?.brakDodatkowychZrodel
-                ? "Tak"
-                : "Nie",
+              brakDodatkowychZrodel: koszt.inneZrodlaUtrzymania?.brakDodatkowychZrodel ? "Tak" : "Nie"
             });
           });
         }
@@ -508,18 +456,14 @@ export async function GET(request: NextRequest) {
           formid: submission.id,
           email: submission.emailSubscription.email,
           wlasneDochodyNetto: submission.dochodyRodzicow.wlasneDochodyNetto,
-          wlasnePotencjalDochodowy:
-            submission.dochodyRodzicow.wlasnePotencjalDochodowy,
-          wlasneKosztyUtrzymania:
-            submission.dochodyRodzicow.wlasneKosztyUtrzymania,
+          wlasnePotencjalDochodowy: submission.dochodyRodzicow.wlasnePotencjalDochodowy,
+          wlasneKosztyUtrzymania: submission.dochodyRodzicow.wlasneKosztyUtrzymania,
           wlasneKosztyInni: submission.dochodyRodzicow.wlasneKosztyInni,
-          wlasneDodatkoweZobowiazania:
-            submission.dochodyRodzicow.wlasneDodatkoweZobowiazania,
+          wlasneDodatkoweZobowiazania: submission.dochodyRodzicow.wlasneDodatkoweZobowiazania,
           drugiRodzicDochody: submission.dochodyRodzicow.drugiRodzicDochody,
           drugiRodzicPotencjal: submission.dochodyRodzicow.drugiRodzicPotencjal,
           drugiRodzicKoszty: submission.dochodyRodzicow.drugiRodzicKoszty,
-          drugiRodzicKosztyInni:
-            submission.dochodyRodzicow.drugiRodzicKosztyInni,
+          drugiRodzicKosztyInni: submission.dochodyRodzicow.drugiRodzicKosztyInni,
           drugiRodzicDodatkowe: submission.dochodyRodzicow.drugiRodzicDodatkowe,
         });
       } else if (formData.dochodyRodzicow) {
@@ -527,29 +471,19 @@ export async function GET(request: NextRequest) {
         incomeSheet.addRow({
           formid: submission.id,
           email: submission.emailSubscription.email,
-          wlasneDochodyNetto:
-            formData.dochodyRodzicow.wlasne?.oficjalneDochodyNetto,
-          wlasnePotencjalDochodowy:
-            formData.dochodyRodzicow.wlasne?.potencjalDochodowy,
-          wlasneKosztyUtrzymania:
-            formData.dochodyRodzicow.wlasne?.kosztyUtrzymaniaSiebie,
-          wlasneKosztyInni:
-            formData.dochodyRodzicow.wlasne?.kosztyUtrzymaniaInnychOsob,
-          wlasneDodatkoweZobowiazania:
-            formData.dochodyRodzicow.wlasne?.dodatkoweZobowiazania,
-          drugiRodzicDochody:
-            formData.dochodyRodzicow.drugiRodzic?.oficjalneDochodyNetto,
-          drugiRodzicPotencjal:
-            formData.dochodyRodzicow.drugiRodzic?.potencjalDochodowy,
-          drugiRodzicKoszty:
-            formData.dochodyRodzicow.drugiRodzic?.kosztyUtrzymaniaSiebie,
-          drugiRodzicKosztyInni:
-            formData.dochodyRodzicow.drugiRodzic?.kosztyUtrzymaniaInnychOsob,
-          drugiRodzicDodatkowe:
-            formData.dochodyRodzicow.drugiRodzic?.dodatkoweZobowiazania,
+          wlasneDochodyNetto: formData.dochodyRodzicow.wlasne?.oficjalneDochodyNetto,
+          wlasnePotencjalDochodowy: formData.dochodyRodzicow.wlasne?.potencjalDochodowy,
+          wlasneKosztyUtrzymania: formData.dochodyRodzicow.wlasne?.kosztyUtrzymaniaSiebie,
+          wlasneKosztyInni: formData.dochodyRodzicow.wlasne?.kosztyUtrzymaniaInnychOsob,
+          wlasneDodatkoweZobowiazania: formData.dochodyRodzicow.wlasne?.dodatkoweZobowiazania,
+          drugiRodzicDochody: formData.dochodyRodzicow.drugiRodzic?.oficjalneDochodyNetto,
+          drugiRodzicPotencjal: formData.dochodyRodzicow.drugiRodzic?.potencjalDochodowy,
+          drugiRodzicKoszty: formData.dochodyRodzicow.drugiRodzic?.kosztyUtrzymaniaSiebie,
+          drugiRodzicKosztyInni: formData.dochodyRodzicow.drugiRodzic?.kosztyUtrzymaniaInnychOsob,
+          drugiRodzicDodatkowe: formData.dochodyRodzicow.drugiRodzic?.dodatkoweZobowiazania,
         });
       }
-
+      
       // Pełne dane JSON (zachowujemy dla kompatybilności i historycznych danych)
       jsonDataSheet.addRow({
         formid: submission.id,

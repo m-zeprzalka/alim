@@ -1,9 +1,9 @@
 // Typowanie dla danych opieki w okresach specjalnych
 
 export interface OpiekeWakacjeData {
-  procentCzasu: number;
-  szczegolowyPlan: boolean;
-  opisPlanu?: string;
+  wakacjeProcentCzasu: number;
+  wakacjeSzczegolowyPlan: boolean;
+  wakacjeOpisPlan?: string;
 }
 
 export interface WakacjeOpiekaData {

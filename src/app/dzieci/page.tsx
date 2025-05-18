@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/custom/Logo";
 import { FormProgress } from "@/components/ui/custom/FormProgress";
@@ -10,8 +10,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFormStore } from "@/lib/store/form-store";
+import { useSecureFormStore } from "@/lib/store/secure-form-store";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PlusCircle, MinusCircle } from "lucide-react";
+import { PlusCircle, MinusCircle, Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -20,15 +21,49 @@ import {
   SelectValue,
   SelectLabel,
 } from "@/components/ui/select-simple";
+import { childrenFormSchema } from "@/lib/schemas/children-schema";
+import {
+  generateCSRFToken,
+  storeCSRFToken,
+  safeToSubmit,
+  recordSubmission,
+} from "@/lib/client-security";
+import {
+  safeNavigate,
+  generateOperationId,
+  trackedLog,
+  retryOperation,
+} from "@/lib/form-handlers";
 
 export default function Dzieci() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
+  const secureStore = useSecureFormStore();
 
-  // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
-  const scrollToTop = () => {
+  // CSRF token initialization
+  const csrfInitialized = useRef(false);
+
+  useEffect(() => {
+    if (!csrfInitialized.current) {
+      const token = generateCSRFToken();
+      storeCSRFToken(token);
+      secureStore.setMetaData({ csrfToken: token });
+      csrfInitialized.current = true;
+    }
+  }, [secureStore]);
+
+  // Zabezpieczenie - sprawdzamy czy użytkownik przeszedł przez poprzednie kroki
+  useEffect(() => {
+    if (!formData.podstawaUstalen) {
+      router.push("/podstawa-ustalen");
+      return;
+    }
+  }, [formData.podstawaUstalen, router]);
+
+  // Funkcja scrollToTop dla lepszego UX przy przejściach
+  const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, []);
 
   // Typ dla placówek edukacyjnych
   type PlacowkaEdukacyjna =
@@ -41,7 +76,20 @@ export default function Dzieci() {
   // Inicjalizacja stanu dla liczby dzieci i ich danych z formStore
   const [liczbaDzieci, setLiczbaDzieci] = useState<number>(
     formData.liczbaDzieci || 1
-  );
+  ); // Typ dla błędów pól formularza
+  type FieldErrors = {
+    [dzieckoId: number]: {
+      wiek?: string;
+      plec?: string;
+      opisSpecjalnychPotrzeb?: string;
+      typPlacowki?: string;
+      opiekaInnejOsoby?: string;
+      modelOpieki?: string;
+    };
+  };
+
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
   const [dzieci, setDzieci] = useState<
     Array<{
       id: number;
@@ -91,10 +139,10 @@ export default function Dzieci() {
       },
     ]
   );
-
   const [error, setError] = useState<string | null>(null);
 
-  // Aktualizacja dzieci, gdy zmieni się liczba dzieci
+  // Stan przycisku do zapobiegania wielokrotnym kliknięciom
+  const [isSubmitting, setIsSubmitting] = useState(false); // Aktualizacja dzieci, gdy zmieni się liczba dzieci
   useEffect(() => {
     // Jeśli brakuje dzieci, dodajemy nowe
     if (dzieci.length < liczbaDzieci) {
@@ -117,8 +165,14 @@ export default function Dzieci() {
     // Jeśli jest za dużo dzieci, usuwamy nadmiarowe
     else if (dzieci.length > liczbaDzieci) {
       setDzieci(dzieci.slice(0, liczbaDzieci));
+      // Usuwamy również błędy dla usuniętych dzieci
+      const newFieldErrors = { ...fieldErrors };
+      for (let i = liczbaDzieci; i < dzieci.length; i++) {
+        delete newFieldErrors[dzieci[i].id];
+      }
+      setFieldErrors(newFieldErrors);
     }
-  }, [liczbaDzieci, dzieci]);
+  }, [liczbaDzieci, dzieci, fieldErrors]);
 
   // Funkcja do aktualizacji danych dziecka
   const updateDziecko = (index: number, data: Partial<(typeof dzieci)[0]>) => {
@@ -126,92 +180,319 @@ export default function Dzieci() {
     noweDzieci[index] = { ...noweDzieci[index], ...data };
     setDzieci(noweDzieci);
   };
-
   // Funkcja do obsługi przejścia do następnego kroku
-  const handleNext = () => {
-    // Walidacja danych
-    let hasError = false;
-    let errorMessage = "";
-
-    dzieci.forEach((dziecko, index) => {
-      if (dziecko.wiek === "") {
-        hasError = true;
-        errorMessage = `Proszę podać wiek dziecka ${index + 1}`;
-      }
-      if (dziecko.plec === "") {
-        hasError = true;
-        errorMessage = `Proszę wybrać płeć dziecka ${index + 1}`;
-      }
-      if (dziecko.specjalnePotrzeby && !dziecko.opisSpecjalnychPotrzeb.trim()) {
-        hasError = true;
-        errorMessage = `Proszę opisać specjalne potrzeby dziecka ${index + 1}`;
-      }
-      // Walidacja placówki edukacyjnej
-      if (dziecko.uczeszczeDoPlacowki && !dziecko.typPlacowki) {
-        hasError = true;
-        errorMessage = `Proszę wybrać typ placówki edukacyjnej dla dziecka ${
-          index + 1
-        }`;
-      }
-      // Walidacja opieki innej osoby dla dzieci, które nie uczęszczają do placówki
-      if (!dziecko.uczeszczeDoPlacowki && dziecko.opiekaInnejOsoby === null) {
-        hasError = true;
-        errorMessage = `Proszę określić, czy dziecko ${
-          index + 1
-        } pozostaje pod opieką innej osoby`;
-      }
-      if (dziecko.modelOpieki === "") {
-        hasError = true;
-        errorMessage = `Proszę wybrać model opieki dla dziecka ${index + 1}`;
-      }
-    });
-
-    if (hasError) {
-      setError(errorMessage);
+  const handleNext = useCallback(async () => {
+    // Zapobieganie wielokrotnym kliknięciom z wizualnym feedbackiem
+    if (isSubmitting || !safeToSubmit()) {
+      trackedLog(
+        "user-action",
+        "Form submission prevented: Already submitting or too soon after last submission"
+      );
       return;
     }
 
-    // Zapisujemy dane do store"a
-    const dzieciDoZapisu = dzieci.map((d) => ({
-      id: d.id,
-      wiek: typeof d.wiek === "number" ? d.wiek : 0,
-      plec: d.plec as "K" | "M" | "I",
-      specjalnePotrzeby: d.specjalnePotrzeby,
-      opisSpecjalnychPotrzeb: d.specjalnePotrzeby
-        ? d.opisSpecjalnychPotrzeb
-        : undefined,
-      uczeszczeDoPlacowki: d.uczeszczeDoPlacowki,
-      typPlacowki: d.uczeszczeDoPlacowki ? d.typPlacowki : undefined,
-      opiekaInnejOsoby: !d.uczeszczeDoPlacowki ? d.opiekaInnejOsoby : undefined,
-      modelOpieki: d.modelOpieki as "50/50" | "inny",
-    }));
-    updateFormData({ liczbaDzieci, dzieci: dzieciDoZapisu });
+    // Unikalny identyfikator dla bieżącej operacji (dla debugowania)
+    const operationId = generateOperationId();
+    trackedLog(operationId, "Starting children form submission");
 
-    // Zawsze zaczynamy od pierwszego dziecka
-    const pierwsze_dziecko = dzieciDoZapisu[0];
+    setIsSubmitting(true);
+    setError(null);
+    setFieldErrors({});
 
-    // Zapisujemy informację o aktualnie przetwarzanym dziecku
-    updateFormData({
-      aktualneDzieckoWTabeliCzasu: pierwsze_dziecko.id,
-    });
+    try {
+      // Walidacja danych przy użyciu schematu Zod
+      trackedLog(operationId, "Validating form data", {
+        liczbaDzieci,
+        dzieciCount: dzieci.length,
+      });
 
-    // Przewijamy stronę do góry przed przejściem do następnej strony
-    scrollToTop();
+      const validationResult = childrenFormSchema.safeParse({
+        liczbaDzieci,
+        dzieci: dzieci.map((d) => ({
+          id: d.id,
+          wiek: d.wiek,
+          plec: d.plec,
+          specjalnePotrzeby: d.specjalnePotrzeby,
+          opisSpecjalnychPotrzeb: d.opisSpecjalnychPotrzeb,
+          uczeszczeDoPlacowki: d.uczeszczeDoPlacowki,
+          typPlacowki: d.typPlacowki,
+          opiekaInnejOsoby: d.opiekaInnejOsoby,
+          modelOpieki: d.modelOpieki,
+        })),
+      });
 
-    if (pierwsze_dziecko.modelOpieki === "inny") {
-      // Jeśli pierwsze dziecko ma model opieki "inny", przechodzimy do wypełniania tabeli czasu
-      router.push("/czas-opieki");
-    } else {
-      // Jeśli nie ma modelu "inny", przechodzimy od razu do kosztów utrzymania dla pierwszego dziecka
-      router.push("/koszty-utrzymania");
+      if (!validationResult.success) {
+        // Przetwarzamy błędy specyficzne dla pól formularza
+        const newFieldErrors: FieldErrors = {};
+
+        // Funkcja do oczyszczania komunikatów błędów
+        const cleanErrorMessage = (msg: string, fieldName?: string): string => {
+          // Usunięcie technicznych informacji o enumach
+          if (msg.startsWith("Invalid enum value")) {
+            if (fieldName === "plec" || msg.includes("plec"))
+              return "Proszę wybrać płeć dziecka";
+            if (fieldName === "typPlacowki" || msg.includes("typPlacowki"))
+              return "Proszę wybrać typ placówki edukacyjnej";
+            if (fieldName === "modelOpieki" || msg.includes("modelOpieki"))
+              return "Proszę wybrać model opieki";
+            return "Proszę wybrać poprawną opcję";
+          }
+          return msg;
+        };
+
+        // Mapowanie pól na bardziej przyjazne nazwy
+        const fieldNameMapping: Record<string, string> = {
+          wiek: "Wiek dziecka",
+          plec: "Płeć dziecka",
+          opisSpecjalnychPotrzeb: "Opis specjalnych potrzeb",
+          uczeszczeDoPlacowki: "Uczęszczanie do placówki",
+          typPlacowki: "Typ placówki edukacyjnej",
+          opiekaInnejOsoby: "Opieka innej osoby",
+          modelOpieki: "Model opieki",
+        };
+
+        // Analizujemy wszystkie problemy walidacji
+        validationResult.error.issues.forEach((issue) => {
+          // Sprawdzamy czy błąd dotyczy konkretnego dziecka i pola
+          if (
+            issue.path.length >= 3 &&
+            issue.path[0] === "dzieci" &&
+            typeof issue.path[1] === "number" &&
+            typeof issue.path[2] === "string"
+          ) {
+            const childIndex = issue.path[1];
+            const fieldName = issue.path[2];
+            const dzieckoId = dzieci[childIndex]?.id;
+
+            if (dzieckoId !== undefined) {
+              // Inicjalizujemy obiekt błędów dla dziecka, jeśli nie istnieje
+              if (!newFieldErrors[dzieckoId]) {
+                newFieldErrors[dzieckoId] = {};
+              }
+
+              // Czyścimy komunikaty błędów z informacji technicznych
+              let errorMessage = issue.message;
+              if (errorMessage.startsWith("Invalid enum value")) {
+                if (fieldName === "plec")
+                  errorMessage = "Proszę wybrać płeć dziecka";
+                else if (fieldName === "typPlacowki")
+                  errorMessage = "Proszę wybrać typ placówki";
+                else if (fieldName === "modelOpieki")
+                  errorMessage = "Proszę wybrać model opieki";
+                else errorMessage = "Proszę wybrać wartość z listy";
+              } else if (
+                fieldName === "wiek" &&
+                errorMessage.includes("Required")
+              ) {
+                errorMessage = "Wiek dziecka jest wymagany";
+              } else if (
+                fieldName === "opisSpecjalnychPotrzeb" &&
+                errorMessage.includes("Required")
+              ) {
+                errorMessage = "Proszę opisać specjalne potrzeby dziecka";
+              } else if (fieldName === "opiekaInnejOsoby") {
+                errorMessage =
+                  "Proszę określić, czy dziecko pozostaje pod opieką innej osoby";
+              }
+
+              // Zapisujemy błąd w odpowiednim polu
+              newFieldErrors[dzieckoId][
+                fieldName as keyof (typeof newFieldErrors)[number]
+              ] = errorMessage;
+            }
+          }
+        });
+
+        // Ustawiamy błędy pól
+        if (Object.keys(newFieldErrors).length > 0) {
+          setFieldErrors(newFieldErrors);
+        }
+
+        // Przygotowanie komunikatu błędu
+        const formattedErrors = validationResult.error.format();
+        let errorMessage = "";
+
+        // Najpierw sprawdzamy błędy na poziomie formularza
+        if (formattedErrors._errors?.length) {
+          errorMessage = formattedErrors._errors[0];
+        }
+        // Następnie błędy na poziomie dzieci
+        else if (formattedErrors.dzieci?._errors?.length) {
+          errorMessage = formattedErrors.dzieci._errors[0];
+        }
+        // Następnie błędy dla poszczególnych dzieci
+        else {
+          for (let i = 0; i < dzieci.length; i++) {
+            const childErrors = formattedErrors.dzieci?.[i];
+            if (childErrors) {
+              // Sprawdzamy wszystkie pola z mapowania
+              for (const [field, displayName] of Object.entries(
+                fieldNameMapping
+              )) {
+                const fieldErrors =
+                  childErrors[field as keyof typeof childErrors];
+                if (
+                  fieldErrors &&
+                  "_errors" in fieldErrors &&
+                  fieldErrors._errors?.length
+                ) {
+                  errorMessage = `Dziecko ${
+                    i + 1
+                  }: ${displayName} - ${cleanErrorMessage(
+                    fieldErrors._errors[0],
+                    field
+                  )}`;
+                  break;
+                }
+              }
+
+              // Jeśli nadal nie mamy komunikatu, sprawdzamy ogólny błąd
+              if (!errorMessage && childErrors._errors?.length) {
+                errorMessage = `Dziecko ${i + 1}: ${cleanErrorMessage(
+                  childErrors._errors[0]
+                )}`;
+                break;
+              }
+            }
+          }
+        }
+
+        // Jeśli nie znaleźliśmy szczegółowego błędu, sprawdzamy jeszcze raw errors
+        if (!errorMessage) {
+          // Przeglądamy wszystkie błędy w tablicy błędów
+          const allIssues = validationResult.error.issues;
+          if (allIssues.length > 0) {
+            const issue = allIssues[0];
+
+            // Jeśli mamy ścieżkę do pola, próbujemy dodać numer dziecka
+            if (
+              issue.path.length >= 2 &&
+              issue.path[0] === "dzieci" &&
+              typeof issue.path[1] === "number"
+            ) {
+              const childIndex = issue.path[1];
+              const fieldName =
+                issue.path.length >= 3 ? (issue.path[2] as string) : "";
+              const displayName = fieldName
+                ? fieldNameMapping[fieldName] || fieldName
+                : "";
+
+              errorMessage = `Dziecko ${childIndex + 1}${
+                displayName ? ": " + displayName : ""
+              } - ${cleanErrorMessage(issue.message, fieldName)}`;
+            } else {
+              errorMessage = cleanErrorMessage(issue.message);
+            }
+          } else {
+            errorMessage = "Proszę poprawić błędy w formularzu";
+          }
+        }
+
+        trackedLog(operationId, "Validation failed", errorMessage, "warn");
+        setError(errorMessage);
+        setIsSubmitting(false);
+        return;
+      }
+
+      trackedLog(operationId, "Validation successful, proceeding to save data");
+
+      // Przygotowanie danych do zapisu - z odpowiednią strukturą i warunkami
+      const dzieciDoZapisu = dzieci.map((d) => ({
+        id: d.id,
+        wiek: typeof d.wiek === "number" ? d.wiek : 0,
+        plec: d.plec as "K" | "M" | "I",
+        specjalnePotrzeby: d.specjalnePotrzeby,
+        opisSpecjalnychPotrzeb: d.specjalnePotrzeby
+          ? d.opisSpecjalnychPotrzeb
+          : undefined,
+        uczeszczeDoPlacowki: d.uczeszczeDoPlacowki,
+        typPlacowki: d.uczeszczeDoPlacowki ? d.typPlacowki : undefined,
+        opiekaInnejOsoby: !d.uczeszczeDoPlacowki
+          ? d.opiekaInnejOsoby
+          : undefined,
+        modelOpieki: d.modelOpieki as "50/50" | "inny",
+      }));
+
+      // Zapisujemy dane do store'a wykorzystując mechanizm ponownych prób
+      try {
+        await retryOperation(
+          async () => {
+            await updateFormData({
+              liczbaDzieci,
+              dzieci: dzieciDoZapisu,
+              // Zawsze zaczynamy od pierwszego dziecka
+              aktualneDzieckoWTabeliCzasu: dzieciDoZapisu[0].id,
+              __meta: {
+                lastUpdated: Date.now(),
+                formVersion: "1.1.0",
+              },
+            });
+            return true;
+          },
+          {
+            maxAttempts: 3,
+            delayMs: 300,
+            operationName: "Update form data - dzieci",
+            operationId,
+          }
+        );
+
+        // Zapisujemy informację o submisji formularza dla celów analizy
+        recordSubmission();
+
+        trackedLog(operationId, "Data successfully saved");
+
+        // Przewijamy stronę do góry przed przejściem do następnej strony
+        scrollToTop();
+
+        // Określenie następnego kroku na podstawie modelu opieki pierwszego dziecka
+        const pierwsze_dziecko = dzieciDoZapisu[0];
+
+        trackedLog(
+          operationId,
+          `Determining next page based on model opieki: ${pierwsze_dziecko.modelOpieki}`
+        );
+
+        // Bezpieczna nawigacja z opóźnieniem dla lepszego UX
+        setTimeout(() => {
+          const targetPath =
+            pierwsze_dziecko.modelOpieki === "inny"
+              ? "/czas-opieki"
+              : "/koszty-utrzymania";
+          trackedLog(operationId, `Navigating to ${targetPath}`);
+          router.push(targetPath);
+
+          // Zmniejszamy szansę na back button lub podwójną submisję
+          setTimeout(() => {
+            setIsSubmitting(false);
+          }, 500);
+        }, 100);
+      } catch (error) {
+        trackedLog(operationId, "Error saving data", error, "error");
+        setIsSubmitting(false);
+        setError("Wystąpił błąd podczas zapisywania danych. Spróbuj ponownie.");
+      }
+    } catch (error) {
+      trackedLog(operationId, "Unexpected error", error, "error");
+      setIsSubmitting(false);
+      setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie.");
     }
-  };
-  // Funkcja do obsługi powrotu do poprzedniego kroku
-  const handleBack = () => {
+  }, [dzieci, liczbaDzieci, router, scrollToTop, updateFormData, isSubmitting]); // Funkcja do obsługi powrotu do poprzedniego kroku
+  const handleBack = useCallback(() => {
+    // Zapobieganie wielokrotnym kliknięciom
+    if (isSubmitting) return;
+
+    const operationId = generateOperationId();
+    trackedLog(operationId, "Navigating back to podstawa-ustalen");
+
     // Przewijamy stronę do góry przed przejściem do poprzedniej strony
     scrollToTop();
-    router.push("/podstawa-ustalen");
-  };
+
+    // Dodajemy małe opóźnienie dla lepszego UX
+    setTimeout(() => {
+      router.push("/podstawa-ustalen");
+    }, 100);
+  }, [isSubmitting, router, scrollToTop]);
 
   return (
     <main className="flex justify-center p-3">
@@ -317,20 +598,37 @@ export default function Dzieci() {
                       Wiek dziecka wpływa na ocenę adekwatności kosztów i
                       stopnia zaangażowania opiekuńczego. Inne potrzeby ma
                       niemowlę, inne nastolatek.
-                    </p>
+                    </p>{" "}
                     <Input
                       id={`wiek-${dziecko.id}`}
                       type="number"
                       min="0"
                       max="26"
                       value={dziecko.wiek}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        // Czyścimy potencjalny błąd po zmianie wartości
+                        if (fieldErrors[dziecko.id]?.wiek) {
+                          setFieldErrors((prev) => ({
+                            ...prev,
+                            [dziecko.id]: {
+                              ...prev[dziecko.id],
+                              wiek: undefined,
+                            },
+                          }));
+                        }
                         updateDziecko(index, {
                           wiek: e.target.value ? parseInt(e.target.value) : "",
-                        })
-                      }
-                      className="mt-1"
+                        });
+                      }}
+                      className={`mt-1 ${
+                        fieldErrors[dziecko.id]?.wiek ? "border-red-500" : ""
+                      }`}
                     />
+                    {fieldErrors[dziecko.id]?.wiek && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldErrors[dziecko.id]?.wiek}
+                      </p>
+                    )}
                   </div>
 
                   {/* 2. Płeć dziecka */}
@@ -370,17 +668,32 @@ export default function Dzieci() {
                       lepiej zrozumieć, jak wygląda rzeczywistość rodziców w
                       różnych sytuacjach.
                     </p>
-
-                    {/* Zastąpienie radio buttonów na Select */}
+                    {/* Zastąpienie radio buttonów na Select */}{" "}
                     <Select
                       value={dziecko.plec}
-                      onValueChange={(value) =>
+                      onValueChange={(value) => {
+                        // Czyścimy potencjalny błąd po zmianie wartości
+                        if (fieldErrors[dziecko.id]?.plec) {
+                          setFieldErrors((prev) => ({
+                            ...prev,
+                            [dziecko.id]: {
+                              ...prev[dziecko.id],
+                              plec: undefined,
+                            },
+                          }));
+                        }
                         updateDziecko(index, {
                           plec: value as "K" | "M" | "I",
-                        })
-                      }
+                        });
+                      }}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger
+                        className={`w-full ${
+                          fieldErrors[dziecko.id]?.plec
+                            ? "border-red-500 ring-red-500"
+                            : ""
+                        }`}
+                      >
                         <SelectValue placeholder="Wybierz płeć dziecka" />
                       </SelectTrigger>
                       <SelectContent>
@@ -391,6 +704,11 @@ export default function Dzieci() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    {fieldErrors[dziecko.id]?.plec && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldErrors[dziecko.id]?.plec}
+                      </p>
+                    )}
                   </div>
 
                   {/* 3. Placówka edukacyjna */}
@@ -435,17 +753,32 @@ export default function Dzieci() {
                         <p className="text-sm text-gray-600 mb-2">
                           Wybierz typ placówki:
                         </p>
-
-                        {/* Zastąpienie radio buttonów na Select */}
+                        {/* Zastąpienie radio buttonów na Select */}{" "}
                         <Select
                           value={dziecko.typPlacowki}
-                          onValueChange={(value) =>
+                          onValueChange={(value) => {
+                            // Czyścimy potencjalny błąd po zmianie wartości
+                            if (fieldErrors[dziecko.id]?.typPlacowki) {
+                              setFieldErrors((prev) => ({
+                                ...prev,
+                                [dziecko.id]: {
+                                  ...prev[dziecko.id],
+                                  typPlacowki: undefined,
+                                },
+                              }));
+                            }
                             updateDziecko(index, {
                               typPlacowki: value as PlacowkaEdukacyjna,
-                            })
-                          }
+                            });
+                          }}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger
+                            className={`w-full ${
+                              fieldErrors[dziecko.id]?.typPlacowki
+                                ? "border-red-500 ring-red-500"
+                                : ""
+                            }`}
+                          >
                             <SelectValue placeholder="Wybierz typ placówki" />
                           </SelectTrigger>
                           <SelectContent>
@@ -461,7 +794,11 @@ export default function Dzieci() {
                             </SelectItem>
                           </SelectContent>
                         </Select>
-
+                        {fieldErrors[dziecko.id]?.typPlacowki && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {fieldErrors[dziecko.id]?.typPlacowki}
+                          </p>
+                        )}
                         <div className="mt-2 p-3 bg-blue-50 rounded-md flex items-start">
                           <span className="text-blue-500 mr-2">ℹ️</span>
                           <p className="text-sm text-blue-700">
@@ -500,8 +837,7 @@ export default function Dzieci() {
                           w sposób powtarzalny (np. opiekunka, dziadkowie, inny
                           członek rodziny).
                         </p>
-
-                        {/* Zastąpienie radio buttonów na Select */}
+                        {/* Zastąpienie radio buttonów na Select */}{" "}
                         <Select
                           value={
                             dziecko.opiekaInnejOsoby === null
@@ -510,7 +846,17 @@ export default function Dzieci() {
                               ? "tak"
                               : "nie"
                           }
-                          onValueChange={(value) =>
+                          onValueChange={(value) => {
+                            // Czyścimy potencjalny błąd po zmianie wartości
+                            if (fieldErrors[dziecko.id]?.opiekaInnejOsoby) {
+                              setFieldErrors((prev) => ({
+                                ...prev,
+                                [dziecko.id]: {
+                                  ...prev[dziecko.id],
+                                  opiekaInnejOsoby: undefined,
+                                },
+                              }));
+                            }
                             updateDziecko(index, {
                               opiekaInnejOsoby:
                                 value === "tak"
@@ -518,10 +864,16 @@ export default function Dzieci() {
                                   : value === "nie"
                                   ? false
                                   : null,
-                            })
-                          }
+                            });
+                          }}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger
+                            className={`w-full ${
+                              fieldErrors[dziecko.id]?.opiekaInnejOsoby
+                                ? "border-red-500 ring-red-500"
+                                : ""
+                            }`}
+                          >
                             <SelectValue placeholder="Wybierz odpowiedź" />
                           </SelectTrigger>
                           <SelectContent>
@@ -532,9 +884,14 @@ export default function Dzieci() {
                             <SelectItem value="nie">
                               Nie – dziecko przebywa wyłącznie pod opieką
                               rodziców
-                            </SelectItem>
+                            </SelectItem>{" "}
                           </SelectContent>
                         </Select>
+                        {fieldErrors[dziecko.id]?.opiekaInnejOsoby && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {fieldErrors[dziecko.id]?.opiekaInnejOsoby}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -564,18 +921,39 @@ export default function Dzieci() {
                       <div className="mt-3">
                         <Label htmlFor={`opis-${dziecko.id}`}>
                           Opisz krótko specjalne potrzeby
-                        </Label>
+                        </Label>{" "}
                         <Input
                           id={`opis-${dziecko.id}`}
                           value={dziecko.opisSpecjalnychPotrzeb}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            // Czyścimy potencjalny błąd po zmianie wartości
+                            if (
+                              fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb
+                            ) {
+                              setFieldErrors((prev) => ({
+                                ...prev,
+                                [dziecko.id]: {
+                                  ...prev[dziecko.id],
+                                  opisSpecjalnychPotrzeb: undefined,
+                                },
+                              }));
+                            }
                             updateDziecko(index, {
                               opisSpecjalnychPotrzeb: e.target.value,
-                            })
-                          }
+                            });
+                          }}
                           placeholder="np. alergia, niepełnosprawność, zajęcia dodatkowe"
-                          className="mt-1"
+                          className={`mt-1 ${
+                            fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb
+                              ? "border-red-500"
+                              : ""
+                          }`}
                         />
+                        {fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb}
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -605,15 +983,32 @@ export default function Dzieci() {
 
                     {/* Zastąpienie radio buttonów na Select */}
                     <div className="mt-2">
+                      {" "}
                       <Select
                         value={dziecko.modelOpieki}
-                        onValueChange={(value) =>
+                        onValueChange={(value) => {
+                          // Czyścimy potencjalny błąd po zmianie wartości
+                          if (fieldErrors[dziecko.id]?.modelOpieki) {
+                            setFieldErrors((prev) => ({
+                              ...prev,
+                              [dziecko.id]: {
+                                ...prev[dziecko.id],
+                                modelOpieki: undefined,
+                              },
+                            }));
+                          }
                           updateDziecko(index, {
                             modelOpieki: value as "50/50" | "inny",
-                          })
-                        }
+                          });
+                        }}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger
+                          className={`w-full ${
+                            fieldErrors[dziecko.id]?.modelOpieki
+                              ? "border-red-500 ring-red-500"
+                              : ""
+                          }`}
+                        >
                           <SelectValue placeholder="Wybierz model opieki" />
                         </SelectTrigger>
                         <SelectContent>
@@ -626,21 +1021,40 @@ export default function Dzieci() {
                           </SelectItem>
                         </SelectContent>
                       </Select>
+                      {fieldErrors[dziecko.id]?.modelOpieki && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldErrors[dziecko.id]?.modelOpieki}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-
             {/* Wyświetlanie błędu walidacji */}
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
+            {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" className="flex-1" onClick={handleBack}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleBack}
+                disabled={isSubmitting}
+              >
                 Wstecz
               </Button>
-              <Button className="flex-1" onClick={handleNext}>
-                Dalej
+              <Button
+                className="flex-1"
+                onClick={handleNext}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Zapisuję...
+                  </>
+                ) : (
+                  "Dalej"
+                )}
               </Button>
             </div>
           </div>

@@ -1,34 +1,23 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { FormData } from "./form-store";
+import { obfuscateData, deobfuscateData } from "../client-security";
 
-// Funkcja do prostego szyfrowania danych (dla podstawowej ochrony)
-const encryptData = (data: string): string => {
-  try {
-    return btoa(encodeURIComponent(data));
-  } catch (error) {
-    console.error("Encryption failed:", error);
-    return data;
-  }
-};
-
-// Funkcja do deszyfrowania danych
-const decryptData = (data: string): string => {
-  try {
-    return decodeURIComponent(atob(data));
-  } catch (error) {
-    console.error("Decryption failed:", error);
-    return data;
-  }
-};
-
-// Definicja interfejsu dla store'a
+// Definicja interfejsu dla store'a z metadanymi
 interface SecureFormStore {
   // Dane formularza
   formData: FormData;
 
+  // Metadane
+  metaData: {
+    lastUpdated: number;
+    version: string;
+    csrfToken?: string;
+  };
+
   // Akcje
   updateFormData: (data: Partial<FormData>) => void;
+  setMetaData: (data: Partial<SecureFormStore["metaData"]>) => void;
   resetForm: () => void;
   clearAllData: () => void;
 }
@@ -36,17 +25,47 @@ interface SecureFormStore {
 // Customowy storage z szyfrowaniem
 const customStorage = {
   getItem: (name: string) => {
-    const sessionValue = sessionStorage.getItem(name);
-    if (sessionValue) {
-      return decryptData(sessionValue);
+    try {
+      const sessionValue = sessionStorage.getItem(name);
+      if (!sessionValue) return null;
+
+      // Próba deszyfrowania wartości
+      try {
+        return deobfuscateData(sessionValue);
+      } catch (decryptError) {
+        console.warn(
+          "Failed to deobfuscate session data, returning original value:",
+          decryptError
+        );
+        return sessionValue; // Zwróć oryginalną wartość jeśli deszyfrowanie się nie powiodło
+      }
+    } catch (error) {
+      console.error("Error accessing sessionStorage:", error);
+      return null;
     }
-    return null;
   },
+
   setItem: (name: string, value: string) => {
-    sessionStorage.setItem(name, encryptData(value));
+    try {
+      const encoded = obfuscateData(value);
+      sessionStorage.setItem(name, encoded);
+    } catch (error) {
+      console.error("Error setting session data:", error);
+      // Fallback - spróbuj zapisać bez szyfrowania
+      try {
+        sessionStorage.setItem(name, value);
+      } catch (fallbackError) {
+        console.error("Fallback session storage failed:", fallbackError);
+      }
+    }
   },
+
   removeItem: (name: string) => {
-    sessionStorage.removeItem(name);
+    try {
+      sessionStorage.removeItem(name);
+    } catch (error) {
+      console.error("Error removing from sessionStorage:", error);
+    }
   },
 };
 
@@ -55,23 +74,74 @@ export const useSecureFormStore = create<SecureFormStore>()(
   persist(
     (set) => ({
       formData: {},
+      metaData: {
+        lastUpdated: Date.now(),
+        version: "1.1.0",
+      },
 
       updateFormData: (data) =>
+        set((state) => {
+          try {
+            console.debug("Securely updating form data:", data);
+
+            // Deep copy of current state for immutability
+            const newFormData = JSON.parse(
+              JSON.stringify({ ...state.formData })
+            );
+
+            // Special handling for arrays
+            if (data.dzieci && Array.isArray(data.dzieci)) {
+              newFormData.dzieci = [...data.dzieci];
+            }
+
+            // Update metadata
+            const newMetaData = {
+              ...state.metaData,
+              lastUpdated: Date.now(),
+            };
+
+            return {
+              formData: { ...newFormData, ...data },
+              metaData: newMetaData,
+            };
+          } catch (error) {
+            console.error("Error during form data update:", error);
+            return state; // return unchanged state on error
+          }
+        }),
+
+      setMetaData: (data) =>
         set((state) => ({
-          formData: { ...state.formData, ...data },
+          metaData: { ...state.metaData, ...data },
         })),
 
-      resetForm: () => set({ formData: {} }),
+      resetForm: () =>
+        set({
+          formData: {},
+          metaData: {
+            lastUpdated: Date.now(),
+            version: "1.1.0",
+          },
+        }),
 
       clearAllData: () => {
-        set({ formData: {} });
+        set({
+          formData: {},
+          metaData: {
+            lastUpdated: Date.now(),
+            version: "1.1.0",
+          },
+        });
         sessionStorage.removeItem("alimatrix-secure-form");
       },
     }),
     {
       name: "alimatrix-secure-form",
       storage: createJSONStorage(() => customStorage),
-      partialize: (state) => ({ formData: state.formData }),
+      partialize: (state) => ({
+        formData: state.formData,
+        metaData: state.metaData,
+      }),
       onRehydrateStorage: () => (state) => {
         if (state) {
           console.log("Form data hydrated successfully");

@@ -150,6 +150,24 @@ const cleanupRateLimiter = (timeWindow: number): void => {
   }
 };
 
+// Schema for path selection
+export const pathSelectionSchema = z.object({
+  sciezkaWybor: z.enum(["established", "not-established"], {
+    required_error: "Proszę wybrać jedną z opcji",
+    invalid_type_error: "Nieprawidłowy typ opcji",
+  }),
+});
+
+// Schema for form data with metadata
+export const formDataWithMetadataSchema = z.object({
+  formData: z.record(z.any()),
+  metaData: z.object({
+    lastUpdated: z.number(),
+    version: z.string(),
+    csrfToken: z.string().optional(),
+  }),
+});
+
 // CSRF functionality is now imported from the csrf.ts module
 import { registerCSRFToken, verifyCSRFToken, consumeCSRFToken } from "./csrf";
 export { registerCSRFToken, verifyCSRFToken, consumeCSRFToken };

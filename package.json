@@ -6,7 +6,7 @@
   "author": "AliMatrix Team",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "prisma generate --no-engine && next build",
     "start": "next start",
     "lint": "next lint",
     "test-db": "ts-node prisma/check-db.ts"
@@ -29,6 +29,7 @@
     "framer-motion": "^12.12.1",
     "lucide-react": "^0.510.0",
     "next": "15.3.2",
+    "next-secure-headers": "^2.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.3",

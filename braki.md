@@ -86,6 +86,10 @@
 4. **Spójność typów danych**:
    - ⚠️ W niektórych miejscach stosowane są wartości typu `string | ""` zamiast `string | null`, co może prowadzić do niejednoznaczności.
    - ⚠️ W `useFormStore` brakuje kompleksowej definicji typów dla całego formularza.
+5. **Duplikaty i niepotrzebne pliki**:
+   - ⚠️ Wiele plików z przyrostkiem `.new` (np. `page.tsx.new`, `route.ts.new`)
+   - ⚠️ Redundantne skrypty migracji i sprawdzania bazy danych
+   - ❌ Testowe pliki HTML i tymczasowe skrypty w głównym katalogu projektu
 
 ## 3. Rekomendacje dotyczące implementacji zabezpieczeń
 
@@ -190,3 +194,143 @@
 5. Implementacja backend'u dla raportów
 6. Testowanie całości rozwiązania
 7. Audyt bezpieczeństwa i zgodności z RODO przed wdrożeniem produkcyjnym
+
+## 6. Plan wdrożenia aplikacji do środowiska produkcyjnego
+
+### 6.1 Przygotowanie kodu przed wdrożeniem
+
+1. **Porządkowanie repozytorium**:
+
+   - Usunięcie plików tymczasowych i duplikatów (`.new`) zidentyfikowanych w analizie
+   - Usunięcie plików testowych i wszelkich danych testowych
+   - Upewnienie się, że nie ma twardych kodowanych kredencjałów i kluczy API
+
+2. **Optymalizacja kodu**:
+
+   - Sprawdzenie analiz statycznych kodu (np. ESLint, TypeScript) i naprawienie wszystkich błędów
+   - Wykonanie audytu zależności (`npm audit`) i zaktualizowanie niebezpiecznych pakietów
+   - Sprawdzenie wydajności aplikacji (Lighthouse, PageSpeed Insights)
+   - Zoptymalizowanie obrazów i zasobów statycznych
+
+3. **Bezpieczeństwo**:
+   - Implementacja wszystkich rekomendowanych zabezpieczeń (sekcja 3)
+   - Konfiguracja odpowiednich nagłówków HTTP bezpieczeństwa
+   - Upewnienie się, że CSRF, sanityzacja danych i walidacja są prawidłowo wdrożone
+
+### 6.2 Konfiguracja środowiska produkcyjnego
+
+1. **Wybór platformy hostingowej**:
+
+   - Zalecenie: Vercel (dla aplikacji Next.js) lub podobna platforma JAMstack
+   - Alternatywy: AWS, Google Cloud, Azure z usługami Kubernetes/Containers
+
+2. **Konfiguracja domeny i SSL**:
+
+   - Zakup domeny produkcyjnej (np. alimatrix.pl)
+   - Konfiguracja certyfikatu SSL (automatycznie przez Vercel lub Let's Encrypt)
+   - Konfiguracja DNS z odpowiednimi rekordami (A, CNAME, MX dla emaili)
+
+3. **Konfiguracja bazy danych**:
+
+   - Utworzenie izolowanej bazy danych produkcyjnej (PostgreSQL)
+   - Implementacja automatycznych backupów (codziennie)
+   - Włączenie szyfrowania danych wrażliwych w spoczynku
+
+4. **Konfiguracja zmiennych środowiskowych**:
+   - Bezpieczne przechowywanie wszystkich zmiennych środowiskowych (Vercel Environment Variables)
+   - Separacja kluczy produkcyjnych od deweloperskich
+   - Konfiguracja API_KEY dla endpointów administracyjnych z silnym hasłem
+
+### 6.3 Proces wdrożenia (CI/CD)
+
+1. **Konfiguracja CI/CD**:
+   - Konfiguracja GitHub Actions lub innego narzędzia CI/CD
+   - Automatyczne testy przy każdym pull requeście
+   - Automatyczna weryfikacja bezpieczeństwa zależności
+2. **Strategia wdrożenia**:
+
+   - Automatyczne wdrożenia dla środowiska staging z głównej gałęzi
+   - Manualne wdrożenie do produkcji po zatwierdzeniu
+   - Wdrażanie z możliwością szybkiego cofnięcia (rollback)
+
+3. **Migracje bazy danych**:
+   - Implementacja bezpiecznej procedury migracji bez utraty danych
+   - Modyfikacja skryptu build, aby zawierał `npx prisma migrate deploy`
+   - Testowanie migracji na środowisku staging przed produkcją
+
+### 6.4 Monitoring i utrzymanie
+
+1. **Konfiguracja monitoringu**:
+
+   - Wdrożenie narzędzi monitorowania aplikacji (np. Sentry)
+   - Konfiguracja alertów dla błędów i anomalii
+   - Monitoring wydajności API i bazy danych
+
+2. **Logi i audyt**:
+
+   - Konfiguracja centralnego systemu logowania
+   - Implementacja logowania zdarzeń bezpieczeństwa
+   - Ustawienie retencji logów zgodnie z wymogami RODO
+
+3. **Procedury backup i recovery**:
+   - Automatyczne regularne backupy bazy danych
+   - Testowanie procedur odtwarzania z backupu
+   - Dokumentacja procedur odtwarzania po awarii (disaster recovery)
+
+### 6.5 RODO i zgodność prawna
+
+1. **Dokumentacja RODO**:
+
+   - Finalizacja Polityki Prywatności
+   - Przygotowanie procedury realizacji praw podmiotów danych
+   - Dokumentacja mechanizmów pseudonimizacji i ochrony danych
+
+2. **Zgody i powiadomienia**:
+
+   - Implementacja bannerów cookie/zgód zgodnych z Prawem Telekomunikacyjnym
+   - Upewnienie się, że wszystkie formularze zbierają wymagane zgody
+   - Wdrożenie mechanizmu rejestracji i śledzenia zgód
+
+3. **Procedury obsługi naruszeń**:
+   - Opracowanie procedury zgłaszania naruszeń ochrony danych
+   - Przygotowanie szablonów powiadomień dla UODO i podmiotów danych
+   - Wdrożenie mechanizmów wykrywania potencjalnych naruszeń
+
+### 6.6 Wdrożenie krok po kroku
+
+1. **Przygotowanie środowiska produkcyjnego**:
+
+   ```bash
+   # Utworzenie projektu na Vercel i połączenie z repozytorium GitHub
+   npm install -g vercel
+   vercel login
+   vercel link
+
+   # Konfiguracja zmiennych środowiskowych
+   vercel env add DATABASE_URL
+   vercel env add ADMIN_API_KEY
+   vercel env add JWT_SECRET
+   vercel env add EMAIL_SERVER
+   vercel env add EMAIL_FROM
+   ```
+
+2. **Budowa i wdrożenie aplikacji**:
+
+   ```bash
+   # Przygotowanie lokalnej produkcyjnej wersji
+   npm run build
+
+   # Wdrożenie na Vercel
+   vercel --prod
+   ```
+
+3. **Weryfikacja wdrożenia**:
+
+   - Sprawdzenie działania strony głównej i wszystkich podstron
+   - Przeprowadzenie testów end-to-end w środowisku produkcyjnym
+   - Weryfikacja integracji z bazą danych
+
+4. **Konfiguracja monitoringu i logowania**:
+   - Integracja z Sentry lub innym narzędziem monitorowania
+   - Konfiguracja alertów na kluczowe metryki
+   - Weryfikacja poprawności działania logowania zdarzeń

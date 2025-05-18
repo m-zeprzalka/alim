@@ -11,11 +11,11 @@ const securityHeaders = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // W prawdziwej implementacji tutaj powinna by� weryfikacja uprawnie� administratora
+    // W prawdziwej implementacji tutaj powinna być weryfikacja uprawnień administratora
 
-    // Pobierz wszystkie zg�oszenia formularzy
+    // Pobierz wszystkie zgłoszenia formularzy
     const formSubmissionData = await prisma.$queryRaw`
       SELECT 
         fs."id",
@@ -40,7 +40,19 @@ export async function GET(request: NextRequest) {
     `;
 
     // Przygotuj statystyki
-    const submissions = formSubmissionData as any[];
+    const submissions = formSubmissionData as Array<{
+      id: string;
+      rodzajsadu?: string;
+      apelacja?: string;
+      sadokregowy?: string;
+      rokdecyzji?: string;
+      watekwiny?: string;
+      status?: string;
+      emailstatus?: string;
+      submittedat?: string;
+      processedat?: string;
+      [key: string]: any; // Pozostawienie any dla innych pól, ale z typowanymi kluczowymi polami
+    }>;
     const total = submissions.length;
 
     // Grupowanie statystyk
@@ -89,8 +101,8 @@ export async function GET(request: NextRequest) {
 
     // Przygotuj szczeg�owe dane dla ka�dego rekordu
     const detailedData = submissions.map((submission) => {
-      // Format daty dla lepszej czytelno�ci
-      const formatDate = (dateStr: string) => {
+      // Format daty dla lepszej czytelności
+      const formatDate = (dateStr?: string) => {
         if (!dateStr) return null;
         const date = new Date(dateStr);
         return date.toLocaleString("pl-PL");

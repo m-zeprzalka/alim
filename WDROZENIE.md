@@ -6,6 +6,29 @@
 
 ```bash
 
+<<<<<<< HEAD
+=======
+# 2. Usuń pliki testowe
+rm c:/ALIMATRIX/alimatrix/src/app/test-form/page.tsx
+rm c:/ALIMATRIX/alimatrix/src/app/test/page.tsx
+
+
+
+# 4. Usuń tymczasowe pliki i skrypty migracji (po zakończeniu migracji)
+rm c:/ALIMATRIX/alimatrix/prisma/apply-migration.js
+rm c:/ALIMATRIX/alimatrix/prisma/run-schema-migration.ts
+rm c:/ALIMATRIX/alimatrix/prisma/run-migration.ts
+rm c:/ALIMATRIX/alimatrix/prisma/db-check.js
+rm c:/ALIMATRIX/alimatrix/prisma/check-tables.js
+rm c:/ALIMATRIX/alimatrix/prisma/check-db.ts
+rm c:/ALIMATRIX/alimatrix/prisma/check-form-submission.sql
+rm c:/ALIMATRIX/alimatrix/prisma/test-court-fields.ts
+rm c:/ALIMATRIX/alimatrix/prisma/schema.prisma.new
+rm c:/ALIMATRIX/alimatrix/apply-migration.ps1
+rm c:/ALIMATRIX/alimatrix/update-database.ps1
+rm c:/ALIMATRIX/alimatrix/init-git.ps1
+
+>>>>>>> f9113b2d06845125986df36fa12bcd77f77be10c
 # 5. Usuń niepotrzebne pliki i loga
 rm c:/ALIMATRIX/alimatrix/public/next.svg
 rm c:/ALIMATRIX/alimatrix/public/vercel.svg
@@ -55,8 +78,13 @@ npx next-secure-headers
 # 2. Skopiuj schemat bazy danych do środowiska produkcyjnego
 npx dotenv -e .env.production -- npx prisma migrate deploy
 
+<<<<<<< HEAD
 # 3. Generuj klienta Prisma dla produkcji
 npx dotenv -e .env.production -- npx prisma generate
+=======
+# 3. Generuj klienta Prisma dla produkcji (z opcją --no-engine dla mniejszego rozmiaru wdrożenia)
+npx dotenv -e .env.production -- npx prisma generate --no-engine
+>>>>>>> f9113b2d06845125986df36fa12bcd77f77be10c
 ```
 
 ### 2.4. Konfiguracja zmiennych środowiskowych 🔐

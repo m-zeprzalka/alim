@@ -11,7 +11,7 @@ type FormSubmissionDetail = {
   sadOkregowy: string;
   rokDecyzji: string;
   watekWiny: string;
-  formData: Record<string, any>;
+  formData: Record<string, unknown>;
 };
 
 type CourtStats = {

@@ -19,7 +19,7 @@ type FormSubmissionDetail = {
   emailStatus?: string;
   acceptedTerms?: boolean;
   acceptedContact?: boolean;
-  formData: Record<string, any>;
+  formData: Record<string, unknown>;
 };
 
 type CourtStats = {
@@ -97,8 +97,12 @@ export default function CourtStatsPage() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (err: any) {
-      setError(err.message || "Wystąpił błąd podczas eksportu do Excela");
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Wystąpił błąd podczas eksportu do Excela";
+      setError(errorMessage);
     } finally {
       setIsExporting(false);
     }

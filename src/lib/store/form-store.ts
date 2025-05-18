@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 // Rozszerzona definicja typów dla danych formularza
 export type FormData = {
@@ -9,6 +9,9 @@ export type FormData = {
   // Dane dla ścieżki alternatywnej
   alternativeEmail?: string;
   alternativeConsent?: boolean;
+
+  // ID zgłoszenia generowane przez system
+  submissionId?: string;
 
   // Krok 3: Podstawa ustaleń
   podstawaUstalen?: string;
@@ -110,9 +113,12 @@ export type FormData = {
     kosztyUznanePrzezSad?: number;
     inneZrodlaUtrzymania: {
       rentaRodzinna: boolean;
+      rentaRodzinnaKwota?: number;
       swiadczeniePielegnacyjne: boolean;
+      swiadczeniePielegnacyjneKwota?: number;
       inne: boolean;
       inneOpis?: string;
+      inneKwota?: number;
       brakDodatkowychZrodel: boolean;
     };
   }[];
@@ -151,16 +157,17 @@ export const useFormStore = create<FormStore>()(
   persist(
     (set) => ({
       formData: {},
-
       updateFormData: (data) =>
-        set((state) => ({
-          formData: { ...state.formData, ...data },
-        })),
+        set((state) => {
+          console.debug("Updating form data:", data);
+          return { formData: { ...state.formData, ...data } };
+        }),
 
       resetForm: () => set({ formData: {} }),
     }),
     {
       name: "alimatrix-form-storage",
+      storage: createJSONStorage(() => localStorage), // Używamy localStorage zamiast sessionStorage dla trwałego przechowywania
     }
   )
 );

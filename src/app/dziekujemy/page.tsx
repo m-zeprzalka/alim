@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/custom/Logo";
@@ -9,18 +9,49 @@ import Link from "next/link";
 import { useFormStore } from "@/lib/store/form-store";
 
 export default function ThankYouPage() {
-  const { resetForm } = useFormStore();
+  const { formData, resetForm } = useFormStore();
+  const [submissionId, setSubmissionId] = useState<string>("");
+  const [copySuccess, setCopySuccess] = useState<boolean>(false);
 
-  // Resetuj formularz przy wejściu na stronę podziękowania
-  // Zapobiega to ponownemu wysłaniu formularza przez refreshowanie strony
+  // Pobierz ID zgłoszenia z URL lub z formData
   useEffect(() => {
-    // Opóźniamy resetowanie formularza, aby dać czas na synchronizację z bazą danych
+    let id = "";
+
+    // Sprawdź URL
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      id = urlParams.get("id") || "";
+    }
+
+    // Jeśli nie ma w URL, sprawdź formData
+    if (!id && formData.submissionId) {
+      id = formData.submissionId;
+    }
+
+    setSubmissionId(id);
+
+    // Resetuj formularz przy wejściu na stronę podziękowania z opóźnieniem
     const timeoutId = setTimeout(() => {
       resetForm();
-    }, 2000);
+    }, 3000);
 
     return () => clearTimeout(timeoutId);
-  }, [resetForm]);
+  }, [formData, resetForm]);
+
+  // Funkcja do kopiowania ID do schowka
+  const copyToClipboard = () => {
+    if (submissionId) {
+      navigator.clipboard
+        .writeText(submissionId)
+        .then(() => {
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        })
+        .catch((err) => {
+          console.error("Błąd podczas kopiowania do schowka:", err);
+        });
+    }
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
@@ -48,8 +79,36 @@ export default function ThankYouPage() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold">
-              Dziękujemy za wypełnienie formularza!
+              Dziękujemy za wypełnienie formularza!{" "}
             </h1>{" "}
+            {submissionId && (
+              <div className="bg-blue-50 p-4 rounded-lg my-4">
+                <p className="text-sm text-gray-700 font-medium mb-1">
+                  ID Twojego zgłoszenia:
+                </p>
+                <div className="flex items-center gap-2 bg-white p-3 rounded border border-gray-200">
+                  <span className="font-mono text-md flex-1">
+                    {submissionId}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyToClipboard}
+                    className={
+                      copySuccess
+                        ? "text-green-600 border-green-600"
+                        : "text-blue-600"
+                    }
+                  >
+                    {copySuccess ? "Skopiowano!" : "Kopiuj"}
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Zachowaj to ID - może być potrzebne w przypadku kontaktu z
+                  nami.
+                </p>
+              </div>
+            )}
             <div className="space-y-4">
               <p className="text-gray-700">
                 Twój raport jest teraz przygotowywany. Wyślemy go na podany

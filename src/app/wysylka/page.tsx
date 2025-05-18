@@ -184,10 +184,19 @@ export default function Wysylka() {
             "Wystąpił problem z wysyłaniem formularza. Spróbuj ponownie."
           );
         }
+      } // Odczytaj odpowiedź i pobierz ID zgłoszenia
+      const responseData = await response.json();
+      console.log("Response data:", responseData);
+
+      // Zapisz ID zgłoszenia do formData
+      if (responseData.id) {
+        updateFormData({
+          submissionId: responseData.id,
+        });
       }
 
-      // Przekieruj do strony potwierdzenia
-      router.push("/dziekujemy");
+      // Przekieruj do strony potwierdzenia z ID
+      router.push(`/dziekujemy?id=${responseData.id || "unknown"}`);
     } catch (error) {
       console.error("Błąd wysyłki formularza:", error);
       setErrorMessage(

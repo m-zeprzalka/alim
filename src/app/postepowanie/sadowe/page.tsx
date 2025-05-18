@@ -120,7 +120,24 @@ export default function PostepowanieSadowe() {
   };
   // Funkcja obsługująca powrót do poprzedniego kroku
   const handleBack = () => {
-    router.push("/dochody");
+    // Zapisujemy dane przed powrotem
+    updateFormData({
+      ocenaAdekwatnosciSad: ocenaAdekwatnosci,
+      wariantPostepu: "court", // Upewniamy się, że wariant jest zapisany
+      rokDecyzjiSad: rokDecyzji,
+      miesiacDecyzjiSad: miesiacDecyzji,
+      rodzajSaduSad: rodzajSadu,
+      apelacjaSad: apelacjaSad,
+      sadOkregowyId: sadOkregowyId,
+      sadRejonowyId: sadRejonowyId,
+      liczbaSedzi: liczbaSedzi,
+      plecSedziego: plecSedziego,
+      inicjalySedziego: inicjalySedziego,
+      czyPozew: czyPozew,
+      watekWiny: watekWiny,
+    });
+
+    router.push("/postepowanie");
   };
 
   return (

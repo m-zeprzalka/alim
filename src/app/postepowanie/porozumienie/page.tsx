@@ -60,7 +60,17 @@ export default function PostepowaniePorozumienie() {
 
   // Funkcja obsługująca powrót do poprzedniego kroku
   const handleBack = () => {
-    router.push("/dochody");
+    // Zapisujemy dane przed powrotem
+    updateFormData({
+      ocenaAdekwatnosciPorozumienie: ocenaAdekwatnosci,
+      wariantPostepu: "agreement", // Upewniamy się, że wariant jest zapisany
+      dataPorozumienia: dataPorozumienia,
+      sposobPorozumienia: sposobPorozumienia,
+      formaPorozumienia: formaPorozumienia,
+      klauzulaWaloryzacyjna: klauzulaWaloryzacyjna,
+    });
+
+    router.push("/postepowanie");
   };
 
   return (

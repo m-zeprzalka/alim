@@ -16,13 +16,14 @@ import { InfoTooltip } from "@/components/ui/custom/InfoTooltip";
 export default function Alternatywna() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
-
   // Stan dla formularza
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string>("");
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // Zabezpieczenie - sprawdzamy czy użytkownik przeszedł przez wybór ścieżki
   useEffect(() => {
@@ -30,6 +31,20 @@ export default function Alternatywna() {
       router.push("/sciezka");
     }
   }, [formData.sciezkaWybor, router]);
+  // Funkcja do kopiowania ID zgłoszenia
+  const copyToClipboard = () => {
+    if (submissionId) {
+      navigator.clipboard
+        .writeText(submissionId)
+        .then(() => {
+          setCopySuccess(true);
+          setTimeout(() => setCopySuccess(false), 2000);
+        })
+        .catch((err) => {
+          console.error("Błąd podczas kopiowania do schowka:", err);
+        });
+    }
+  };
 
   // Funkcja do obsługi zapisu
   const handleSubmit = async () => {
@@ -61,7 +76,6 @@ export default function Alternatywna() {
           acceptedTerms: consent,
         }),
       });
-
       const data = await response.json();
 
       if (!response.ok) {
@@ -72,7 +86,13 @@ export default function Alternatywna() {
       updateFormData({
         alternativeEmail: email,
         alternativeConsent: consent,
+        submissionId: data.submissionId, // Zapisujemy ID zgłoszenia
       });
+
+      // Ustawiamy ID zgłoszenia do wyświetlenia
+      if (data.submissionId) {
+        setSubmissionId(data.submissionId);
+      }
 
       // Oznaczamy sukces
       setIsSuccess(true);
@@ -120,11 +140,39 @@ export default function Alternatywna() {
                   </div>
                   <h2 className="text-xl font-bold text-green-800 mb-2">
                     Zapisano pomyślnie!
-                  </h2>
+                  </h2>{" "}
                   <p className="text-gray-700 mb-4">
                     Dziękujemy za zapisanie się na powiadomienia. Poinformujemy
                     Cię, gdy raporty będą dostępne.
                   </p>
+                  {submissionId && (
+                    <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+                      <p className="text-sm text-gray-700 font-medium mb-1">
+                        ID Twojego zgłoszenia:
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-md flex-1">
+                          {submissionId}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={copyToClipboard}
+                          className={
+                            copySuccess
+                              ? "text-green-600 border-green-600"
+                              : "text-blue-600"
+                          }
+                        >
+                          {copySuccess ? "Skopiowano!" : "Kopiuj"}
+                        </Button>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Zachowaj to ID - może być potrzebne w przypadku kontaktu
+                        z nami.
+                      </p>
+                    </div>
+                  )}
                   <Button onClick={() => router.push("/")} className="mt-2">
                     Wróć do strony głównej
                   </Button>

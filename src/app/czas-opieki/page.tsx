@@ -278,7 +278,13 @@ export default function CzasOpieki() {
     }
 
     // Obliczamy aktualne wskaźniki przed zapisaniem
-    const wskaznikiDoZapisu = obliczWskaznikiCzasuOpieki(tabelaCzasu);
+    const wskaznikiDoZapisu = {
+      czasOpiekiBezEdukacji: czasOpiekiBezEdukacji,
+      czasAktywnejOpieki: czasAktywnejOpieki,
+      czasSnu: czasSnu,
+    };
+
+    console.log("Zapisuję wskaźniki czasu opieki:", wskaznikiDoZapisu);
 
     // Zapisujemy dane do store'a - teraz zapisujemy trzy wskaźniki procentowe
     if (aktualneDzieckoId && formData.dzieci) {
@@ -315,8 +321,17 @@ export default function CzasOpieki() {
   };
   // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = () => {
-    // Obliczamy aktualne wskaźniki przed zapisaniem
-    const wskaznikiDoZapisu = obliczWskaznikiCzasuOpieki(tabelaCzasu);
+    // Zapisujemy aktualne wskaźniki
+    const wskaznikiDoZapisu = {
+      czasOpiekiBezEdukacji: czasOpiekiBezEdukacji,
+      czasAktywnejOpieki: czasAktywnejOpieki,
+      czasSnu: czasSnu,
+    };
+
+    console.log(
+      "Zapisuję wskaźniki czasu opieki przed powrotem:",
+      wskaznikiDoZapisu
+    );
 
     // Zapisujemy aktualne dane dziecka
     if (aktualneDzieckoId && formData.dzieci) {

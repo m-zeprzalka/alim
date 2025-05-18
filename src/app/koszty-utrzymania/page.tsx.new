@@ -13,11 +13,7 @@ import { useFormStore } from "@/lib/store/form-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
 import { safeToSubmit, recordSubmission } from "@/lib/client-security";
-import {
-  generateOperationId,
-  trackedLog,
-  retryOperation,
-} from "@/lib/form-handlers";
+import { generateOperationId, trackedLog, retryOperation } from "@/lib/form-handlers";
 import { KosztyDziecka } from "./typings";
 import { kosztyDzieckaSchema } from "@/lib/schemas/koszty-utrzymania-schema";
 
@@ -36,7 +32,7 @@ export default function KosztyUtrzymania() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
+  
   // Funkcja do obliczania łącznej kwoty utrzymania dziecka
   const obliczLacznaKwote = (koszty: KosztyDziecka): number => {
     let suma = 0;
@@ -66,8 +62,7 @@ export default function KosztyUtrzymania() {
 
     if (
       koszty.inneZrodlaUtrzymania.swiadczeniePielegnacyjne &&
-      typeof koszty.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota ===
-        "number"
+      typeof koszty.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota === "number"
     ) {
       suma += koszty.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota;
     }
@@ -81,7 +76,7 @@ export default function KosztyUtrzymania() {
 
     return suma;
   };
-
+  
   // Inicjalizacja danych kosztów na podstawie dzieci z formData
   useEffect(() => {
     if (
@@ -159,7 +154,7 @@ export default function KosztyUtrzymania() {
       return updated;
     });
   };
-
+  
   // Walidacja formularza przy użyciu schematu Zod
   const validateForm = useCallback((dziecko: KosztyDziecka) => {
     try {
@@ -174,9 +169,9 @@ export default function KosztyUtrzymania() {
         let generalError: string | null = null;
 
         err.errors.forEach((e: any) => {
-          const path = e.path.join(".");
+          const path = e.path.join('.');
           errorMessages[path] = e.message;
-
+          
           // Ustaw pierwszy błąd jako ogólny komunikat
           if (!generalError) {
             generalError = e.message;
@@ -192,8 +187,8 @@ export default function KosztyUtrzymania() {
       }
       return false;
     }
-  }, []);
-
+  }, [setError, setFieldErrors]);
+  
   // Obsługa przejścia do następnego dziecka lub kroku
   const handleNext = useCallback(async () => {
     // Zapobieganie wielokrotnym kliknięciom
@@ -208,19 +203,19 @@ export default function KosztyUtrzymania() {
     setIsSubmitting(true);
     setError(null);
     setFieldErrors({});
-
+    
     const operationId = generateOperationId();
     trackedLog(operationId, "Starting koszty utrzymania form submission");
-
+    
     try {
       const aktualneDziecko = kosztyDzieci[aktualneDzieckoIndex];
-
+      
       // Walidacja danych formularza
       if (!validateForm(aktualneDziecko)) {
         setIsSubmitting(false);
         return;
       }
-
+      
       // Przygotowujemy dane kosztów do zapisania w store
       // Konwertujemy typ KosztyDziecka[] na format wymagany przez formStore
       const kosztyDoZapisu = kosztyDzieci.map((k) => ({
@@ -250,8 +245,7 @@ export default function KosztyUtrzymania() {
             k.inneZrodlaUtrzymania.swiadczeniePielegnacyjne,
           swiadczeniePielegnacyjneKwota:
             k.inneZrodlaUtrzymania.swiadczeniePielegnacyjne &&
-            typeof k.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota ===
-              "number"
+            typeof k.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota === "number"
               ? k.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota
               : undefined,
           inne: k.inneZrodlaUtrzymania.inne,
@@ -266,7 +260,7 @@ export default function KosztyUtrzymania() {
           brakDodatkowychZrodel: k.inneZrodlaUtrzymania.brakDodatkowychZrodel,
         },
       }));
-
+      
       // Zapisz dane z mechanizmem ponownych prób
       await retryOperation(
         async () => {
@@ -297,8 +291,8 @@ export default function KosztyUtrzymania() {
         if (nastepneDziecko) {
           await updateFormData({
             aktualneDzieckoWTabeliCzasu: nastepneDziecko.id,
-          });
-
+          }); 
+          
           // Sprawdzamy, czy następne dziecko ma model opieki "inny"
           if (nastepneDziecko.modelOpieki === "inny") {
             // Przewijamy stronę do góry przed przejściem do następnej strony
@@ -306,12 +300,9 @@ export default function KosztyUtrzymania() {
 
             // Dodajemy małe opóźnienie dla lepszego UX
             setTimeout(() => {
-              trackedLog(
-                operationId,
-                "Navigating to czas-opieki for next child"
-              );
+              trackedLog(operationId, "Navigating to czas-opieki for next child");
               router.push("/czas-opieki");
-
+              
               // Zmniejszamy szansę na back button lub podwójną submisję
               setTimeout(() => {
                 setIsSubmitting(false);
@@ -336,7 +327,7 @@ export default function KosztyUtrzymania() {
         setTimeout(() => {
           trackedLog(operationId, "Navigating to dochody-i-koszty");
           router.push("/dochody-i-koszty");
-
+          
           // Zmniejszamy szansę na back button lub podwójną submisję
           setTimeout(() => {
             setIsSubmitting(false);
@@ -344,36 +335,22 @@ export default function KosztyUtrzymania() {
         }, 100);
       }
     } catch (error) {
-      trackedLog(
-        operationId,
-        "Error saving koszty utrzymania data",
-        error,
-        "error"
-      );
+      trackedLog(operationId, "Error saving koszty utrzymania data", error, "error");
       setError("Wystąpił błąd podczas zapisywania danych. Spróbuj ponownie.");
       setIsSubmitting(false);
     }
-  }, [
-    isSubmitting,
-    kosztyDzieci,
-    aktualneDzieckoIndex,
-    formData.dzieci,
-    updateFormData,
-    router,
-    scrollToTop,
-    validateForm,
-  ]);
-
+  }, [isSubmitting, kosztyDzieci, aktualneDzieckoIndex, formData.dzieci, updateFormData, router, scrollToTop, validateForm]);
+  
   // Obsługa powrotu do poprzedniego dziecka lub kroku
   const handleBack = useCallback(async () => {
     // Zapobieganie wielokrotnym kliknięciom
     if (isSubmitting) {
       return;
     }
-
+    
     setIsSubmitting(true);
     setError(null);
-
+    
     const operationId = generateOperationId();
     trackedLog(operationId, "Back navigation from koszty utrzymania");
 
@@ -406,8 +383,7 @@ export default function KosztyUtrzymania() {
             k.inneZrodlaUtrzymania.swiadczeniePielegnacyjne,
           swiadczeniePielegnacyjneKwota:
             k.inneZrodlaUtrzymania.swiadczeniePielegnacyjne &&
-            typeof k.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota ===
-              "number"
+            typeof k.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota === "number"
               ? k.inneZrodlaUtrzymania.swiadczeniePielegnacyjneKwota
               : undefined,
           inne: k.inneZrodlaUtrzymania.inne,
@@ -422,7 +398,7 @@ export default function KosztyUtrzymania() {
           brakDodatkowychZrodel: k.inneZrodlaUtrzymania.brakDodatkowychZrodel,
         },
       }));
-
+      
       await updateFormData({
         kosztyDzieci: kosztyDoZapisu,
         __meta: {
@@ -430,7 +406,7 @@ export default function KosztyUtrzymania() {
           formVersion: "1.1.0",
         },
       });
-
+      
       // Aktualnie przetwarzane dziecko
       const aktualneDziecko = formData.dzieci?.[aktualneDzieckoIndex];
 
@@ -481,7 +457,7 @@ export default function KosztyUtrzymania() {
         // Jeśli to pierwsze dziecko i nie ma modelu "inny", wracamy do strony dzieci
         // Przewijamy stronę do góry przed przejściem do poprzedniej strony
         scrollToTop();
-
+        
         // Dodajemy małe opóźnienie dla lepszego UX
         setTimeout(() => {
           trackedLog(operationId, "Navigating back to dzieci");
@@ -494,15 +470,7 @@ export default function KosztyUtrzymania() {
       setError("Wystąpił błąd podczas zapisywania danych. Spróbuj ponownie.");
       setIsSubmitting(false);
     }
-  }, [
-    isSubmitting,
-    kosztyDzieci,
-    aktualneDzieckoIndex,
-    formData.dzieci,
-    updateFormData,
-    router,
-    scrollToTop,
-  ]);
+  }, [isSubmitting, kosztyDzieci, aktualneDzieckoIndex, formData.dzieci, updateFormData, router, scrollToTop]);
 
   // Pobierz aktualne dziecko z form store
   const aktualneDziecko = formData.dzieci?.[aktualneDzieckoIndex];
@@ -578,8 +546,7 @@ export default function KosztyUtrzymania() {
             <p className="text-gray-700">
               📌 Jeśli masz wydatki roczne (np. wakacje, sprzęt sportowy),
               podziel je przez 12 i podaj uśrednioną miesięczną kwotę.
-            </p>{" "}
-            <div>
+            </p>            <div>
               <Label htmlFor="kwota-alimentow">
                 Kwota alimentów <span className="text-red-500">*</span>
               </Label>
@@ -596,34 +563,30 @@ export default function KosztyUtrzymania() {
                       : "",
                   });
                   // Reset errors when typing
-                  if (fieldErrors["kwotaAlimentow"]) {
+                  if (fieldErrors['kwotaAlimentow']) {
                     setFieldErrors((prev) => {
                       const updated = { ...prev };
-                      delete updated["kwotaAlimentow"];
+                      delete updated['kwotaAlimentow'];
                       return updated;
                     });
                   }
                   if (error) setError(null);
                 }}
-                className={`mt-1 ${
-                  fieldErrors["kwotaAlimentow"] ? "border-red-500" : ""
-                }`}
+                className={`mt-1 ${fieldErrors['kwotaAlimentow'] ? 'border-red-500' : ''}`}
                 placeholder="0"
               />
-              {fieldErrors["kwotaAlimentow"] && (
+              {fieldErrors['kwotaAlimentow'] && (
                 <p className="text-red-500 text-xs mt-1">
-                  {fieldErrors["kwotaAlimentow"]}
+                  {fieldErrors['kwotaAlimentow']}
                 </p>
               )}
               <p className="text-sm text-gray-500 mt-1">
                 Jaka kwota została ustalona jako alimenty na to dziecko (przez
                 sąd lub w porozumieniu)?
               </p>
-            </div>{" "}
-            <div>
+            </div>            <div>
               <Label htmlFor="twoje-wydatki">
-                Twoje miesięczne wydatki na dziecko{" "}
-                <span className="text-red-500">*</span>
+                Twoje miesięczne wydatki na dziecko <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="twoje-wydatki"
@@ -638,30 +601,27 @@ export default function KosztyUtrzymania() {
                       : "",
                   });
                   // Reset errors when typing
-                  if (fieldErrors["twojeMiesieczneWydatki"]) {
+                  if (fieldErrors['twojeMiesieczneWydatki']) {
                     setFieldErrors((prev) => {
                       const updated = { ...prev };
-                      delete updated["twojeMiesieczneWydatki"];
+                      delete updated['twojeMiesieczneWydatki'];
                       return updated;
                     });
                   }
                   if (error) setError(null);
                 }}
-                className={`mt-1 ${
-                  fieldErrors["twojeMiesieczneWydatki"] ? "border-red-500" : ""
-                }`}
+                className={`mt-1 ${fieldErrors['twojeMiesieczneWydatki'] ? 'border-red-500' : ''}`}
                 placeholder="0"
               />
-              {fieldErrors["twojeMiesieczneWydatki"] && (
+              {fieldErrors['twojeMiesieczneWydatki'] && (
                 <p className="text-red-500 text-xs mt-1">
-                  {fieldErrors["twojeMiesieczneWydatki"]}
+                  {fieldErrors['twojeMiesieczneWydatki']}
                 </p>
               )}
               <p className="text-sm text-gray-500 mt-1">
                 Jaką średnią miesięczną kwotę przeznaczasz na potrzeby dziecka?
               </p>
-            </div>{" "}
-            <div>
+            </div>            <div>
               <Label htmlFor="wydatki-drugiego">
                 Wydatki drugiego rodzica (jeśli znane)
               </Label>
@@ -678,30 +638,27 @@ export default function KosztyUtrzymania() {
                       : "",
                   });
                   // Reset errors when typing
-                  if (fieldErrors["wydatkiDrugiegoRodzica"]) {
+                  if (fieldErrors['wydatkiDrugiegoRodzica']) {
                     setFieldErrors((prev) => {
                       const updated = { ...prev };
-                      delete updated["wydatkiDrugiegoRodzica"];
+                      delete updated['wydatkiDrugiegoRodzica'];
                       return updated;
                     });
                   }
                   if (error) setError(null);
                 }}
-                className={`mt-1 ${
-                  fieldErrors["wydatkiDrugiegoRodzica"] ? "border-red-500" : ""
-                }`}
+                className={`mt-1 ${fieldErrors['wydatkiDrugiegoRodzica'] ? 'border-red-500' : ''}`}
                 placeholder="0"
               />
-              {fieldErrors["wydatkiDrugiegoRodzica"] && (
+              {fieldErrors['wydatkiDrugiegoRodzica'] && (
                 <p className="text-red-500 text-xs mt-1">
-                  {fieldErrors["wydatkiDrugiegoRodzica"]}
+                  {fieldErrors['wydatkiDrugiegoRodzica']}
                 </p>
               )}
               <p className="text-sm text-gray-500 mt-1">
                 Jaką kwotę miesięcznie przeznacza na dziecko drugi rodzic?
               </p>
-            </div>{" "}
-            <div>
+            </div>            <div>
               <Label htmlFor="koszty-sad">
                 Koszty uznane przez sąd (jeśli dotyczy)
               </Label>
@@ -718,23 +675,21 @@ export default function KosztyUtrzymania() {
                       : "",
                   });
                   // Reset errors when typing
-                  if (fieldErrors["kosztyUznanePrzezSad"]) {
+                  if (fieldErrors['kosztyUznanePrzezSad']) {
                     setFieldErrors((prev) => {
                       const updated = { ...prev };
-                      delete updated["kosztyUznanePrzezSad"];
+                      delete updated['kosztyUznanePrzezSad'];
                       return updated;
                     });
                   }
                   if (error) setError(null);
                 }}
-                className={`mt-1 ${
-                  fieldErrors["kosztyUznanePrzezSad"] ? "border-red-500" : ""
-                }`}
+                className={`mt-1 ${fieldErrors['kosztyUznanePrzezSad'] ? 'border-red-500' : ''}`}
                 placeholder="0"
               />
-              {fieldErrors["kosztyUznanePrzezSad"] && (
+              {fieldErrors['kosztyUznanePrzezSad'] && (
                 <p className="text-red-500 text-xs mt-1">
-                  {fieldErrors["kosztyUznanePrzezSad"]}
+                  {fieldErrors['kosztyUznanePrzezSad']}
                 </p>
               )}
               <p className="text-sm text-gray-500 mt-1">
@@ -953,12 +908,7 @@ export default function KosztyUtrzymania() {
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
             <div className="flex gap-3 pt-4">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={handleBack}
-                disabled={isSubmitting}
-              >
+              <Button variant="outline" className="flex-1" onClick={handleBack} disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -968,20 +918,16 @@ export default function KosztyUtrzymania() {
                   "Wstecz"
                 )}
               </Button>{" "}
-              <Button
-                className="flex-1"
-                onClick={handleNext}
-                disabled={isSubmitting}
-              >
+              <Button className="flex-1" onClick={handleNext} disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Zapisuję...
                   </>
-                ) : aktualneDzieckoIndex < kosztyDzieci.length - 1 ? (
-                  "Przejdź do następnego dziecka"
                 ) : (
-                  "Dalej"
+                  aktualneDzieckoIndex < kosztyDzieci.length - 1
+                    ? "Przejdź do następnego dziecka"
+                    : "Dalej"
                 )}
               </Button>
             </div>

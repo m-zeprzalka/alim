@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/custom/Logo";
 import { FormProgress } from "@/components/ui/custom/FormProgress";
@@ -18,15 +18,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
 import {
   APPELATIONS,
   REGIONAL_COURTS,
   getRegionalCourts,
 } from "@/lib/court-data";
+import {
+  PostepowanieSadoweData,
+  RodzajSadu,
+  LiczbaSedzi,
+  PlecSedziego,
+  TakNie,
+  WatekWiny,
+} from "./typings";
+import { postepowanieSadoweSchema } from "@/lib/schemas/postepowanie-sadowe-schema";
+import { safeToSubmit, recordSubmission } from "@/lib/client-security";
+import {
+  generateOperationId,
+  trackedLog,
+  retryOperation,
+} from "@/lib/form-handlers";
 
 export default function PostepowanieSadowe() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
+
+  // Stan dla błędów walidacji
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Stan oceny adekwatności postępowania
   const [ocenaAdekwatnosci, setOcenaAdekwatnosci] = useState<number>(
@@ -42,9 +63,9 @@ export default function PostepowanieSadowe() {
   );
 
   // Stany dla sądu
-  const [rodzajSadu, setRodzajSadu] = useState<
-    "rejonowy" | "okregowy" | "nie_pamietam"
-  >(formData.rodzajSaduSad || "nie_pamietam");
+  const [rodzajSadu, setRodzajSadu] = useState<RodzajSadu>(
+    (formData.rodzajSaduSad as RodzajSadu) || "nie_pamietam"
+  );
   const [apelacjaSad, setApelacjaSad] = useState<string>(
     formData.apelacjaSad || ""
   );
@@ -63,32 +84,35 @@ export default function PostepowanieSadowe() {
     if (sadOkregowyId) {
       const rejonowe = getRegionalCourts(sadOkregowyId);
       setDostepneSadyRejonowe(rejonowe);
+
+      // Resetuj wybór sądu rejonowego, jeśli wybrany wcześniej sąd nie jest dostępny
+      if (sadRejonowyId) {
+        const istnieje = rejonowe.some((sad) => sad.id === sadRejonowyId);
+        if (!istnieje) {
+          setSadRejonowyId("");
+        }
+      }
     } else {
       setDostepneSadyRejonowe([]);
+      setSadRejonowyId("");
     }
-  }, [sadOkregowyId]);
+  }, [sadOkregowyId, sadRejonowyId]);
 
   // Inne stany
-  const [liczbaSedzi, setLiczbaSedzi] = useState<"jeden" | "trzech">(
-    (formData.liczbaSedzi as "jeden" | "trzech") || "jeden"
+  const [liczbaSedzi, setLiczbaSedzi] = useState<LiczbaSedzi>(
+    (formData.liczbaSedzi as LiczbaSedzi) || "jeden"
   );
-  const [plecSedziego, setPlecSedziego] = useState<"kobieta" | "mezczyzna">(
-    (formData.plecSedziego as "kobieta" | "mezczyzna") || "kobieta"
+  const [plecSedziego, setPlecSedziego] = useState<PlecSedziego>(
+    (formData.plecSedziego as PlecSedziego) || "kobieta"
   );
   const [inicjalySedziego, setInicjalySedziego] = useState<string>(
     formData.inicjalySedziego || ""
   );
-  const [czyPozew, setCzyPozew] = useState<"tak" | "nie">(
-    (formData.czyPozew as "tak" | "nie") || "nie"
+  const [czyPozew, setCzyPozew] = useState<TakNie>(
+    (formData.czyPozew as TakNie) || "nie"
   );
-  const [watekWiny, setWatekWiny] = useState<
-    "nie" | "tak-ja" | "tak-druga-strona" | "tak-oboje"
-  >(
-    (formData.watekWiny as
-      | "nie"
-      | "tak-ja"
-      | "tak-druga-strona"
-      | "tak-oboje") || "nie"
+  const [watekWiny, setWatekWiny] = useState<WatekWiny>(
+    (formData.watekWiny as WatekWiny) || "nie"
   );
 
   // Generowanie opcji lat
@@ -96,49 +120,276 @@ export default function PostepowanieSadowe() {
   const years = Array.from({ length: 20 }, (_, i) =>
     (currentYear - i).toString()
   );
+
+  // Funkcja walidacji formularza
+  const validateForm = useCallback(() => {
+    try {
+      // Przygotowanie danych do walidacji
+      const formDataToValidate = {
+        ocenaAdekwatnosciSad: ocenaAdekwatnosci,
+        wariantPostepu: "court",
+        rokDecyzjiSad: rokDecyzji,
+        miesiacDecyzjiSad: miesiacDecyzji,
+        rodzajSaduSad: rodzajSadu,
+        apelacjaSad: apelacjaSad,
+        sadOkregowyId: sadOkregowyId,
+        sadRejonowyId: sadRejonowyId,
+        liczbaSedzi: liczbaSedzi,
+        plecSedziego: plecSedziego,
+        inicjalySedziego: inicjalySedziego,
+        czyPozew: czyPozew,
+        watekWiny: watekWiny,
+      };
+
+      // Walidacja za pomocą schematu Zod
+      postepowanieSadoweSchema.parse(formDataToValidate);
+
+      // Resetuj błędy jeśli walidacja przeszła poprawnie
+      setError(null);
+      setFieldErrors({});
+      return true;
+    } catch (err: any) {
+      // Obsługa błędów walidacji Zod
+      if (err.errors) {
+        const errorMessages: Record<string, string> = {};
+        let generalError: string | null = null;
+
+        err.errors.forEach((e: any) => {
+          const path = e.path.join(".");
+          errorMessages[path] = e.message;
+
+          // Ustaw pierwszy błąd jako ogólny komunikat
+          if (!generalError) {
+            generalError = e.message;
+          }
+        });
+
+        setFieldErrors(errorMessages);
+        if (generalError) {
+          setError(generalError);
+        }
+      } else {
+        setError("Wystąpiły błędy formularza. Sprawdź poprawność danych.");
+      }
+      return false;
+    }
+  }, [
+    ocenaAdekwatnosci,
+    rokDecyzji,
+    miesiacDecyzji,
+    rodzajSadu,
+    apelacjaSad,
+    sadOkregowyId,
+    sadRejonowyId,
+    liczbaSedzi,
+    plecSedziego,
+    inicjalySedziego,
+    czyPozew,
+    watekWiny,
+  ]);
+
+  // Funkcja scrollToTop
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   // Funkcja obsługująca przejście do następnego kroku
-  const handleNext = () => {
-    // Zapisujemy dane do store'a
-    updateFormData({
-      ocenaAdekwatnosciSad: ocenaAdekwatnosci,
-      wariantPostepu: "court", // Upewniamy się, że wariant jest zapisany
-      rokDecyzjiSad: rokDecyzji,
-      miesiacDecyzjiSad: miesiacDecyzji,
-      rodzajSaduSad: rodzajSadu,
-      apelacjaSad: apelacjaSad,
-      sadOkregowyId: sadOkregowyId,
-      sadRejonowyId: sadRejonowyId,
-      liczbaSedzi: liczbaSedzi,
-      plecSedziego: plecSedziego,
-      inicjalySedziego: inicjalySedziego,
-      czyPozew: czyPozew,
-      watekWiny: watekWiny,
-    });
+  const handleNext = useCallback(async () => {
+    // Zapobieganie wielokrotnym kliknięciom
+    if (isSubmitting || !safeToSubmit()) {
+      trackedLog(
+        "user-action",
+        "Form submission prevented: Already submitting or too soon after last submission"
+      );
+      return;
+    }
 
-    // Przekierowanie do następnego kroku
-    router.push("/informacje-o-tobie");
-  };
+    setIsSubmitting(true);
+    setError(null);
+    setFieldErrors({});
+
+    const operationId = generateOperationId();
+    trackedLog(operationId, "Starting postepowanie sadowe form submission");
+
+    try {
+      // Walidacja danych formularza
+      if (!validateForm()) {
+        setIsSubmitting(false);
+        scrollToTop();
+        return;
+      }
+
+      // Przygotowanie danych do zapisania
+      const postepowanieSadoweData: PostepowanieSadoweData = {
+        ocenaAdekwatnosciSad: ocenaAdekwatnosci,
+        wariantPostepu: "court",
+        rokDecyzjiSad: rokDecyzji,
+        miesiacDecyzjiSad: miesiacDecyzji,
+        rodzajSaduSad: rodzajSadu,
+        apelacjaSad: apelacjaSad,
+        sadOkregowyId: sadOkregowyId,
+        sadRejonowyId: sadRejonowyId,
+        liczbaSedzi: liczbaSedzi,
+        plecSedziego: plecSedziego,
+        inicjalySedziego: inicjalySedziego,
+        czyPozew: czyPozew,
+        watekWiny: watekWiny,
+      };
+
+      // Zapisywanie danych z mechanizmem ponownych prób
+      await retryOperation(
+        async () => {
+          await updateFormData({
+            ...postepowanieSadoweData,
+            __meta: {
+              lastUpdated: Date.now(),
+              formVersion: "1.1.0",
+            },
+          });
+          return true;
+        },
+        {
+          maxAttempts: 3,
+          delayMs: 300,
+          operationName: "Update form data - postepowanie sadowe",
+          operationId,
+        }
+      );
+
+      // Zapisujemy informację o submisji formularza dla celów analizy
+      recordSubmission();
+
+      // Przewijamy stronę do góry przed przejściem do następnego kroku
+      scrollToTop();
+
+      // Dodajemy małe opóźnienie dla lepszego UX
+      setTimeout(() => {
+        trackedLog(operationId, "Navigating to informacje-o-tobie");
+        router.push("/informacje-o-tobie");
+
+        // Zmniejszamy szansę na back button lub podwójną submisję
+        setTimeout(() => {
+          setIsSubmitting(false);
+        }, 500);
+      }, 100);
+    } catch (error) {
+      trackedLog(
+        operationId,
+        "Error in postepowanie sadowe submission",
+        error,
+        "error"
+      );
+      setError("Wystąpił błąd podczas zapisywania danych. Spróbuj ponownie.");
+      setIsSubmitting(false);
+      scrollToTop();
+    }
+  }, [
+    isSubmitting,
+    validateForm,
+    ocenaAdekwatnosci,
+    rokDecyzji,
+    miesiacDecyzji,
+    rodzajSadu,
+    apelacjaSad,
+    sadOkregowyId,
+    sadRejonowyId,
+    liczbaSedzi,
+    plecSedziego,
+    inicjalySedziego,
+    czyPozew,
+    watekWiny,
+    updateFormData,
+    router,
+    scrollToTop,
+  ]);
+
   // Funkcja obsługująca powrót do poprzedniego kroku
-  const handleBack = () => {
-    // Zapisujemy dane przed powrotem
-    updateFormData({
-      ocenaAdekwatnosciSad: ocenaAdekwatnosci,
-      wariantPostepu: "court", // Upewniamy się, że wariant jest zapisany
-      rokDecyzjiSad: rokDecyzji,
-      miesiacDecyzjiSad: miesiacDecyzji,
-      rodzajSaduSad: rodzajSadu,
-      apelacjaSad: apelacjaSad,
-      sadOkregowyId: sadOkregowyId,
-      sadRejonowyId: sadRejonowyId,
-      liczbaSedzi: liczbaSedzi,
-      plecSedziego: plecSedziego,
-      inicjalySedziego: inicjalySedziego,
-      czyPozew: czyPozew,
-      watekWiny: watekWiny,
-    });
+  const handleBack = useCallback(async () => {
+    // Zapobieganie wielokrotnym kliknięciom
+    if (isSubmitting) {
+      return;
+    }
 
-    router.push("/postepowanie");
-  };
+    setIsSubmitting(true);
+    setError(null);
+
+    const operationId = generateOperationId();
+    trackedLog(operationId, "Back navigation from postepowanie sadowe");
+
+    try {
+      // Zapisz bieżące dane przed cofnięciem
+      const postepowanieSadoweData: PostepowanieSadoweData = {
+        ocenaAdekwatnosciSad: ocenaAdekwatnosci,
+        wariantPostepu: "court",
+        rokDecyzjiSad: rokDecyzji,
+        miesiacDecyzjiSad: miesiacDecyzji,
+        rodzajSaduSad: rodzajSadu,
+        apelacjaSad: apelacjaSad,
+        sadOkregowyId: sadOkregowyId,
+        sadRejonowyId: sadRejonowyId,
+        liczbaSedzi: liczbaSedzi,
+        plecSedziego: plecSedziego,
+        inicjalySedziego: inicjalySedziego,
+        czyPozew: czyPozew,
+        watekWiny: watekWiny,
+      };
+
+      await updateFormData({
+        ...postepowanieSadoweData,
+        __meta: {
+          lastUpdated: Date.now(),
+          formVersion: "1.1.0",
+        },
+      });
+
+      // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+      scrollToTop();
+
+      // Dodajemy małe opóźnienie dla lepszego UX
+      setTimeout(() => {
+        trackedLog(operationId, "Navigating back to postepowanie");
+        router.push("/postepowanie");
+        setIsSubmitting(false);
+      }, 100);
+    } catch (error) {
+      trackedLog(operationId, "Error during back navigation", error, "error");
+      setError("Wystąpił błąd podczas zapisywania danych. Spróbuj ponownie.");
+      setIsSubmitting(false);
+      scrollToTop();
+    }
+  }, [
+    isSubmitting,
+    ocenaAdekwatnosci,
+    rokDecyzji,
+    miesiacDecyzji,
+    rodzajSadu,
+    apelacjaSad,
+    sadOkregowyId,
+    sadRejonowyId,
+    liczbaSedzi,
+    plecSedziego,
+    inicjalySedziego,
+    czyPozew,
+    watekWiny,
+    updateFormData,
+    router,
+    scrollToTop,
+  ]);
+
+  // Funkcja do resetowania błędów dla danego pola
+  const resetFieldError = useCallback(
+    (fieldName: string) => {
+      if (fieldErrors[fieldName]) {
+        setFieldErrors((prev) => {
+          const updated = { ...prev };
+          delete updated[fieldName];
+          return updated;
+        });
+      }
+      if (error) setError(null);
+    },
+    [fieldErrors, error]
+  );
 
   return (
     <main className="flex justify-center p-3">
@@ -169,6 +420,11 @@ export default function PostepowanieSadowe() {
                 }
               />
             </div>
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-md">
+                {error}
+              </div>
+            )}
             <p>
               W tej części zbieramy informacje o decyzji, która określiła zasady
               finansowania potrzeb dziecka – może to być wyrok, postanowienie
@@ -199,11 +455,21 @@ export default function PostepowanieSadowe() {
                       </div>
                     }
                   />
-                </Label>
+                </Label>{" "}
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <Select value={rokDecyzji} onValueChange={setRokDecyzji}>
-                      <SelectTrigger>
+                    <Select
+                      value={rokDecyzji}
+                      onValueChange={(value) => {
+                        setRokDecyzji(value);
+                        resetFieldError("rokDecyzjiSad");
+                      }}
+                    >
+                      <SelectTrigger
+                        className={
+                          fieldErrors["rokDecyzjiSad"] ? "border-red-500" : ""
+                        }
+                      >
                         <SelectValue placeholder="Wybierz rok" />
                       </SelectTrigger>
                       <SelectContent>
@@ -214,13 +480,27 @@ export default function PostepowanieSadowe() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {fieldErrors["rokDecyzjiSad"] && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldErrors["rokDecyzjiSad"]}
+                      </p>
+                    )}
                   </div>
                   <div className="flex-1">
                     <Select
                       value={miesiacDecyzji}
-                      onValueChange={setMiesiacDecyzji}
+                      onValueChange={(value) => {
+                        setMiesiacDecyzji(value);
+                        resetFieldError("miesiacDecyzjiSad");
+                      }}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger
+                        className={
+                          fieldErrors["miesiacDecyzjiSad"]
+                            ? "border-red-500"
+                            : ""
+                        }
+                      >
                         <SelectValue placeholder="Wybierz miesiąc" />
                       </SelectTrigger>
                       <SelectContent>
@@ -238,6 +518,11 @@ export default function PostepowanieSadowe() {
                         <SelectItem value="12">Grudzień</SelectItem>
                       </SelectContent>
                     </Select>
+                    {fieldErrors["miesiacDecyzjiSad"] && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldErrors["miesiacDecyzjiSad"]}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -263,11 +548,28 @@ export default function PostepowanieSadowe() {
                     <p className="text-sm text-gray-600 mb-3">
                       Zaznacz, przez jaki sąd została wydana decyzja dotycząca
                       alimentów w Twojej sprawie:
-                    </p>
-
+                    </p>{" "}
                     <RadioGroup
                       value={rodzajSadu}
-                      onValueChange={(value) => setRodzajSadu(value as any)}
+                      onValueChange={(value) => {
+                        setRodzajSadu(value as RodzajSadu);
+                        resetFieldError("rodzajSaduSad");
+
+                        // Reset dependent fields when changing court type
+                        if (value !== rodzajSadu) {
+                          setApelacjaSad("");
+                          setSadOkregowyId("");
+                          setSadRejonowyId("");
+                          resetFieldError("apelacjaSad");
+                          resetFieldError("sadOkregowyId");
+                          resetFieldError("sadRejonowyId");
+                        }
+                      }}
+                      className={
+                        fieldErrors["rodzajSaduSad"]
+                          ? "border-red-500 p-2 rounded-md"
+                          : ""
+                      }
                     >
                       <div className="flex items-center space-x-2 mb-2">
                         <RadioGroupItem value="rejonowy" id="sad-rejonowy" />
@@ -285,7 +587,11 @@ export default function PostepowanieSadowe() {
                         <Label htmlFor="sad-nie-pamietam">Nie pamiętam</Label>
                       </div>
                     </RadioGroup>
-
+                    {fieldErrors["rodzajSaduSad"] && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldErrors["rodzajSaduSad"]}
+                      </p>
+                    )}
                     <div className="mt-2 p-3 bg-blue-50 rounded-md">
                       <p className="text-sm text-blue-700 flex items-start">
                         <span className="text-blue-500 mr-2">ℹ️</span>
@@ -296,7 +602,6 @@ export default function PostepowanieSadowe() {
                         prowadzi sąd okręgowy.
                       </p>
                     </div>
-
                     <div className="mt-3">
                       <InfoTooltip
                         content={
@@ -327,17 +632,24 @@ export default function PostepowanieSadowe() {
                     <p className="text-sm text-gray-600 mb-3">
                       Wybierz obszar apelacji, do którego należy sąd
                       rozpatrujący Twoją sprawę:
-                    </p>
-
+                    </p>{" "}
                     <Select
                       value={apelacjaSad}
                       onValueChange={(value) => {
                         setApelacjaSad(value);
                         setSadOkregowyId("");
                         setSadRejonowyId("");
+                        resetFieldError("apelacjaSad");
+                        resetFieldError("sadOkregowyId");
+                        resetFieldError("sadRejonowyId");
                       }}
+                      disabled={rodzajSadu === "nie_pamietam"}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger
+                        className={
+                          fieldErrors["apelacjaSad"] ? "border-red-500" : ""
+                        }
+                      >
                         <SelectValue placeholder="Wybierz apelację" />
                       </SelectTrigger>
                       <SelectContent>
@@ -348,6 +660,11 @@ export default function PostepowanieSadowe() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {fieldErrors["apelacjaSad"] && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {fieldErrors["apelacjaSad"]}
+                      </p>
+                    )}
                   </div>
 
                   {apelacjaSad && (
@@ -363,14 +680,23 @@ export default function PostepowanieSadowe() {
 
                       {/* Wybór sądu okręgowego */}
                       <div className="mb-4">
+                        {" "}
                         <Select
                           value={sadOkregowyId}
                           onValueChange={(value) => {
                             setSadOkregowyId(value);
                             setSadRejonowyId("");
+                            resetFieldError("sadOkregowyId");
+                            resetFieldError("sadRejonowyId");
                           }}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger
+                            className={
+                              fieldErrors["sadOkregowyId"]
+                                ? "border-red-500"
+                                : ""
+                            }
+                          >
                             <SelectValue placeholder="Wybierz sąd okręgowy" />
                           </SelectTrigger>
                           <SelectContent>
@@ -383,16 +709,31 @@ export default function PostepowanieSadowe() {
                             ))}
                           </SelectContent>
                         </Select>
+                        {fieldErrors["sadOkregowyId"] && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {fieldErrors["sadOkregowyId"]}
+                          </p>
+                        )}
                       </div>
 
                       {/* Wybór sądu rejonowego (tylko gdy wybrany sąd rejonowy) */}
                       {rodzajSadu === "rejonowy" && sadOkregowyId && (
                         <div className="mb-4">
+                          {" "}
                           <Select
                             value={sadRejonowyId}
-                            onValueChange={setSadRejonowyId}
+                            onValueChange={(value) => {
+                              setSadRejonowyId(value);
+                              resetFieldError("sadRejonowyId");
+                            }}
                           >
-                            <SelectTrigger>
+                            <SelectTrigger
+                              className={
+                                fieldErrors["sadRejonowyId"]
+                                  ? "border-red-500"
+                                  : ""
+                              }
+                            >
                               <SelectValue placeholder="Wybierz sąd rejonowy" />
                             </SelectTrigger>
                             <SelectContent>
@@ -403,6 +744,11 @@ export default function PostepowanieSadowe() {
                               ))}
                             </SelectContent>
                           </Select>
+                          {fieldErrors["sadRejonowyId"] && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {fieldErrors["sadRejonowyId"]}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
@@ -574,14 +920,36 @@ export default function PostepowanieSadowe() {
                   </div>
                 </div>
               </div>
-            </div>
-
+            </div>{" "}
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" className="flex-1" onClick={handleBack}>
-                Wstecz
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={handleBack}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Wracam...
+                  </>
+                ) : (
+                  "Wstecz"
+                )}
               </Button>
-              <Button className="flex-1" onClick={handleNext}>
-                Dalej
+              <Button
+                className="flex-1"
+                onClick={handleNext}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Zapisuję...
+                  </>
+                ) : (
+                  "Dalej"
+                )}
               </Button>
             </div>
           </div>

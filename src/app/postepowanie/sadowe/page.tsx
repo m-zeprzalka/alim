@@ -23,7 +23,9 @@ import {
   APPELATIONS,
   REGIONAL_COURTS,
   getRegionalCourts,
-} from "@/lib/court-data";
+  getDistrictCourt,
+  getAppellation,
+} from "@/lib/court-data-hierarchical";
 import {
   PostepowanieSadoweData,
   RodzajSadu,
@@ -132,8 +134,20 @@ export default function PostepowanieSadowe() {
         miesiacDecyzjiSad: miesiacDecyzji,
         rodzajSaduSad: rodzajSadu,
         apelacjaSad: apelacjaSad,
+        apelacjaId: apelacjaSad,
+        apelacjaNazwa: apelacjaSad
+          ? getAppellation(apelacjaSad)?.name || ""
+          : "",
         sadOkregowyId: sadOkregowyId,
+        sadOkregowyNazwa:
+          sadOkregowyId && apelacjaSad
+            ? getDistrictCourt(apelacjaSad, sadOkregowyId)?.name || ""
+            : "",
         sadRejonowyId: sadRejonowyId,
+        sadRejonowyNazwa: sadRejonowyId
+          ? dostepneSadyRejonowe.find((sad) => sad.id === sadRejonowyId)
+              ?.name || ""
+          : "",
         liczbaSedzi: liczbaSedzi,
         plecSedziego: plecSedziego,
         inicjalySedziego: inicjalySedziego,
@@ -187,10 +201,11 @@ export default function PostepowanieSadowe() {
     czyPozew,
     watekWiny,
   ]);
-
   // Funkcja scrollToTop
   const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   }, []);
 
   // Funkcja obsługująca przejście do następnego kroku
@@ -227,8 +242,20 @@ export default function PostepowanieSadowe() {
         miesiacDecyzjiSad: miesiacDecyzji,
         rodzajSaduSad: rodzajSadu,
         apelacjaSad: apelacjaSad,
+        apelacjaId: apelacjaSad, // Dla kompatybilności z nowym schematem
+        apelacjaNazwa: apelacjaSad
+          ? getAppellation(apelacjaSad)?.name || ""
+          : "",
         sadOkregowyId: sadOkregowyId,
+        sadOkregowyNazwa:
+          sadOkregowyId && apelacjaSad
+            ? getDistrictCourt(apelacjaSad, sadOkregowyId)?.name || ""
+            : "",
         sadRejonowyId: sadRejonowyId,
+        sadRejonowyNazwa: sadRejonowyId
+          ? dostepneSadyRejonowe.find((sad) => sad.id === sadRejonowyId)
+              ?.name || ""
+          : "",
         liczbaSedzi: liczbaSedzi,
         plecSedziego: plecSedziego,
         inicjalySedziego: inicjalySedziego,
@@ -301,6 +328,9 @@ export default function PostepowanieSadowe() {
     updateFormData,
     router,
     scrollToTop,
+    dostepneSadyRejonowe,
+    getAppellation,
+    getDistrictCourt,
   ]);
 
   // Funkcja obsługująca powrót do poprzedniego kroku
@@ -325,8 +355,20 @@ export default function PostepowanieSadowe() {
         miesiacDecyzjiSad: miesiacDecyzji,
         rodzajSaduSad: rodzajSadu,
         apelacjaSad: apelacjaSad,
+        apelacjaId: apelacjaSad, // Dla kompatybilności z nowym schematem
+        apelacjaNazwa: apelacjaSad
+          ? getAppellation(apelacjaSad)?.name || ""
+          : "",
         sadOkregowyId: sadOkregowyId,
+        sadOkregowyNazwa:
+          sadOkregowyId && apelacjaSad
+            ? getDistrictCourt(apelacjaSad, sadOkregowyId)?.name || ""
+            : "",
         sadRejonowyId: sadRejonowyId,
+        sadRejonowyNazwa: sadRejonowyId
+          ? dostepneSadyRejonowe.find((sad) => sad.id === sadRejonowyId)
+              ?.name || ""
+          : "",
         liczbaSedzi: liczbaSedzi,
         plecSedziego: plecSedziego,
         inicjalySedziego: inicjalySedziego,
@@ -374,6 +416,9 @@ export default function PostepowanieSadowe() {
     updateFormData,
     router,
     scrollToTop,
+    dostepneSadyRejonowe,
+    getAppellation,
+    getDistrictCourt,
   ]);
 
   // Funkcja do resetowania błędów dla danego pola

@@ -133,16 +133,18 @@ export default function Wysylka() {
         submissionDate: new Date().toISOString(),
         csrfToken: csrfToken, // Dodaj token CSRF
         notHuman: "", // Puste pole honeypot do wykrywania botów
-      };
-
-      // Log dla developerów - jakie dane sądowe są wysyłane
+      }; // Log dla developerów - jakie dane sądowe są wysyłane
       console.log("Dane sądu do wysyłki:", {
         rokDecyzjiSad: submissionData.rokDecyzjiSad,
         miesiacDecyzjiSad: submissionData.miesiacDecyzjiSad,
         rodzajSaduSad: submissionData.rodzajSaduSad,
         apelacjaSad: submissionData.apelacjaSad,
+        apelacjaId: submissionData.apelacjaId,
+        apelacjaNazwa: submissionData.apelacjaNazwa,
         sadOkregowyId: submissionData.sadOkregowyId,
+        sadOkregowyNazwa: submissionData.sadOkregowyNazwa,
         sadRejonowyId: submissionData.sadRejonowyId,
+        sadRejonowyNazwa: submissionData.sadRejonowyNazwa,
       });
 
       console.log("Submission data:", JSON.stringify(submissionData));
@@ -192,11 +194,37 @@ export default function Wysylka() {
       if (responseData.id) {
         updateFormData({
           submissionId: responseData.id,
+          isOfflineSubmission: responseData.isOffline === true,
         });
+
+        // Jeśli to zgłoszenie offline, zapisz je lokalnie
+        if (responseData.isOffline) {
+          console.log("Zapisywanie danych w trybie offline");
+          try {
+            // Importujemy dynamicznie funkcję do zapisywania offline
+            const { saveFormDataLocally } = await import(
+              "@/lib/offline-support"
+            );
+            saveFormDataLocally({
+              ...submissionData,
+              submissionId: responseData.id,
+              savedAt: new Date().toISOString(),
+            });
+          } catch (offlineError) {
+            console.error(
+              "Błąd podczas zapisywania danych offline:",
+              offlineError
+            );
+          }
+        }
       }
 
       // Przekieruj do strony potwierdzenia z ID
-      router.push(`/dziekujemy?id=${responseData.id || "unknown"}`);
+      router.push(
+        `/dziekujemy?id=${responseData.id || "unknown"}${
+          responseData.isOffline ? "&offline=true" : ""
+        }`
+      );
     } catch (error) {
       console.error("Błąd wysyłki formularza:", error);
       setErrorMessage(

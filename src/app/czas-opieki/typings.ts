@@ -1,12 +1,20 @@
-// Typowanie dla tabeli czasu opieki
+// Typowanie dla pojedynczego dnia w tabeli czasu opieki
+export interface DzienCzasuOpieki {
+  poranek: number;
+  placowkaEdukacyjna: number;
+  czasPoEdukacji: number;
+  senURodzica: number;
+  senUDrugiegoRodzica: number;
+}
+
+// Typowanie dla tabeli czasu opieki jednego tygodnia
 export interface TabelaCzasu {
-  [dzien: string]: {
-    poranek: number;
-    placowkaEdukacyjna: number;
-    czasPoEdukacji: number;
-    senURodzica: number;
-    senUDrugiegoRodzica: number;
-  };
+  [dzien: string]: DzienCzasuOpieki;
+}
+
+// Typowanie dla wielotygodniowej tabeli czasu opieki
+export interface TabeleCzasuOpieki {
+  [tydzien: number]: TabelaCzasu;
 }
 
 // Typowanie dla wskaźników czasu opieki
@@ -34,6 +42,6 @@ export interface Dziecko {
   modelOpieki?: "50/50" | "inny";
   cyklOpieki?: "1" | "2" | "4" | "custom";
   procentCzasuOpieki?: number;
-  tabelaCzasu?: TabelaCzasu;
+  tabeleCzasuOpieki?: TabeleCzasuOpieki;
   wskaznikiCzasuOpieki?: WskaznikiCzasuOpieki;
 }

@@ -12,23 +12,29 @@ export default function ThankYouPage() {
   const { formData, resetForm } = useFormStore();
   const [submissionId, setSubmissionId] = useState<string>("");
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
+  const [isOfflineSubmission, setIsOfflineSubmission] =
+    useState<boolean>(false);
 
   // Pobierz ID zgłoszenia z URL lub z formData
   useEffect(() => {
     let id = "";
+    let offline = false;
 
     // Sprawdź URL
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       id = urlParams.get("id") || "";
+      offline = urlParams.get("offline") === "true";
     }
 
     // Jeśli nie ma w URL, sprawdź formData
     if (!id && formData.submissionId) {
       id = formData.submissionId;
+      offline = formData.isOfflineSubmission === true;
     }
 
     setSubmissionId(id);
+    setIsOfflineSubmission(offline);
 
     // Resetuj formularz przy wejściu na stronę podziękowania z opóźnieniem
     const timeoutId = setTimeout(() => {
@@ -77,10 +83,36 @@ export default function ThankYouPage() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-            </div>
+            </div>{" "}
             <h1 className="text-2xl font-bold">
               Dziękujemy za wypełnienie formularza!{" "}
-            </h1>{" "}
+            </h1>
+            {isOfflineSubmission && (
+              <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg my-4">
+                <p className="flex items-center gap-2 text-amber-800 font-medium">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
+                  Tryb offline
+                </p>
+                <p className="text-sm text-amber-700 mt-2">
+                  Twoje zgłoszenie zostało zapisane w trybie offline. Dane
+                  zostaną przesłane do serwera automatycznie, gdy połączenie
+                  internetowe zostanie przywrócone.
+                </p>
+              </div>
+            )}
             {submissionId && (
               <div className="bg-blue-50 p-4 rounded-lg my-4">
                 <p className="text-sm text-gray-700 font-medium mb-1">

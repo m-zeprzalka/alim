@@ -26,16 +26,20 @@ export const postepowanieSadoweSchema = z
     miesiacDecyzjiSad: z.string().min(1, "Miesiąc jest wymagany").max(2),
 
     // Rodzaj sądu
-    rodzajSaduSad: z.enum(["rejonowy", "okregowy", "nie_pamietam"] as const),
-
-    // Apelacja - wymagana tylko jeśli rodzajSaduSad to nie "nie_pamietam"
+    rodzajSaduSad: z.enum(["rejonowy", "okregowy", "nie_pamietam"] as const), // Apelacja - wymagana tylko jeśli rodzajSaduSad to nie "nie_pamietam"
     apelacjaSad: z.string().optional(),
+
+    // Nowe pola dla hierarchicznej struktury sądów
+    apelacjaId: z.string().optional(),
+    apelacjaNazwa: z.string().optional(),
 
     // ID sądu okręgowego - wymagane tylko dla określonych rodzajów sądu
     sadOkregowyId: z.string().optional(),
+    sadOkregowyNazwa: z.string().optional(),
 
     // ID sądu rejonowego - wymagane tylko dla rodzaju "rejonowy"
     sadRejonowyId: z.string().optional(),
+    sadRejonowyNazwa: z.string().optional(),
 
     // Liczba sędziów
     liczbaSedzi: z.enum(["jeden", "trzech"] as const),

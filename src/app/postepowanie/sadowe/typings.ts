@@ -26,8 +26,12 @@ export interface PostepowanieSadoweData {
   miesiacDecyzjiSad: string;
   rodzajSaduSad: RodzajSadu;
   apelacjaSad: string;
+  apelacjaId?: string; // Dla kompatybilności z nowym schematem
+  apelacjaNazwa?: string; // Nazwa apelacji
   sadOkregowyId: string;
+  sadOkregowyNazwa?: string; // Nazwa sądu okręgowego
   sadRejonowyId: string;
+  sadRejonowyNazwa?: string; // Nazwa sądu rejonowego
   liczbaSedzi: LiczbaSedzi;
   plecSedziego: PlecSedziego;
   inicjalySedziego: string;
@@ -37,6 +41,5 @@ export interface PostepowanieSadoweData {
 
 // Interfejs dla formularza z dodatkowymi opcjonalnymi polami
 export interface PostepowanieSadoweFormData extends PostepowanieSadoweData {
-  sadOkregowyNazwa?: string;
-  sadRejonowyNazwa?: string;
+  // Dodatkowe pola formularzowe, jeśli potrzebne
 }

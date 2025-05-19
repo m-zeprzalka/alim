@@ -1,0 +1,1269 @@
+{
+  "title": "Właściwość Sądów Powszechnych w Polsce",
+  "date": "1 lutego 2025",
+  "author": "Ministerstwo Sprawiedliwości",
+  "courts": {
+    "Sąd Apelacyjny w Białymstoku": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Białymstoku",
+        "Sąd Okręgowy w Łomży",
+        "Sąd Okręgowy w Olsztynie",
+        "Sąd Okręgowy w Ostrołęce",
+        "Sąd Okręgowy w Suwałkach"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Białymstoku": {
+          "local_courts": {
+            "Sąd Rejonowy w Białymstoku": {
+              "jurisdiction": "dla miasta Białystok oraz gmin: Choroszcz, Czarna Białostocka, Dobrzyniewo Duże, Grabówka, Gródek, Jasionówka, Jaświły, Juchnowiec Kościelny, Knyszyn, Krypno, Łapy, Michałowo, Mońki, Poświętne, Supraśl, Suraż, Turośń Kościelna, Tykocin, Wasilków i Zabłudów"
+            },
+            "Sąd Rejonowy w Bielsku Podlaskim": {
+              "jurisdiction": "dla miast: Bielsk Podlaski, Brańsk, Hajnówka i Siemiatycze oraz gmin: Białowieża, Bielsk Podlaski, Boćki, Brańsk, Czeremcha, Czyże, Drohiczyn, Dubicze Cerkiewne, Dziadkowice, Grodzisk, Hajnówka, Kleszczele, Mielnik, Milejczyce, Narew, Narewka, Nurzec-Stacja, Orla, Perlejewo, Rudka, Siemiatycze i Wyszki"
+            },
+            "Sąd Rejonowy w Sokółce": {
+              "jurisdiction": "dla gmin: Dąbrowa Białostocka, Janów, Korycin, Krynki, Kuźnica, Nowy Dwór, Sidra, Sokółka, Suchowola i Szudziałowo"
+            }
+          }
+        },
+        "Sąd Okręgowy w Łomży": {
+          "local_courts": {
+            "Sąd Rejonowy w Grajewie": {
+              "jurisdiction": "dla miasta Grajewo oraz gmin: Goniądz, Grajewo, Radziłów, Rajgród, Szczuczyn, Trzcianne i Wąsosz"
+            },
+            "Sąd Rejonowy w Łomży": {
+              "jurisdiction": "dla miast Kolno i Łomża oraz gmin: Grabowo, Jedwabne, Kolno, Łomża, Mały Płock, Miastkowo, Nowogród, Piątnica, Przytuły, Stawiski, Śniadowo, Turośl, Wizna i Zbójna"
+            },
+            "Sąd Rejonowy w Wysokiem Mazowieckiem": {
+              "jurisdiction": "dla miasta Wysokie Mazowieckie oraz gmin: Ciechanowiec, Czyżew, Klukowo, Kobylin-Borzymy, Kulesze Kościelne, Nowe Piekuty, Sokoły, Szepietowo i Wysokie Mazowieckie"
+            },
+            "Sąd Rejonowy w Zambrowie": {
+              "jurisdiction": "dla miasta Zambrów oraz gmin: Kołaki Kościelne, Rutki, Szumowo, Zambrów i Zawady"
+            }
+          }
+        },
+        "Sąd Okręgowy w Olsztynie": {
+          "local_courts": {
+            "Sąd Rejonowy w Bartoszycach": {
+              "jurisdiction": "dla miast Bartoszyce i Górowo Iławeckie oraz gmin: Bartoszyce, Górowo Iławeckie i Sępopol"
+            },
+            "Sąd Rejonowy w Biskupcu": {
+              "jurisdiction": "dla gmin: Biskupiec, Bisztynek, Jeziorany i Kolno"
+            },
+            "Sąd Rejonowy w Giżycku": {
+              "jurisdiction": "dla miasta Giżycko oraz gmin: Budry, Giżycko, Kruklanki, Miłki, Pozezdrze, Ryn, Węgorzewo i Wydminy"
+            },
+            "Sąd Rejonowy w Kętrzynie": {
+              "jurisdiction": "dla miasta Kętrzyn oraz gmin: Barciany, Kętrzyn, Korsze, Reszel i Srokowo"
+            },
+            "Sąd Rejonowy w Lidzbarku Warmińskim": {
+              "jurisdiction": "dla miasta Lidzbark Warmiński oraz gmin: Kiwity, Lidzbark Warmiński, Lubomino i Orneta"
+            },
+            "Sąd Rejonowy w Mrągowie": {
+              "jurisdiction": "dla miasta Mrągowo oraz gmin: Mikołajki, Mrągowo, Piecki i Sorkwity"
+            },
+            "Sąd Rejonowy w Nidzicy": {
+              "jurisdiction": "dla gmin: Janowiec Kościelny, Janowo, Kozłowo i Nidzica"
+            },
+            "Sąd Rejonowy w Olsztynie": {
+              "jurisdiction": "dla miasta Olsztyn oraz gmin: Barczewo, Dobre Miasto, Dywity, Gietrzwałd, Jonkowo, Olsztynek, Purda, Stawiguda i Świątki"
+            },
+            "Sąd Rejonowy w Piszu": {
+              "jurisdiction": "dla gmin: Biała Piska, Orzysz, Pisz i Ruciane-Nida"
+            },
+            "Sąd Rejonowy w Szczytnie": {
+              "jurisdiction": "dla miasta Szczytno oraz gmin: Dźwierzuty, Jedwabno, Pasym, Rozogi, Szczytno, Świętajno i Wielbark"
+            }
+          }
+        },
+        "Sąd Okręgowy w Ostrołęce": {
+          "local_courts": {
+            "Sąd Rejonowy w Ostrołęce": {
+              "jurisdiction": "dla miasta Ostrołęka oraz gmin: Baranowo, Czarnia, Czerwin, Goworowo, Kadzidło, Lelis, Łyse, Myszyniec, Olszewo-Borki, Rzekuń i Troszyn"
+            },
+            "Sąd Rejonowy w Ostrowi Mazowieckiej": {
+              "jurisdiction": "dla miasta Ostrów Mazowiecka oraz gmin: Andrzejewo, Boguty-Pianki, Brok, Małkinia Górna, Nur, Ostrów Mazowiecka, Stary Lubotyń, Szulborze Wielkie, Wąsewo i Zaręby Kościelne"
+            },
+            "Sąd Rejonowy w Przasnyszu": {
+              "jurisdiction": "dla miast Maków Mazowiecki i Przasnysz oraz gmin: Chorzele, Czernice Borowe, Czerwonka, Jednorożec, Karniewo, Krasne, Krasnosielc, Krzynowłoga Mała, Młynarze, Płoniawy-Bramura, Przasnysz, Różan, Rzewnie, Sypniewo i Szelków"
+            },
+            "Sąd Rejonowy w Pułtusku": {
+              "jurisdiction": "dla gmin: Gzy, Nasielsk, Obryte, Pokrzywnica, Pułtusk, Świercze, Winnica i Zatory"
+            },
+            "Sąd Rejonowy w Wyszkowie": {
+              "jurisdiction": "dla gmin: Brańszczyk, Długosiodło, Rząśnik, Somianka, Wyszków i Zabrodzie"
+            }
+          }
+        },
+        "Sąd Okręgowy w Suwałkach": {
+          "local_courts": {
+            "Sąd Rejonowy w Augustowie": {
+              "jurisdiction": "dla miast Augustów i Sejny oraz gmin: Augustów, Bargłów Kościelny, Giby, Krasnopol, Lipsk, Nowinka, Płaska, Puńsk, Sejny i Sztabin"
+            },
+            "Sąd Rejonowy w Ełku": {
+              "jurisdiction": "dla miasta Ełk oraz gmin: Ełk, Kalinowo, Prostki i Stare Juchy"
+            },
+            "Sąd Rejonowy w Olecku": {
+              "jurisdiction": "dla gmin: Banie Mazurskie, Dubeninki, Gołdap, Kowale Oleckie, Olecko, Świętajno i Wieliczki"
+            },
+            "Sąd Rejonowy w Suwałkach": {
+              "jurisdiction": "dla miasta Suwałki oraz gmin: Bakałarzewo, Filipów, Jeleniewo, Przerośl, Raczki, Rutka-Tartak, Suwałki, Szypliszki i Wiżajny"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Gdańsku": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Bydgoszczy",
+        "Sąd Okręgowy w Elblągu",
+        "Sąd Okręgowy w Gdańsku",
+        "Sąd Okręgowy w Słupsku",
+        "Sąd Okręgowy w Toruniu",
+        "Sąd Okręgowy we Włocławku"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Bydgoszczy": {
+          "local_courts": {
+            "Sąd Rejonowy w Bydgoszczy": {
+              "jurisdiction": "dla miasta Bydgoszcz oraz gmin: Białe Błota, Dąbrowa Chełmińska, Dobrcz, Koronowo, Nowa Wieś Wielka, Osielsko i Solec Kujawski"
+            },
+            "Sąd Rejonowy w Inowrocławiu": {
+              "jurisdiction": "dla miasta Inowrocław oraz gmin: Dąbrowa Biskupia, Gniewkowo, Inowrocław, Janikowo, Kruszwica, Pakość, Rojewo i Złotniki Kujawskie"
+            },
+            "Sąd Rejonowy w Mogilnie": {
+              "jurisdiction": "dla gmin: Dąbrowa, Jeziora Wielkie, Mogilno i Strzelno"
+            },
+            "Sąd Rejonowy w Nakle nad Notecią": {
+              "jurisdiction": "dla gmin: Mrocza, Nakło nad Notecią, Sadki i Sicienko"
+            },
+            "Sąd Rejonowy w Szubinie": {
+              "jurisdiction": "dla gmin: Barcin, Kcynia, Łabiszyn i Szubin"
+            },
+            "Sąd Rejonowy w Świeciu": {
+              "jurisdiction": "dla gmin: Bukowiec, Dragacz, Drzycim, Jeżewo, Lniano, Nowe, Osie, Pruszcz, Świecie, Świekatowo i Warlubie"
+            },
+            "Sąd Rejonowy w Tucholi": {
+              "jurisdiction": "dla gmin: Cekcyn, Gostycyn, Kamień Krajeński, Kęsowo, Lubiewo, Sępólno Krajeńskie, Sośno, Śliwice, Tuchola i Więcbork"
+            },
+            "Sąd Rejonowy w Żninie": {
+              "jurisdiction": "dla gmin: Gąsawa, Janowiec Wielkopolski, Rogowo i Żnin"
+            }
+          }
+        },
+        "Sąd Okręgowy w Elblągu": {
+          "local_courts": {
+            "Sąd Rejonowy w Braniewie": {
+              "jurisdiction": "dla miasta Braniewo oraz gmin: Braniewo, Frombork, Godkowo, Lelkowo, Młynary, Pieniężno, Płoskinia i Wilczęta"
+            },
+            "Sąd Rejonowy w Działdowie": {
+              "jurisdiction": "dla miasta Działdowo oraz gmin: Działdowo, Iłowo-Osada, Lidzbark, Płośnica i Rybno"
+            },
+            "Sąd Rejonowy w Elblągu": {
+              "jurisdiction": "dla miasta Elbląg oraz gmin: Elbląg, Gronowo Elbląskie, Markusy, Milejewo, Pasłęk, Rychliki i Tolkmicko"
+            },
+            "Sąd Rejonowy w Iławie": {
+              "jurisdiction": "dla miast Iława i Lubawa oraz gmin: Iława, Kisielice, Lubawa, Susz i Zalewo"
+            },
+            "Sąd Rejonowy w Nowym Mieście Lubawskim": {
+              "jurisdiction": "dla miasta Nowe Miasto Lubawskie oraz gmin: Biskupiec, Grodziczno, Kurzętnik i Nowe Miasto Lubawskie"
+            },
+            "Sąd Rejonowy w Ostródzie": {
+              "jurisdiction": "dla miasta Ostróda oraz gmin: Dąbrówno, Grunwald, Łukta, Małdyty, Miłakowo, Miłomłyn, Morąg i Ostróda"
+            }
+          }
+        },
+        "Sąd Okręgowy w Gdańsku": {
+          "local_courts": {
+            "Sąd Rejonowy Gdańsk-Południe w Gdańsku": {
+              "jurisdiction": "dla części obszaru miasta Gdańsk ustalonego dla jednostek pomocniczych: Aniołki, Chełm, Jasień, Krakowiec-Górki Zachodnie, Olszynka, Orunia Górna-Gdańsk Południe, Orunia-Św. Wojciech-Lipce, Przeróbka, Rudniki, Siedlce, Stogi, Suchanino, Śródmieście, Ujeścisko-Łostowice, Wyspa Sobieszewska, Wzgórze Mickiewicza, miasta Pruszcz Gdański oraz gmin: Cedry Wielkie, Kolbudy, Pruszcz Gdański, Przywidz, Pszczółki, Suchy Dąb i Trąbki Wielkie"
+            },
+            "Sąd Rejonowy Gdańsk-Północ w Gdańsku": {
+              "jurisdiction": "dla części obszaru miasta Gdańsk ustalonego dla jednostek pomocniczych: Brętowo, Brzeźno, Kokoszki, Letnica, Matarnia, Młyniska, Nowy Port, Oliwa, Osowa, Piecki-Migowo, Przymorze Małe, Przymorze Wielkie, VII Dwór, Strzyża, Wrzeszcz Dolny, Wrzeszcz Górny, Zaspa-Młyniec, Zaspa-Rozstaje i Żabianka-Wejhera-Jelitkowo-Tysiąclecia"
+            },
+            "Sąd Rejonowy w Gdyni": {
+              "jurisdiction": "dla miasta Gdynia"
+            },
+            "Sąd Rejonowy w Kartuzach": {
+              "jurisdiction": "dla gmin: Chmielno, Kartuzy, Przodkowo, Sierakowice, Somonino, Stężyca, Sulęczyno i Żukowo"
+            },
+            "Sąd Rejonowy w Kościerzynie": {
+              "jurisdiction": "dla miasta Kościerzyna oraz gmin: Dziemiany, Karsin, Kościerzyna, Liniewo, Lipusz, Nowa Karczma i Stara Kiszewa"
+            },
+            "Sąd Rejonowy w Kwidzynie": {
+              "jurisdiction": "dla miasta Kwidzyn oraz gmin: Dzierzgoń, Gardeja, Kwidzyn, Mikołajki Pomorskie, Prabuty, Ryjewo, Sadlinki, Stary Dzierzgoń, Stary Targ i Sztum"
+            },
+            "Sąd Rejonowy w Malborku": {
+              "jurisdiction": "dla miast Krynica Morska i Malbork oraz gmin: Lichnowy, Malbork, Miłoradz, Nowy Dwór Gdański, Nowy Staw, Ostaszewo, Stare Pole, Stegna i Sztutowo"
+            },
+            "Sąd Rejonowy w Sopocie": {
+              "jurisdiction": "dla miasta Sopot"
+            },
+            "Sąd Rejonowy w Starogardzie Gdańskim": {
+              "jurisdiction": "dla miast Skórcz i Starogard Gdański oraz gmin: Bobowo, Czarna Woda, Kaliska, Lubichowo, Osieczna, Osiek, Skarszewy, Skórcz, Smętowo Graniczne, Starogard Gdański i Zblewo"
+            },
+            "Sąd Rejonowy w Tczewie": {
+              "jurisdiction": "dla miasta Tczew oraz gmin: Gniew, Morzeszczyn, Pelplin, Subkowy i Tczew"
+            },
+            "Sąd Rejonowy w Wejherowie": {
+              "jurisdiction": "dla miast: Hel, Puck, Reda, Rumia i Wejherowo oraz gmin: Choczewo, Gniewino, Jastarnia, Kosakowo, Krokowa, Linia, Luzino, Łęczyce, Puck, Szemud, Wejherowo i Władysławowo"
+            }
+          }
+        },
+        "Sąd Okręgowy w Słupsku": {
+          "local_courts": {
+            "Sąd Rejonowy w Bytowie": {
+              "jurisdiction": "dla gmin: Borzytuchom, Bytów, Kołczygłowy, Lipnica, Parchowo, Studzienice i Tuchomie"
+            },
+            "Sąd Rejonowy w Chojnicach": {
+              "jurisdiction": "dla miasta Chojnice oraz gmin: Brusy, Chojnice i Czersk"
+            },
+            "Sąd Rejonowy w Człuchowie": {
+              "jurisdiction": "dla miasta Człuchów oraz gmin: Czarne, Człuchów, Debrzno, Konarzyny, Przechlewo i Rzeczenica"
+            },
+            "Sąd Rejonowy w Lęborku": {
+              "jurisdiction": "dla miast Lębork i Łeba oraz gmin: Cewice, Czarna Dąbrówka, Nowa Wieś Lęborska, Potęgowo i Wicko"
+            },
+            "Sąd Rejonowy w Miastku": {
+              "jurisdiction": "dla gmin: Kępice, Koczała, Miastko i Trzebielino"
+            },
+            "Sąd Rejonowy w Słupsku": {
+              "jurisdiction": "dla miast Słupsk i Ustka oraz gmin: Damnica, Dębnica Kaszubska, Główczyce, Kobylnica, Redzikowo, Smołdzino i Ustka"
+            }
+          }
+        },
+        "Sąd Okręgowy w Toruniu": {
+          "local_courts": {
+            "Sąd Rejonowy w Brodnicy": {
+              "jurisdiction": "dla miasta Brodnica oraz gmin: Bartniczka, Bobrowo, Brodnica, Brzozie, Górzno, Jabłonowo Pomorskie, Osiek, Świedziebnia i Zbiczno"
+            },
+            "Sąd Rejonowy w Chełmnie": {
+              "jurisdiction": "dla miasta Chełmno oraz gmin: Chełmno, Kijewo Królewskie, Lisewo, Papowo Biskupie, Stolno i Unisław"
+            },
+            "Sąd Rejonowy w Golubiu-Dobrzyniu": {
+              "jurisdiction": "dla miasta Golub-Dobrzyń oraz gmin: Ciechocin, Golub-Dobrzyń, Kowalewo Pomorskie, Radomin i Zbójno"
+            },
+            "Sąd Rejonowy w Grudziądzu": {
+              "jurisdiction": "dla miasta Grudziądz oraz gmin: Grudziądz, Gruta, Łasin, Rogóźno i Świecie nad Osą"
+            },
+            "Sąd Rejonowy w Toruniu": {
+              "jurisdiction": "dla miast Chełmża i Toruń oraz gmin: Chełmża, Lubicz, Łubianka, Łysomice, Obrowo, Wielka Nieszawka i Zławieś Wielka"
+            },
+            "Sąd Rejonowy w Wąbrzeźnie": {
+              "jurisdiction": "dla miasta Wąbrzeźno oraz gmin: Dębowa Łąka, Książki, Płużnica, Radzyń Chełmiński i Ryńsk"
+            }
+          }
+        },
+        "Sąd Okręgowy we Włocławku": {
+          "local_courts": {
+            "Sąd Rejonowy w Aleksandrowie Kujawskim": {
+              "jurisdiction": "dla miast: Aleksandrów Kujawski, Ciechocinek i Nieszawa oraz gmin: Aleksandrów Kujawski, Bądkowo, Koneck, Raciążek, Waganiec i Zakrzewo"
+            },
+            "Sąd Rejonowy w Lipnie": {
+              "jurisdiction": "dla miasta Lipno oraz gmin: Bobrowniki, Chrostkowo, Czernikowo, Dobrzyń nad Wisłą, Kikół, Lipno, Skępe, Tłuchowo i Wielgie"
+            },
+            "Sąd Rejonowy w Radziejowie": {
+              "jurisdiction": "dla miasta Radziejów oraz gmin: Bytoń, Dobre, Izbica Kujawska, Osięciny, Piotrków Kujawski, Radziejów i Topólka"
+            },
+            "Sąd Rejonowy w Rypinie": {
+              "jurisdiction": "dla miasta Rypin oraz gmin: Brzuze, Rogowo, Rypin, Skrwilno i Wąpielsk"
+            },
+            "Sąd Rejonowy we Włocławku": {
+              "jurisdiction": "dla miast Kowal i Włocławek oraz gmin: Baruchowo, Boniewo, Brześć Kujawski, Choceń, Chodecz, Fabianki, Kowal, Lubanie, Lubień Kujawski, Lubraniec i Włocławek"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Katowicach": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Bielsku-Białej",
+        "Sąd Okręgowy w Częstochowie",
+        "Sąd Okręgowy w Gliwicach",
+        "Sąd Okręgowy w Katowicach"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Bielsku-Białej": {
+          "local_courts": {
+            "Sąd Rejonowy w Bielsku-Białej": {
+              "jurisdiction": "dla miast Bielsko-Biała i Szczyrk oraz gmin: Bestwina, Buczkowice, Czechowice-Dziedzice, Jasienica, Jaworze, Kozy, Porąbka, Wilamowice i Wilkowice"
+            },
+            "Sąd Rejonowy w Cieszynie": {
+              "jurisdiction": "dla miasta Cieszyn oraz gmin: Brenna, Chybie, Dębowiec, Goleszów, Hażlach, Istebna, Skoczów, Strumień, Ustroń, Wisła i Zebrzydowice"
+            },
+            "Sąd Rejonowy w Żywcu": {
+              "jurisdiction": "dla miasta Żywiec oraz gmin: Czernichów, Gilowice, Jeleśnia, Koszarawa, Lipowa, Łękawica, Łodygowice, Milówka, Radziechowy-Wieprz, Rajcza, Słotwina, Ślemień, Świnna, Ujsoły i Węgierska Górka"
+            }
+          }
+        },
+        "Sąd Okręgowy w Częstochowie": {
+          "local_courts": {
+            "Sąd Rejonowy w Częstochowie": {
+              "jurisdiction": "dla miasta Częstochowa oraz gmin: Blachownia, Dąbrowa Zielona, Janów, Kamienica Polska, Kłomnice, Konopiska, Kruszyna, Lelów, Mstów, Mykanów, Olsztyn, Poczesna, Przyrów, Rędziny i Starcza"
+            },
+            "Sąd Rejonowy w Lublińcu": {
+              "jurisdiction": "dla miast Kalety i Lubliniec oraz gmin: Boronów, Ciasna, Herby, Kochanowice, Koszęcin, Pawonków i Woźniki"
+            },
+            "Sąd Rejonowy w Myszkowie": {
+              "jurisdiction": "dla miasta Myszków oraz gmin: Koziegłowy, Niegowa, Poraj i Żarki"
+            },
+            "Sąd Rejonowy w Zawierciu": {
+              "jurisdiction": "dla miast Poręba i Zawiercie oraz gmin: Irządze, Kroczyce, Łazy, Ogrodzieniec, Pilica, Szczekociny, Włodowice i Żarnowiec"
+            }
+          }
+        },
+        "Sąd Okręgowy w Gliwicach": {
+          "local_courts": {
+            "Sąd Rejonowy w Gliwicach": {
+              "jurisdiction": "dla miast: Gliwice, Knurów i Pyskowice oraz gmin: Gierałtowice, Pilchowice, Rudziniec, Sośnicowice, Toszek i Wielowieś"
+            },
+            "Sąd Rejonowy w Jastrzębiu-Zdroju": {
+              "jurisdiction": "dla miasta Jastrzębie-Zdrój oraz gmin: Godów, Mszana i Zebrzydowice"
+            },
+            "Sąd Rejonowy w Raciborzu": {
+              "jurisdiction": "dla miast Kuźnia Raciborska i Racibórz oraz gmin: Kornowac, Krzanowice, Krzyżanowice, Nędza, Pietrowice Wielkie i Rudnik"
+            },
+            "Sąd Rejonowy w Rybniku": {
+              "jurisdiction": "dla miast: Pszów, Radlin, Rybnik, Rydułtowy i Żory oraz gmin: Czerwionka-Leszczyny, Gaszowice, Jejkowice, Lyski, Marklowice i Świerklany"
+            },
+            "Sąd Rejonowy w Tarnowskich Górach": {
+              "jurisdiction": "dla miast: Kalety, Miasteczko Śląskie, Radzionków i Tarnowskie Góry oraz gmin: Krupski Młyn, Ożarowice, Świerklaniec, Tworóg i Zbrosławice"
+            },
+            "Sąd Rejonowy w Wodzisławiu Śląskim": {
+              "jurisdiction": "dla miasta Wodzisław Śląski oraz gmin: Gorzyce, Lubomia i Marklowice"
+            },
+            "Sąd Rejonowy w Zabrzu": {
+              "jurisdiction": "dla miasta Zabrze"
+            }
+          }
+        },
+        "Sąd Okręgowy w Katowicach": {
+          "local_courts": {
+            "Sąd Rejonowy w Będzinie": {
+              "jurisdiction": "dla miast: Będzin, Czeladź i Wojkowice oraz gminy Bobrowniki"
+            },
+            "Sąd Rejonowy w Bytomiu": {
+              "jurisdiction": "dla miasta Bytom"
+            },
+            "Sąd Rejonowy w Chorzowie": {
+              "jurisdiction": "dla miasta Chorzów"
+            },
+            "Sąd Rejonowy w Dąbrowie Górniczej": {
+              "jurisdiction": "dla miasta Dąbrowa Górnicza"
+            },
+            "Sąd Rejonowy w Jaworznie": {
+              "jurisdiction": "dla miasta Jaworzno"
+            },
+            "Sąd Rejonowy Katowice-Wschód w Katowicach": {
+              "jurisdiction": "dla części miasta Katowice ustalonej dla dzielnic: Bogucice, Dąbrówka Mała, Giszowiec, Janów-Nikiszowiec, Murcki, Piotrowice-Ochojec, Podlesie, Szopienice-Burowiec, Załęska Hałda-Brynów część wschodnia, Załęże i Zawodzie oraz dla miast Mysłowice i Siemianowice Śląskie"
+            },
+            "Sąd Rejonowy Katowice-Zachód w Katowicach": {
+              "jurisdiction": "dla części miasta Katowice ustalonej dla dzielnic: Brynów-Osiedle Zgrzebnioka, Dąb, Kostuchna, Koszutka, Ligota-Panewniki, Osiedle Paderewskiego-Muchowiec, Osiedle Tysiąclecia, Osiedle Witosa, Śródmieście, Wełnowiec-Józefowiec i Zarzecze"
+            },
+            "Sąd Rejonowy w Mikołowie": {
+              "jurisdiction": "dla miast: Łaziska Górne, Mikołów, Orzesze i Tychy oraz gmin: Kobiór, Ornontowice, Wyry"
+            },
+            "Sąd Rejonowy w Pszczynie": {
+              "jurisdiction": "dla miasta Pszczyna oraz gmin: Goczałkowice-Zdrój, Miedźna, Pawłowice i Suszec"
+            },
+            "Sąd Rejonowy w Rudzie Śląskiej": {
+              "jurisdiction": "dla miasta Ruda Śląska"
+            },
+            "Sąd Rejonowy w Sosnowcu": {
+              "jurisdiction": "dla miasta Sosnowiec"
+            },
+            "Sąd Rejonowy w Tychach": {
+              "jurisdiction": "dla miast: Bieruń, Imielin i Tychy oraz gminy Lędziny"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Krakowie": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Kielcach",
+        "Sąd Okręgowy w Krakowie",
+        "Sąd Okręgowy w Nowym Sączu",
+        "Sąd Okręgowy w Tarnowie"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Kielcach": {
+          "local_courts": {
+            "Sąd Rejonowy w Busku-Zdroju": {
+              "jurisdiction": "dla miasta Busko-Zdrój oraz gmin: Chmielnik, Gnojno, Nowy Korczyn, Pacanów, Pierzchnica, Solec-Zdrój, Stopnica, Szydłów, Tuczępy i Wiślica"
+            },
+            "Sąd Rejonowy w Jędrzejowie": {
+              "jurisdiction": "dla miasta Jędrzejów oraz gmin: Imielno, Małogoszcz, Nagłowice, Oksa, Sędziszów, Słupia, Sobków i Wodzisław"
+            },
+            "Sąd Rejonowy w Kazimierzy Wielkiej": {
+              "jurisdiction": "dla miasta Kazimierza Wielka oraz gmin: Bejsce, Czarnocin, Działoszyce, Opatowiec, Skalbmierz i Michałów"
+            },
+            "Sąd Rejonowy w Kielcach": {
+              "jurisdiction": "dla miasta Kielce oraz gmin: Bieliny, Bodzentyn, Chęciny, Daleszyce, Górno, Łagów, Łączna, Masłów, Miedziana Góra, Mniów, Morawica, Nowa Słupia, Piekoszów, Raków, Sitkówka-Nowiny, Strawczyn i Zagnańsk"
+            },
+            "Sąd Rejonowy w Końskich": {
+              "jurisdiction": "dla miasta Końskie oraz gmin: Bliżyn, Fałków, Gowarczów, Mniów, Radoszyce, Ruda Maleniecka, Słupia, Smyków i Stąporków"
+            },
+            "Sąd Rejonowy w Opatowie": {
+              "jurisdiction": "dla miast: Opatów i Ożarów oraz gmin: Baćkowice, Iwaniska, Lipnik, Opatów, Ożarów, Sadowie, Tarłów i Wojciechowice"
+            },
+            "Sąd Rejonowy w Ostrowcu Świętokrzyskim": {
+              "jurisdiction": "dla miasta Ostrowiec Świętokrzyski oraz gmin: Bałtów, Bodzechów, Ćmielów, Kunów i Waśniów"
+            },
+            "Sąd Rejonowy w Pińczowie": {
+              "jurisdiction": "dla miasta Pińczów oraz gmin: Kije, Michałów i Złota"
+            },
+            "Sąd Rejonowy w Sandomierzu": {
+              "jurisdiction": "dla miast: Sandomierz i Zawichost oraz gmin: Dwikozy, Klimontów, Koprzywnica, Łoniów, Obrazów, Samborzec i Wilczyce"
+            },
+            "Sąd Rejonowy w Skarżysku-Kamiennej": {
+              "jurisdiction": "dla miasta Skarżysko-Kamienna oraz gmin: Łączna, Skarżysko Kościelne i Suchedniów"
+            },
+            "Sąd Rejonowy w Starachowicach": {
+              "jurisdiction": "dla miasta Starachowice oraz gmin: Brody, Mirzec, Pawłów i Wąchock"
+            },
+            "Sąd Rejonowy w Staszowie": {
+              "jurisdiction": "dla miasta Staszów oraz gmin: Bogoria, Łubnice, Oleśnica, Osiek, Połaniec, Rytwiany i Szydłów"
+            },
+            "Sąd Rejonowy we Włoszczowie": {
+              "jurisdiction": "dla miasta Włoszczowa oraz gmin: Kluczewsko, Krasocin, Moskorzew, Radków i Secemin"
+            }
+          }
+        },
+        "Sąd Okręgowy w Krakowie": {
+          "local_courts": {
+            "Sąd Rejonowy dla Krakowa-Krowodrzy w Krakowie": {
+              "jurisdiction": "dla części miasta Krakowa obejmującej obszar dzielnic samorządowych: IV - Prądnik Biały, V - Krowodrza, VI - Bronowice, VII - Zwierzyniec oraz gmin: Jerzmanowice-Przeginia, Krzeszowice, Michałowice, Skała, Zabierzów i Zielonki"
+            },
+            "Sąd Rejonowy dla Krakowa-Nowej Huty w Krakowie": {
+              "jurisdiction": "dla części miasta Krakowa obejmującej obszar dzielnic samorządowych: XIV - Czyżyny, XV - Mistrzejowice, XVI - Bieńczyce, XVII - Wzgórza Krzesławickie, XVIII - Nowa Huta oraz gmin: Igołomia-Wawrzeńczyce, Kocmyrzów-Luborzyca, Niepołomice, Koniusza i Nowe Brzesko"
+            },
+            "Sąd Rejonowy dla Krakowa-Podgórza w Krakowie": {
+              "jurisdiction": "dla części miasta Krakowa obejmującej obszar dzielnic samorządowych: VIII - Dębniki, IX - Łagiewniki-Borek Fałęcki, X - Swoszowice, XI - Podgórze Duchackie, XII - Bieżanów-Prokocim, XIII - Podgórze oraz gmin: Mogilany, Piekary, Świątniki Górne i Wieliczka"
+            },
+            "Sąd Rejonowy dla Krakowa-Śródmieścia w Krakowie": {
+              "jurisdiction": "dla części miasta Krakowa obejmującej obszar dzielnic samorządowych: I - Stare Miasto, II - Grzegórzki, III - Prądnik Czerwony"
+            },
+            "Sąd Rejonowy w Chrzanowie": {
+              "jurisdiction": "dla miast: Alwernia, Chrzanów, Libiąż i Trzebinia oraz gmin: Alwernia, Babice, Chełmek i Libiąż"
+            },
+            "Sąd Rejonowy w Miechowie": {
+              "jurisdiction": "dla miasta Miechów oraz gmin: Charsznica, Gołcza, Kozłów, Książ Wielki, Miechów, Racławice, Słaboszów i Słomniki"
+            },
+            "Sąd Rejonowy w Myślenicach": {
+              "jurisdiction": "dla miast: Dobczyce, Myślenice i Sułkowice oraz gmin: Dobczyce, Lubień, Myślenice, Pcim, Raciechowice, Siepraw, Sułkowice, Tokarnia i Wiśniowa"
+            },
+            "Sąd Rejonowy w Olkuszu": {
+              "jurisdiction": "dla miast: Bukowno, Olkusz i Wolbrom oraz gmin: Bolesław, Klucze, Olkusz, Sławków, Trzyciąż i Wolbrom"
+            },
+            "Sąd Rejonowy w Oświęcimiu": {
+              "jurisdiction": "dla miast: Brzeszcze i Oświęcim oraz gmin: Brzeszcze, Chełmek, Kęty, Osiek, Oświęcim, Polanka Wielka i Przeciszów"
+            },
+            "Sąd Rejonowy w Skawinie": {
+              "jurisdiction": "dla miasta Skawina oraz gmin: Czernichów, Liszki, Skawina i Spytkowice"
+            },
+            "Sąd Rejonowy w Wadowicach": {
+              "jurisdiction": "dla miast: Andrychów, Kalwaria Zebrzydowska, Wadowice i Zator oraz gmin: Andrychów, Brzeźnica, Kalwaria Zebrzydowska, Lanckorona, Mucharz, Spytkowice, Stryszów, Tomice, Wadowice, Wieprz i Zator"
+            }
+          }
+        },
+        "Sąd Okręgowy w Nowym Sączu": {
+          "local_courts": {
+            "Sąd Rejonowy w Gorlicach": {
+              "jurisdiction": "dla miast: Biecz i Gorlice oraz gmin: Bobowa, Gorlice, Lipinki, Łużna, Moszczenica, Ropa, Sękowa i Uście Gorlickie"
+            },
+            "Sąd Rejonowy w Limanowej": {
+              "jurisdiction": "dla miasta Limanowa oraz gmin: Dobra, Jodłownik, Kamienica, Laskowa, Limanowa, Łukowica, Mszana Dolna, Niedźwiedź, Słopnice, Tymbark"
+            },
+            "Sąd Rejonowy w Muszynie": {
+              "jurisdiction": "dla miasta Muszyna oraz gmin: Krynica, Łabowa, Łącko, Łososina Dolna, Nawojowa, Piwniczna, Podegrodzie, Rytro i Stary Sącz"
+            },
+            "Sąd Rejonowy w Nowym Sączu": {
+              "jurisdiction": "dla miasta Nowy Sącz i Grybów oraz gmin: Chełmiec, Gródek nad Dunajcem, Grybów, Kamionka Wielka, Korzenna"
+            },
+            "Sąd Rejonowy w Nowym Targu": {
+              "jurisdiction": "dla miast: Nowy Targ, Szczawnica oraz gmin: Czarny Dunajec, Czorsztyn, Jabłonka, Krościenko nad Dunajcem, Lipnica Wielka, Łapsze Niżne, Nowy Targ, Ochotnica Dolna, Raba Wyżna, Rabka, Spytkowice i Szaflary"
+            },
+            "Sąd Rejonowy w Zakopanem": {
+              "jurisdiction": "dla miasta Zakopane oraz gmin: Biały Dunajec, Bukowina Tatrzańska, Kościelisko, Poronin"
+            }
+          }
+        },
+        "Sąd Okręgowy w Tarnowie": {
+          "local_courts": {
+            "Sąd Rejonowy w Bochni": {
+              "jurisdiction": "dla miasta Bochnia oraz gmin: Bochnia, Drwinia, Lipnica Murowana, Łapanów, Nowy Wiśnicz, Rzezawa, Trzciana i Żegocina"
+            },
+            "Sąd Rejonowy w Brzesku": {
+              "jurisdiction": "dla miasta Brzesko oraz gmin: Borzęcin, Czchów, Dębno, Gnojnik, Iwkowa i Szczurowa"
+            },
+            "Sąd Rejonowy w Dąbrowie Tarnowskiej": {
+              "jurisdiction": "dla miasta Dąbrowa Tarnowska oraz gmin: Bolesław, Gręboszów, Mędrzechów, Olesno, Radgoszcz, Szczucin i Żabno"
+            },
+            "Sąd Rejonowy w Tarnowie": {
+              "jurisdiction": "dla miasta Tarnów oraz gmin: Ciężkowice, Gromnik, Lisia Góra, Pleśna, Radłów, Ryglice, Rzepiennik Strzyżewski, Skrzyszów, Tarnów, Tuchów, Wierzchosławice, Wietrzychowice i Wojnicz"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Lublinie": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Lublinie",
+        "Sąd Okręgowy w Radomiu",
+        "Sąd Okręgowy w Siedlcach",
+        "Sąd Okręgowy w Zamościu"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Lublinie": {
+          "local_courts": {
+            "Sąd Rejonowy w Białej Podlaskiej": {
+              "jurisdiction": "dla miast Biała Podlaska i Terespol oraz gmin: Biała Podlaska, Drelów, Janów Podlaski, Kodeń, Konstantynów, Leśna Podlaska, Łomazy, Międzyrzec Podlaski, Piszczac, Rokitno, Rossosz, Sławatycze, Sosnówka, Terespol, Tuczna, Wisznice i Zalesie"
+            },
+            "Sąd Rejonowy w Chełmie": {
+              "jurisdiction": "dla miasta Chełm oraz gmin: Białopole, Chełm, Dorohusk, Dubienka, Horodło, Hrubieszów, Kamień, Leśniowice, Rejowiec, Rejowiec Fabryczny, Ruda-Huta, Sawin, Siedliszcze, Uchanie, Wierzbica, Wojsławice, Wola Uhruska i Żmudź"
+            },
+            "Sąd Rejonowy w Kraśniku": {
+              "jurisdiction": "dla miast: Józefów, Kraśnik oraz gmin: Annopol, Batorz, Dzierzkowice, Godziszów, Kraśnik, Modliborzyce, Potok Wielki, Szastarka, Trzydnik Duży, Urzędów, Wilkołaz, Zakrzówek"
+            },
+            "Sąd Rejonowy w Lubartowie": {
+              "jurisdiction": "dla miasta Lubartów oraz gmin: Abramów, Firlej, Jeziorzany, Kamionka, Kock, Lubartów, Michów, Niedźwiada, Ostrówek, Ostrów Lubelski, Serniki i Uścimów"
+            },
+            "Sąd Rejonowy Lublin-Wschód w Lublinie z siedzibą w Świdniku": {
+              "jurisdiction": "dla miast: Łęczna i Świdnik oraz gmin: Cyców, Garbów, Głusk, Jabłonna, Jastków, Kamionka, Konopnica, Krzczonów, Ludwin, Łęczna, Mełgiew, Milejów, Niemce, Piaski, Puchaczów, Serniki, Spiczyn, Strzyżewice, Trawniki, Wólka, Wysokie i Zakrzew"
+            },
+            "Sąd Rejonowy Lublin-Zachód w Lublinie": {
+              "jurisdiction": "dla miasta Lublin"
+            },
+            "Sąd Rejonowy w Łukowie": {
+              "jurisdiction": "dla miast: Łuków, Stoczek Łukowski oraz gmin: Adamów, Borki, Czemierniki, Jeziorzany, Kłoczew, Kock, Krzywda, Łuków, Nowodwór, Radzyń Podlaski, Serokomla, Stanin, Stoczek Łukowski, Trzebieszów, Ułęż, Ulan-Majorat, Wojcieszków i Wola Mysłowska"
+            },
+            "Sąd Rejonowy w Opolu Lubelskim": {
+              "jurisdiction": "dla miast: Józefów nad Wisłą, Opole Lubelskie i Poniatowa oraz gmin: Bełżyce, Borzechów, Chodel, Józefów nad Wisłą, Karczmiska, Łaziska, Nałęczów, Opole Lubelskie, Poniatowa, Wąwolnica, Wilków i Wojciechów"
+            },
+            "Sąd Rejonowy w Puławach": {
+              "jurisdiction": "dla miast: Kazimierz Dolny, Puławy oraz gmin: Baranów, Janowiec, Końskowola, Kurów, Markuszów, Puławy, Wąwolnica i Żyrzyn"
+            },
+            "Sąd Rejonowy w Radzyniu Podlaskim": {
+              "jurisdiction": "dla miasta Radzyń Podlaski oraz gmin: Czemierniki, Kąkolewnica, Komarówka Podlaska, Międzyrzec Podlaski, Radzyń Podlaski, Ulan-Majorat i Wohyń"
+            },
+            "Sąd Rejonowy w Rykach": {
+              "jurisdiction": "dla miasta Ryki oraz gmin: Dęblin, Kłoczew, Nowodwór, Stężyca i Ułęż"
+            }
+          }
+        },
+        "Sąd Okręgowy w Radomiu": {
+          "local_courts": {
+            "Sąd Rejonowy w Grójcu": {
+              "jurisdiction": "dla miasta Grójec oraz gmin: Belsk Duży, Błędów, Chynów, Goszczyn, Jasieniec, Mogielnica, Nowe Miasto nad Pilicą, Pniewy, Promna i Warka"
+            },
+            "Sąd Rejonowy w Kozienicach": {
+              "jurisdiction": "dla miasta Kozienice oraz gmin: Garbatka-Letnisko, Głowaczów, Gniewoszów, Grabów nad Pilicą, Magnuszew i Sieciechów"
+            },
+            "Sąd Rejonowy w Lipsku": {
+              "jurisdiction": "dla miasta Lipsko oraz gmin: Chotcza, Ciepielów, Rzeczniów i Solec nad Wisłą"
+            },
+            "Sąd Rejonowy w Pionkach": {
+              "jurisdiction": "dla miasta Pionki oraz gmin: Gózd, Jedlnia-Letnisko, Pionki i Zwoleń"
+            },
+            "Sąd Rejonowy w Przysusze": {
+              "jurisdiction": "dla miasta Przysucha oraz gmin: Borkowice, Gielniów, Klwów, Odrzywół, Potworów, Rusinów i Wieniawa"
+            },
+            "Sąd Rejonowy w Radomiu": {
+              "jurisdiction": "dla miasta Radom oraz gmin: Iłża, Jastrzębia, Jedlińsk, Kowala, Przytyk, Skaryszew, Wierzbica i Wolanów"
+            },
+            "Sąd Rejonowy w Szydłowcu": {
+              "jurisdiction": "dla miasta Szydłowiec oraz gmin: Chlewiska, Jastrząb, Mirów i Orońsko"
+            },
+            "Sąd Rejonowy w Zwoleniu": {
+              "jurisdiction": "dla miasta Zwoleń oraz gmin: Kazanów, Policzna, Przyłęk i Tczów"
+            }
+          }
+        },
+        "Sąd Okręgowy w Siedlcach": {
+          "local_courts": {
+            "Sąd Rejonowy w Garwolinie": {
+              "jurisdiction": "dla miasta Garwolin oraz gmin: Borowie, Garwolin, Górzno, Łaskarzew, Maciejowice, Miastków Kościelny, Parysów, Pilawa, Sobolew, Trojanów i Wilga"
+            },
+            "Sąd Rejonowy w Łosicach": {
+              "jurisdiction": "dla miasta Łosice oraz gmin: Huszlew, Olszanka, Platerów, Sarnaki i Stara Kornica"
+            },
+            "Sąd Rejonowy w Mińsku Mazowieckim": {
+              "jurisdiction": "dla miast: Kałuszyn, Mińsk Mazowiecki i Sulejówek oraz gmin: Cegłów, Dębe Wielkie, Dobre, Halinów, Jakubów, Kałuszyn, Latowicz, Mińsk Mazowiecki, Mrozy, Siennica, Stanisławów i Stojadła"
+            },
+            "Sąd Rejonowy w Siedlcach": {
+              "jurisdiction": "dla miasta Siedlce oraz gmin: Domanice, Korczew, Kotuń, Mokobody, Mordy, Paprotnia, Przesmyki, Skórzec, Siedlce, Suchożebry, Wiśniew, Wodynie, Zbuczyn"
+            },
+            "Sąd Rejonowy w Sokołowie Podlaskim": {
+              "jurisdiction": "dla miasta Sokołów Podlaski oraz gmin: Bielany, Ceranów, Jabłonna Lacka, Kosów Lacki, Repki, Sabnie, Sokołów Podlaski, Sterdyń i Węgrów"
+            },
+            "Sąd Rejonowy w Węgrowie": {
+              "jurisdiction": "dla miasta Węgrów oraz gmin: Grębków, Korytnica, Liw, Łochów, Miedzna, Sadowne, Stoczek i Wierzbno"
+            }
+          }
+        },
+        "Sąd Okręgowy w Zamościu": {
+          "local_courts": {
+            "Sąd Rejonowy w Biłgoraju": {
+              "jurisdiction": "dla miast: Biłgoraj, Frampol, Goraj, Józefów, Szczebrzeszyn, Tarnogród, Zwierzyniec oraz gmin: Adamów, Aleksandrów, Biłgoraj, Biszcza, Frampol, Goraj, Józefów, Księżpol, Łukowa, Obsza, Potok Górny, Radecznica, Sułów, Szczebrzeszyn, Tarnogród, Tereszpol, Turobin, Zwierzyniec"
+            },
+            "Sąd Rejonowy w Hrubieszowie": {
+              "jurisdiction": "dla miasta Hrubieszów oraz gmin: Dołhobyczów, Grabowiec, Horodło, Hrubieszów, Mircze, Trzeszczany, Uchanie i Werbkowice"
+            },
+            "Sąd Rejonowy w Janowie Lubelskim": {
+              "jurisdiction": "dla miasta Janów Lubelski oraz gmin: Batorz, Chrzanów, Dzwola, Godziszów, Modliborzyce, Potok Wielki, Szastarka"
+            },
+            "Sąd Rejonowy w Krasnymstawie": {
+              "jurisdiction": "dla miast: Krasnystaw oraz gmin: Fajsławice, Gorzków, Izbica, Krasnystaw, Kraśniczyn, Łopiennik Górny, Rudnik, Siennica Różana, Żółkiewka"
+            },
+            "Sąd Rejonowy w Tomaszowie Lubelskim": {
+              "jurisdiction": "dla miasta Tomaszów Lubelski oraz gmin: Bełżec, Jarczów, Krynice, Lubycza Królewska, Łaszczów, Rachanie, Susiec, Tarnawatka, Telatyn, Tomaszów Lubelski, Tyszowce i Ulhówek"
+            },
+            "Sąd Rejonowy w Zamościu": {
+              "jurisdiction": "dla miasta Zamość oraz gmin: Adamów, Grabowiec, Komarów-Osada, Krasnobród, Łabunie, Miączyn, Nielisz, Radecznica, Sitno, Skierbieszów, Stary Zamość, Sułów, Szczebrzeszyn, Zamość i Zwierzyniec"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Łodzi": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Kaliszu",
+        "Sąd Okręgowy w Łodzi",
+        "Sąd Okręgowy w Piotrkowie Trybunalskim",
+        "Sąd Okręgowy w Płocku",
+        "Sąd Okręgowy w Sieradzu"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Kaliszu": {
+          "local_courts": {
+            "Sąd Rejonowy w Jarocinie": {
+              "jurisdiction": "dla miasta Jarocin oraz gmin: Jaraczewo, Kotlin i Żerków"
+            },
+            "Sąd Rejonowy w Kaliszu": {
+              "jurisdiction": "dla miasta Kalisz oraz gmin: Blizanów, Brzeziny, Ceków-Kolonia, Godziesze Wielkie, Koźminek, Lisków, Mycielin, Opatówek, Stawiszyn i Żelazków"
+            },
+            "Sąd Rejonowy w Kępnie": {
+              "jurisdiction": "dla miasta Kępno oraz gmin: Baranów, Bralin, Łęka Opatowska, Perzów, Rychtal i Trzcinica"
+            },
+            "Sąd Rejonowy w Krotoszynie": {
+              "jurisdiction": "dla miast: Koźmin Wielkopolski, Krotoszyn, Sulmierzyce oraz gmin: Kobylin, Koźmin Wielkopolski, Krotoszyn, Pogorzela, Rozdrażew i Zduny"
+            },
+            "Sąd Rejonowy w Ostrowie Wielkopolskim": {
+              "jurisdiction": "dla miasta Ostrów Wielkopolski oraz gmin: Nowe Skalmierzyce, Odolanów, Ostrów Wielkopolski, Przygodzice, Raszków i Sieroszewice"
+            },
+            "Sąd Rejonowy w Ostrzeszowie": {
+              "jurisdiction": "dla miasta Ostrzeszów oraz gmin: Czajków, Doruchów, Grabów nad Prosną, Kobyla Góra, Kraszewice i Mikstat"
+            },
+            "Sąd Rejonowy w Pleszewie": {
+              "jurisdiction": "dla miasta Pleszew oraz gmin: Chocz, Czermin, Dobrzyca, Gizałki i Gołuchów"
+            }
+          }
+        },
+        "Sąd Okręgowy w Łodzi": {
+          "local_courts": {
+            "Sąd Rejonowy w Brzezinach": {
+              "jurisdiction": "dla miasta Brzeziny oraz gmin: Andrespol, Brójce, Brzeziny, Dmosin, Jeżów, Koluszki, Nowosolna i Rogów"
+            },
+            "Sąd Rejonowy w Kutnie": {
+              "jurisdiction": "dla miasta Kutno oraz gmin: Bedlno, Dąbrowice, Krośniewice, Krzyżanów, Kutno, Łanięta, Nowe Ostrowy, Oporów, Strzelce i Żychlin"
+            },
+            "Sąd Rejonowy w Łęczycy": {
+              "jurisdiction": "dla miasta Łęczyca oraz gmin: Daszyna, Góra Świętej Małgorzaty, Grabów, Łęczyca, Piątek, Świnice Warckie i Witonia"
+            },
+            "Sąd Rejonowy dla Łodzi-Śródmieścia w Łodzi": {
+              "jurisdiction": "dla części miasta Łodzi w granicach ustalonych tradycyjnie dla dzielnicy Łódź-Śródmieście"
+            },
+            "Sąd Rejonowy dla Łodzi-Widzewa w Łodzi": {
+              "jurisdiction": "dla części miasta Łodzi w granicach ustalonych tradycyjnie dla dzielnicy Łódź-Widzew oraz gmin: Andrespol, Brójce, Nowosolna"
+            },
+            "Sąd Rejonowy w Łowiczu": {
+              "jurisdiction": "dla miasta Łowicz oraz gmin: Bielawy, Chąśno, Domaniewice, Kiernozia, Kocierzew Południowy, Łowicz, Łyszkowice, Nieborów i Zduny"
+            },
+            "Sąd Rejonowy w Pabianicach": {
+              "jurisdiction": "dla miast: Konstantynów Łódzki, Pabianice i gmin: Dłutów, Dobroń, Ksawerów, Lutomiersk, Pabianice"
+            },
+            "Sąd Rejonowy w Rawie Mazowieckiej": {
+              "jurisdiction": "dla miasta Rawa Mazowiecka oraz gmin: Biała Rawska, Cielądz, Głuchów, Kowiesy, Rawa Mazowiecka, Regnów, Sadkowice i Żelechlinek"
+            },
+            "Sąd Rejonowy w Skierniewicach": {
+              "jurisdiction": "dla miasta Skierniewice oraz gmin: Bolimów, Godzianów, Lipce Reymontowskie, Maków, Nowy Kawęczyn, Skierniewice i Słupia"
+            },
+            "Sąd Rejonowy w Zgierzu": {
+              "jurisdiction": "dla miast: Aleksandrów Łódzki, Głowno, Ozorków, Stryków, Zgierz oraz gmin: Aleksandrów Łódzki, Głowno, Ozorków, Parzęczew, Stryków i Zgierz"
+            }
+          }
+        },
+        "Sąd Okręgowy w Piotrkowie Trybunalskim": {
+          "local_courts": {
+            "Sąd Rejonowy w Bełchatowie": {
+              "jurisdiction": "dla miasta Bełchatów oraz gmin: Bełchatów, Drużbice, Kleszczów, Kluki, Rusiec, Szczerców i Zelów"
+            },
+            "Sąd Rejonowy w Opocznie": {
+              "jurisdiction": "dla miasta Opoczno oraz gmin: Białaczów, Drzewica, Mniszków, Paradyż, Poświętne, Sławno i Żarnów"
+            },
+            "Sąd Rejonowy w Piotrkowie Trybunalskim": {
+              "jurisdiction": "dla miasta Piotrków Trybunalski oraz gmin: Aleksandrów, Czarnocin, Gorzkowice, Grabica, Łęki Szlacheckie, Moszczenica, Ręczno, Rozprza, Sulejów, Wola Krzysztoporska i Wolbórz"
+            },
+            "Sąd Rejonowy w Radomsku": {
+              "jurisdiction": "dla miasta Radomsko oraz gmin: Dobryszyce, Gidle, Gomunice, Kamieńsk, Kobiele Wielkie, Kodrąb, Lgota Wielka, Ładzice, Masłowice, Przedbórz, Radomsko, Wielgomłyny i Żytno"
+            },
+            "Sąd Rejonowy w Tomaszowie Mazowieckim": {
+              "jurisdiction": "dla miasta Tomaszów Mazowiecki oraz gmin: Będków, Budziszewice, Czerniewice, Inowłódz, Lubochnia, Rokiciny, Rzeczyca, Tomaszów Mazowiecki, Ujazd i Żelechlinek"
+            }
+          }
+        },
+        "Sąd Okręgowy w Płocku": {
+          "local_courts": {
+            "Sąd Rejonowy w Ciechanowie": {
+              "jurisdiction": "dla miasta Ciechanów oraz gmin: Ciechanów, Glinojeck, Gołymin-Ośrodek, Grudusk, Ojrzeń, Opinogóra Górna, Regimin i Sońsk"
+            },
+            "Sąd Rejonowy w Gostyninie": {
+              "jurisdiction": "dla miasta Gostynin oraz gmin: Gostynin, Łąck, Nowy Duninów, Pacyna, Sanniki i Szczawin Kościelny"
+            },
+            "Sąd Rejonowy w Mławie": {
+              "jurisdiction": "dla miasta Mława oraz gmin: Dzierzgowo, Lipowiec Kościelny, Radzanów, Strzegowo, Stupsk, Szreńsk, Szydłowo, Wieczfnia Kościelna i Wiśniewo"
+            },
+            "Sąd Rejonowy w Płocku": {
+              "jurisdiction": "dla miasta Płock oraz gmin: Bielsk, Bodzanów, Brudzeń Duży, Bulkowo, Czerwińsk nad Wisłą, Drobin, Gąbin, Mała Wieś, Nowy Duninów, Radzanowo, Słubice, Słupno, Stara Biała, Staroźreby, Wyszogród i Teresin"
+            },
+            "Sąd Rejonowy w Płońsku": {
+              "jurisdiction": "dla miasta Płońsk oraz gmin: Baboszewo, Czerwińsk nad Wisłą, Dzierzążnia, Joniec, Naruszewo, Nowe Miasto, Płońsk, Raciąż, Sochocin i Załuski"
+            },
+            "Sąd Rejonowy w Sierpcu": {
+              "jurisdiction": "dla miasta Sierpc oraz gmin: Gozdowo, Mochowo, Rościszewo, Sierpc, Szczutowo i Zawidz"
+            },
+            "Sąd Rejonowy w Sochaczewie": {
+              "jurisdiction": "dla miasta Sochaczew oraz gmin: Brochów, Iłów, Młodzieszyn, Nowa Sucha, Rybno, Sochaczew i Teresin"
+            },
+            "Sąd Rejonowy w Żyrardowie": {
+              "jurisdiction": "dla miast: Mszczonów, Żyrardów oraz gmin: Baranów, Jaktorów, Puszcza Mariańska, Radziejowice i Wiskitki"
+            }
+          }
+        },
+        "Sąd Okręgowy w Sieradzu": {
+          "local_courts": {
+            "Sąd Rejonowy w Łasku": {
+              "jurisdiction": "dla miasta Łask oraz gmin: Buczek, Dobroń, Sędziejowice, Widawa i Wodzierady"
+            },
+            "Sąd Rejonowy w Sieradzu": {
+              "jurisdiction": "dla miasta Sieradz oraz gmin: Błaszki, Brąszewice, Brzeźnio, Burzenin, Goszczanów, Klonowa, Sieradz, Warta i Wróblew"
+            },
+            "Sąd Rejonowy w Wieluniu": {
+              "jurisdiction": "dla miasta Wieluń oraz gmin: Biała, Czarnożyły, Konopnica, Mokrsko, Osjaków, Ostrówek, Pątnów, Siemkowice, Skomlin, Wieluń i Wierzchlas"
+            },
+            "Sąd Rejonowy w Zduńskiej Woli": {
+              "jurisdiction": "dla miasta Zduńska Wola oraz gmin: Szadek, Zapolice i Zduńska Wola"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Poznaniu": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Koninie",
+        "Sąd Okręgowy w Poznaniu",
+        "Sąd Okręgowy w Zielonej Górze"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Koninie": {
+          "local_courts": {
+            "Sąd Rejonowy w Kole": {
+              "jurisdiction": "dla miasta Koło oraz gmin: Babiak, Chodów, Dąbie, Grzegorzew, Kłodawa, Koło, Kościelec, Olszówka, Osiek Mały i Przedecz"
+            },
+            "Sąd Rejonowy w Koninie": {
+              "jurisdiction": "dla miasta Konin oraz gmin: Golina, Grodziec, Kazimierz Biskupi, Kleczew, Kramsk, Krzymów, Rzgów, Rychwał, Skulsk, Sompolno, Stare Miasto, Ślesin, Wierzbinek i Wilczyn"
+            },
+            "Sąd Rejonowy w Słupcy": {
+              "jurisdiction": "dla miasta Słupca oraz gmin: Lądek, Orchowo, Ostrowite, Powidz, Słupca, Strzałkowo i Zagórów"
+            },
+            "Sąd Rejonowy w Turku": {
+              "jurisdiction": "dla miasta Turek oraz gmin: Brudzew, Dobra, Kawęczyn, Malanów, Przykona, Tuliszków, Turek i Władysławów"
+            }
+          }
+        },
+        "Sąd Okręgowy w Poznaniu": {
+          "local_courts": {
+            "Sąd Rejonowy w Chodzieży": {
+              "jurisdiction": "dla miasta Chodzież oraz gmin: Budzyń, Chodzież, Margonin, Szamocin i Ujście"
+            },
+            "Sąd Rejonowy w Czarnkowie": {
+              "jurisdiction": "dla miasta Czarnków oraz gmin: Czarnków, Drawsko, Krzyż Wielkopolski, Lubasz, Połajewo, Trzcianka i Wieleń"
+            },
+            "Sąd Rejonowy w Gnieźnie": {
+              "jurisdiction": "dla miasta Gniezno oraz gmin: Czerniejewo, Gniezno, Kiszkowo, Kłecko, Łubowo, Mieleszyn, Niechanowo, Trzemeszno i Witkowo"
+            },
+            "Sąd Rejonowy w Gostyniu": {
+              "jurisdiction": "dla miasta Gostyń oraz gmin: Borek Wielkopolski, Krobia, Pępowo, Piaski i Poniec"
+            },
+            "Sąd Rejonowy w Grodzisku Wielkopolskim": {
+              "jurisdiction": "dla miasta Grodzisk Wielkopolski oraz gmin: Granowo, Kamieniec, Rakoniewice i Wielichowo"
+            },
+            "Sąd Rejonowy w Kościanie": {
+              "jurisdiction": "dla miasta Kościan oraz gmin: Czempiń, Kościan, Krzywiń i Śmigiel"
+            },
+            "Sąd Rejonowy w Lesznie": {
+              "jurisdiction": "dla miasta Leszno oraz gmin: Krzemieniewo, Lipno, Osieczna, Rydzyna, Święciechowa i Włoszakowice"
+            },
+            "Sąd Rejonowy w Nowym Tomyślu": {
+              "jurisdiction": "dla miasta Nowy Tomyśl oraz gmin: Kuślin, Lwówek, Miedzichowo, Opalenica i Zbąszyń"
+            },
+            "Sąd Rejonowy w Obornikach": {
+              "jurisdiction": "dla miasta Oborniki oraz gmin: Ryczywół i Rogoźno"
+            },
+            "Sąd Rejonowy Poznań-Grunwald i Jeżyce w Poznaniu": {
+              "jurisdiction": "dla dzielnic miasta Poznania - Grunwald i Jeżyce"
+            },
+            "Sąd Rejonowy Poznań-Nowe Miasto i Wilda w Poznaniu": {
+              "jurisdiction": "dla dzielnic miasta Poznania - Nowe Miasto i Wilda"
+            },
+            "Sąd Rejonowy Poznań-Stare Miasto w Poznaniu": {
+              "jurisdiction": "dla dzielnicy miasta Poznania - Stare Miasto"
+            },
+            "Sąd Rejonowy w Rawiczu": {
+              "jurisdiction": "dla miasta Rawicz oraz gmin: Bojanowo, Jutrosin, Miejska Górka, Pakosław i Pempowo"
+            },
+            "Sąd Rejonowy w Szamotułach": {
+              "jurisdiction": "dla miasta Szamotuły oraz gmin: Duszniki, Kaźmierz, Obrzycko, Ostroróg i Pniewy"
+            },
+            "Sąd Rejonowy w Śremie": {
+              "jurisdiction": "dla miasta Śrem oraz gmin: Brodnica, Dolsk, Książ Wielkopolski i Zaniemyśl"
+            },
+            "Sąd Rejonowy w Środzie Wielkopolskiej": {
+              "jurisdiction": "dla miasta Środa Wielkopolska oraz gmin: Dominowo, Krzykosy, Nowe Miasto nad Wartą i Zaniemyśl"
+            },
+            "Sąd Rejonowy w Trzciance": {
+              "jurisdiction": "dla miasta Trzcianka oraz gmin: Czarnków, Drawsko, Krzyż Wielkopolski i Wieleń"
+            },
+            "Sąd Rejonowy w Wągrowcu": {
+              "jurisdiction": "dla miast: Skoki, Wągrowiec oraz gmin: Damasławek, Gołańcz, Mieścisko, Wapno i Wągrowiec"
+            },
+            "Sąd Rejonowy w Wolsztynie": {
+              "jurisdiction": "dla miasta Wolsztyn oraz gmin: Przemęt i Siedlec"
+            },
+            "Sąd Rejonowy we Wrześni": {
+              "jurisdiction": "dla miasta Września oraz gmin: Kołaczkowo, Miłosław, Nekla i Pyzdry"
+            },
+            "Sąd Rejonowy w Złotowie": {
+              "jurisdiction": "dla miasta Złotów oraz gmin: Jastrowie, Krajenka, Lipka, Okonek, Tarnówka, Zakrzewo i Złotów"
+            }
+          }
+        },
+        "Sąd Okręgowy w Zielonej Górze": {
+          "local_courts": {
+            "Sąd Rejonowy w Głogowie": {
+              "jurisdiction": "dla miasta Głogów oraz gmin: Głogów, Grębocice, Jerzmanowa, Kotla, Pęcław i Żukowice"
+            },
+            "Sąd Rejonowy w Krośnie Odrzańskim": {
+              "jurisdiction": "dla miast: Gubin, Krosno Odrzańskie oraz gmin: Bobrowice, Bytnica, Cybinka, Dąbie, Gubin, Krosno Odrzańskie i Maszewo"
+            },
+            "Sąd Rejonowy w Nowej Soli": {
+              "jurisdiction": "dla miasta Nowa Sól oraz gmin: Bytom Odrzański, Kolsko, Kożuchów, Nowa Sól, Nowe Miasteczko, Otyń i Siedlisko"
+            },
+            "Sąd Rejonowy w Świebodzinie": {
+              "jurisdiction": "dla miast: Świebodzin, Zbąszynek oraz gmin: Lubrza, Łagów, Skąpe i Szczaniec"
+            },
+            "Sąd Rejonowy we Wschowie": {
+              "jurisdiction": "dla miasta Wschowa oraz gmin: Sława i Szlichtyngowa"
+            },
+            "Sąd Rejonowy w Zielonej Górze": {
+              "jurisdiction": "dla miasta Zielona Góra oraz gmin: Babimost, Bojadła, Czerwieńsk, Kargowa, Nowogród Bobrzański, Sulechów, Świdnica, Trzebiechów i Zabór"
+            },
+            "Sąd Rejonowy w Żaganiu": {
+              "jurisdiction": "dla miast: Gozdnica, Łęknica, Żagań oraz gmin: Brzeźnica, Iłowa, Lipinki Łużyckie, Małomice, Przewóz, Szprotawa, Trzebiel, Wymiarki i Żagań"
+            },
+            "Sąd Rejonowy w Żarach": {
+              "jurisdiction": "dla miasta Żary oraz gmin: Brody, Jasień, Lipinki Łużyckie, Lubsko, Przewóz, Trzebiel, Tuplice i Żary"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Rzeszowie": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Krośnie",
+        "Sąd Okręgowy w Przemyślu",
+        "Sąd Okręgowy w Rzeszowie",
+        "Sąd Okręgowy w Tarnobrzegu"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Krośnie": {
+          "local_courts": {
+            "Sąd Rejonowy w Brzozowie": {
+              "jurisdiction": "dla miasta Brzozów oraz gmin: Domaradz, Dydnia, Haczów, Jasienica Rosielna i Nozdrzec"
+            },
+            "Sąd Rejonowy w Jaśle": {
+              "jurisdiction": "dla miasta Jasło oraz gmin: Brzyska, Dębowiec, Jasło, Kołaczyce, Krempna, Nowy Żmigród, Osiek Jasielski, Skołyszyn i Tarnowiec"
+            },
+            "Sąd Rejonowy w Krośnie": {
+              "jurisdiction": "dla miast: Dukla, Jedlicze, Krosno i Rymanów oraz gmin: Chorkówka, Iwonicz-Zdrój, Jaśliska, Jedlicze, Korczyna, Krościenko Wyżne, Miejsce Piastowe i Wojaszówka"
+            },
+            "Sąd Rejonowy w Lesku": {
+              "jurisdiction": "dla miasta Lesko oraz gmin: Baligród, Cisna, Olszanica i Solina"
+            },
+            "Sąd Rejonowy w Sanoku": {
+              "jurisdiction": "dla miast: Sanok, Zagórz oraz gmin: Besko, Bukowsko, Komańcza, Sanok, Tyrawa Wołoska i Zarszyn"
+            }
+          }
+        },
+        "Sąd Okręgowy w Przemyślu": {
+          "local_courts": {
+            "Sąd Rejonowy w Jarosławiu": {
+              "jurisdiction": "dla miasta Jarosław oraz gmin: Chłopice, Jarosław, Laszki, Pawłosiów, Pruchnik, Radymno, Rokietnica, Roźwienica i Wiązownica"
+            },
+            "Sąd Rejonowy w Lubaczowie": {
+              "jurisdiction": "dla miasta Lubaczów oraz gmin: Cieszanów, Horyniec-Zdrój, Lubaczów, Narol, Oleszyce, Stary Dzików i Wielkie Oczy"
+            },
+            "Sąd Rejonowy w Przemyślu": {
+              "jurisdiction": "dla miasta Przemyśl oraz gmin: Bircza, Dubiecko, Fredropol, Krasiczyn, Krzywcza, Medyka, Orły, Przemyśl, Stubno i Żurawica"
+            },
+            "Sąd Rejonowy w Przeworsku": {
+              "jurisdiction": "dla miasta Przeworsk oraz gmin: Adamówka, Gać, Jawornik Polski, Kańczuga, Przeworsk, Sieniawa, Tryńcza i Zarzecze"
+            }
+          }
+        },
+        "Sąd Okręgowy w Rzeszowie": {
+          "local_courts": {
+            "Sąd Rejonowy w Dębicy": {
+              "jurisdiction": "dla miasta Dębica oraz gmin: Brzostek, Czarna, Dębica, Jodłowa, Pilzno i Żyraków"
+            },
+            "Sąd Rejonowy w Leżajsku": {
+              "jurisdiction": "dla miasta Leżajsk oraz gmin: Grodzisko Dolne, Kuryłówka, Leżajsk i Nowa Sarzyna"
+            },
+            "Sąd Rejonowy w Łańcucie": {
+              "jurisdiction": "dla miasta Łańcut oraz gmin: Białobrzegi, Czarna, Łańcut, Markowa, Rakszawa i Żołynia"
+            },
+            "Sąd Rejonowy w Ropczycach": {
+              "jurisdiction": "dla miast: Ropczyce, Sędziszów Małopolski oraz gmin: Iwierzyce, Ostrów i Wielopole Skrzyńskie"
+            },
+            "Sąd Rejonowy w Rzeszowie": {
+              "jurisdiction": "dla miasta Rzeszów oraz gmin: Błażowa, Boguchwała, Chmielnik, Dynów, Głogów Małopolski, Hyżne, Kamień, Krasne, Lubenia, Sokołów Małopolski, Świlcza, Trzebownisko i Tyczyn"
+            },
+            "Sąd Rejonowy w Strzyżowie": {
+              "jurisdiction": "dla miasta Strzyżów oraz gmin: Czudec, Frysztak, Niebylec i Wiśniowa"
+            }
+          }
+        },
+        "Sąd Okręgowy w Tarnobrzegu": {
+          "local_courts": {
+            "Sąd Rejonowy w Kolbuszowej": {
+              "jurisdiction": "dla miasta Kolbuszowa oraz gmin: Cmolas, Dzikowiec, Majdan Królewski, Niwiska i Raniżów"
+            },
+            "Sąd Rejonowy w Mielcu": {
+              "jurisdiction": "dla miasta Mielec oraz gmin: Borowa, Czermin, Gawłuszowice, Mielec, Padew Narodowa, Przecław, Radomyśl Wielki, Tuszów Narodowy i Wadowice Górne"
+            },
+            "Sąd Rejonowy w Nisku": {
+              "jurisdiction": "dla miasta Nisko oraz gmin: Bojanów, Harasiuki, Jarocin, Jeżowe, Krzeszów i Ulanów"
+            },
+            "Sąd Rejonowy w Stalowej Woli": {
+              "jurisdiction": "dla miasta Stalowa Wola oraz gmin: Pysznica, Radomyśl nad Sanem i Zaleszany"
+            },
+            "Sąd Rejonowy w Tarnobrzegu": {
+              "jurisdiction": "dla miasta Tarnobrzeg oraz gmin: Baranów Sandomierski, Gorzyce, Grębów i Nowa Dęba"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Szczecinie": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Gorzowie Wielkopolskim",
+        "Sąd Okręgowy w Koszalinie",
+        "Sąd Okręgowy w Szczecinie"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Gorzowie Wielkopolskim": {
+          "local_courts": {
+            "Sąd Rejonowy w Gorzowie Wielkopolskim": {
+              "jurisdiction": "dla miasta Gorzów Wielkopolski oraz gmin: Bogdaniec, Deszczno, Kłodawa, Lubiszyn i Santok"
+            },
+            "Sąd Rejonowy w Międzyrzeczu": {
+              "jurisdiction": "dla miasta Międzyrzecz oraz gmin: Bledzew, Międzyrzecz, Przytoczna, Pszczew i Trzciel"
+            },
+            "Sąd Rejonowy w Słubicach": {
+              "jurisdiction": "dla miasta Słubice oraz gmin: Cybinka, Górzyca, Ośno Lubuskie i Rzepin"
+            },
+            "Sąd Rejonowy w Strzelcach Krajeńskich": {
+              "jurisdiction": "dla miasta Strzelce Krajeńskie oraz gmin: Dobiegniew, Drezdenko, Stare Kurowo i Zwierzyn"
+            },
+            "Sąd Rejonowy w Sulęcinie": {
+              "jurisdiction": "dla miasta Sulęcin oraz gmin: Krzeszyce, Lubniewice, Słońsk i Torzym"
+            }
+          }
+        },
+        "Sąd Okręgowy w Koszalinie": {
+          "local_courts": {
+            "Sąd Rejonowy w Białogardzie": {
+              "jurisdiction": "dla miasta Białogard oraz gmin: Białogard, Karlino i Tychowo"
+            },
+            "Sąd Rejonowy w Drawsku Pomorskim": {
+              "jurisdiction": "dla miasta Drawsko Pomorskie oraz gmin: Czaplinek, Kalisz Pomorski, Ostrowice, Wierzchowo i Złocieniec"
+            },
+            "Sąd Rejonowy w Kołobrzegu": {
+              "jurisdiction": "dla miasta Kołobrzeg oraz gmin: Dygowo, Gościno, Kołobrzeg, Rymań, Siemyśl i Ustronie Morskie"
+            },
+            "Sąd Rejonowy w Koszalinie": {
+              "jurisdiction": "dla miasta Koszalin oraz gmin: Będzino, Biesiekierz, Bobolice, Manowo, Mielno, Polanów i Świeszyno"
+            },
+            "Sąd Rejonowy w Sławnie": {
+              "jurisdiction": "dla miasta Sławno oraz gmin: Darłowo, Malechowo, Postomino i Sławno"
+            },
+            "Sąd Rejonowy w Szczecinku": {
+              "jurisdiction": "dla miasta Szczecinek oraz gmin: Barwice, Biały Bór, Borne Sulinowo, Grzmiąca i Szczecinek"
+            },
+            "Sąd Rejonowy w Wałczu": {
+              "jurisdiction": "dla miasta Wałcz oraz gmin: Człopa, Mirosławiec, Tuczno i Wałcz"
+            }
+          }
+        },
+        "Sąd Okręgowy w Szczecinie": {
+          "local_courts": {
+            "Sąd Rejonowy w Choszcznie": {
+              "jurisdiction": "dla miasta Choszczno oraz gmin: Bierzwnik, Drawno, Krzęcin, Pełczyce i Recz"
+            },
+            "Sąd Rejonowy w Goleniowie": {
+              "jurisdiction": "dla miasta Goleniów oraz gmin: Maszewo, Nowogard, Osina, Przybiernów i Stepnica"
+            },
+            "Sąd Rejonowy w Gryficach": {
+              "jurisdiction": "dla miasta Gryfice oraz gmin: Brojce, Karnice, Płoty, Rewal i Trzebiatów"
+            },
+            "Sąd Rejonowy w Gryfinie": {
+              "jurisdiction": "dla miasta Gryfino oraz gmin: Banie, Cedynia, Chojna, Mieszkowice, Moryń, Stare Czarnowo, Trzcińsko-Zdrój i Widuchowa"
+            },
+            "Sąd Rejonowy w Kamieniu Pomorskim": {
+              "jurisdiction": "dla miasta Kamień Pomorski oraz gmin: Dziwnów, Golczewo, Międzyzdroje, Świerzno i Wolin"
+            },
+            "Sąd Rejonowy w Łobzie": {
+              "jurisdiction": "dla miasta Łobez oraz gmin: Dobra, Radowo Małe, Resko i Węgorzyno"
+            },
+            "Sąd Rejonowy w Myśliborzu": {
+              "jurisdiction": "dla miasta Myślibórz oraz gmin: Barlinek, Boleszkowice, Dębno, Nowogródek Pomorski"
+            },
+            "Sąd Rejonowy w Stargardzie": {
+              "jurisdiction": "dla miasta Stargard oraz gmin: Chociwel, Dobrzany, Dolice, Ińsko, Kobylanka, Marianowo, Stara Dąbrowa, Stargard, Suchań i Warnice"
+            },
+            "Sąd Rejonowy Szczecin-Centrum w Szczecinie": {
+              "jurisdiction": "dla części miasta Szczecin w dzielnicy Śródmieście"
+            },
+            "Sąd Rejonowy Szczecin-Prawobrzeże i Zachód w Szczecinie": {
+              "jurisdiction": "dla części miasta Szczecin w dzielnicach Prawobrzeże i Zachód oraz gmin: Dobra, Kołbaskowo, Nowe Warpno, Police i Stare Czarnowo"
+            },
+            "Sąd Rejonowy w Świnoujściu": {
+              "jurisdiction": "dla miasta Świnoujście"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny w Warszawie": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Ostrołęce",
+        "Sąd Okręgowy w Płocku",
+        "Sąd Okręgowy w Warszawie",
+        "Sąd Okręgowy Warszawa-Praga w Warszawie"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Warszawie": {
+          "local_courts": {
+            "Sąd Rejonowy dla m.st. Warszawy w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicach: Mokotów, Ochota, Śródmieście, Ursynów, Wilanów i Wola"
+            },
+            "Sąd Rejonowy dla Warszawy-Woli w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicy Wola"
+            },
+            "Sąd Rejonowy dla Warszawy-Żoliborza w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicach: Bemowo, Bielany i Żoliborz"
+            },
+            "Sąd Rejonowy dla Warszawy-Mokotowa w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicach: Mokotów, Ursynów i Wilanów"
+            },
+            "Sąd Rejonowy dla Warszawy-Śródmieścia w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicy Śródmieście"
+            },
+            "Sąd Rejonowy dla Warszawy-Ochoty w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicach: Ochota, Ursus i Włochy"
+            },
+            "Sąd Rejonowy w Grodzisku Mazowieckim": {
+              "jurisdiction": "dla miast: Brwinów, Milanówek, Podkowa Leśna i Pruszków oraz gmin: Baranów, Błonie, Grodzisk Mazowiecki, Michałowice, Nadarzyn, Ożarów Mazowiecki, Piastów i Raszyn"
+            },
+            "Sąd Rejonowy w Piasecznie": {
+              "jurisdiction": "dla miast: Góra Kalwaria, Konstancin-Jeziorna, Piaseczno i Tarczyn oraz gmin: Karczew, Lesznowola i Prażmów"
+            },
+            "Sąd Rejonowy w Pruszkowie": {
+              "jurisdiction": "dla miast: Brwinów, Milanówek, Podkowa Leśna i Pruszków oraz gmin: Michałowice, Nadarzyn i Raszyn"
+            },
+            "Sąd Rejonowy w Legionowie": {
+              "jurisdiction": "dla miasta Legionowo oraz gmin: Jabłonna, Nieporęt, Serock i Wieliszew"
+            },
+            "Sąd Rejonowy w Nowym Dworze Mazowieckim": {
+              "jurisdiction": "dla miasta Nowy Dwór Mazowiecki oraz gmin: Czosnów, Leoncin, Pomiechówek i Zakroczym"
+            },
+            "Sąd Rejonowy w Otwocku": {
+              "jurisdiction": "dla miasta Otwock oraz gmin: Celestynów, Karczew, Kołbiel, Osieck, Sobienie-Jeziory, Wiązowna"
+            },
+            "Sąd Rejonowy w Wołominie": {
+              "jurisdiction": "dla miast: Kobyłka, Marki, Ząbki, Zielonka i Wołomin oraz gmin: Dąbrówka, Jadów, Klembów, Poświętne, Radzymin, Strachówka i Tłuszcz"
+            }
+          }
+        },
+        "Sąd Okręgowy Warszawa-Praga w Warszawie": {
+          "local_courts": {
+            "Sąd Rejonowy dla Warszawy Pragi-Północ w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicy Praga-Północ"
+            },
+            "Sąd Rejonowy dla Warszawy Pragi-Południe w Warszawie": {
+              "jurisdiction": "dla części miasta stołecznego Warszawa w dzielnicach: Praga-Południe, Rembertów, Wawer i Wesoła"
+            },
+            "Sąd Rejonowy w Legionowie": {
+              "jurisdiction": "dla miasta Legionowo oraz gmin: Jabłonna, Nieporęt, Serock i Wieliszew"
+            },
+            "Sąd Rejonowy w Nowym Dworze Mazowieckim": {
+              "jurisdiction": "dla miasta Nowy Dwór Mazowiecki oraz gmin: Czosnów, Leoncin, Pomiechówek i Zakroczym"
+            },
+            "Sąd Rejonowy w Otwocku": {
+              "jurisdiction": "dla miasta Otwock oraz gmin: Celestynów, Karczew, Kołbiel, Osieck, Sobienie-Jeziory i Wiązowna"
+            }
+          }
+        }
+      }
+    },
+    "Sąd Apelacyjny we Wrocławiu": {
+      "jurisdiction": [
+        "Sąd Okręgowy w Jeleniej Górze",
+        "Sąd Okręgowy w Legnicy",
+        "Sąd Okręgowy w Opolu",
+        "Sąd Okręgowy w Świdnicy",
+        "Sąd Okręgowy we Wrocławiu"
+      ],
+      "district_courts": {
+        "Sąd Okręgowy w Jeleniej Górze": {
+          "local_courts": {
+            "Sąd Rejonowy w Bolesławcu": {
+              "jurisdiction": "dla miasta Bolesławiec oraz gmin: Bolesławiec, Gromadka, Nowogrodziec, Osiecznica i Warta Bolesławiecka"
+            },
+            "Sąd Rejonowy w Jeleniej Górze": {
+              "jurisdiction": "dla miast: Jelenia Góra, Karpacz, Kowary, Piechowice, Szklarska Poręba oraz gmin: Janowice Wielkie, Jeżów Sudecki, Mysłakowice, Podgórzyn i Stara Kamienica"
+            },
+            "Sąd Rejonowy w Kamiennej Górze": {
+              "jurisdiction": "dla miasta Kamienna Góra oraz gmin: Kamienna Góra, Lubawka i Marciszów"
+            },
+            "Sąd Rejonowy w Lubaniu": {
+              "jurisdiction": "dla miast: Lubań, Świeradów-Zdrój oraz gmin: Leśna, Lubań, Olszyna, Platerówka i Siekierczyn"
+            },
+            "Sąd Rejonowy w Lwówku Śląskim": {
+              "jurisdiction": "dla miasta Lwówek Śląski oraz gmin: Gryfów Śląski, Lubomierz, Mirsk i Wleń"
+            },
+            "Sąd Rejonowy w Zgorzelcu": {
+              "jurisdiction": "dla miast: Zawidów, Zgorzelec oraz gmin: Bogatynia, Pieńsk, Sulików, Węgliniec i Zgorzelec"
+            }
+          }
+        },
+        "Sąd Okręgowy w Legnicy": {
+          "local_courts": {
+            "Sąd Rejonowy w Głogowie": {
+              "jurisdiction": "dla miasta Głogów oraz gmin: Głogów, Grębocice, Jerzmanowa, Kotla, Pęcław i Żukowice"
+            },
+            "Sąd Rejonowy w Jaworze": {
+              "jurisdiction": "dla miasta Jawor oraz gmin: Bolków, Męcinka, Mściwojów, Paszowice i Wądroże Wielkie"
+            },
+            "Sąd Rejonowy w Legnicy": {
+              "jurisdiction": "dla miasta Legnica oraz gmin: Chojnów, Krotoszyce, Kunice, Legnickie Pole, Miłkowice, Prochowice i Ruja"
+            },
+            "Sąd Rejonowy w Lubinie": {
+              "jurisdiction": "dla miast: Lubin, Ścinawa oraz gmin: Chocianów, Gaworzyce, Grębocice, Lubin, Polkowice, Przemków, Radwanice i Rudna"
+            },
+            "Sąd Rejonowy w Złotoryi": {
+              "jurisdiction": "dla miasta Złotoryja oraz gmin: Pielgrzymka, Świerzawa, Wojcieszów, Zagrodno i Złotoryja"
+            }
+          }
+        },
+        "Sąd Okręgowy w Opolu": {
+          "local_courts": {
+            "Sąd Rejonowy w Brzegu": {
+              "jurisdiction": "dla miasta Brzeg oraz gmin: Lewin Brzeski, Lubsza, Olszanka i Skarbimierz"
+            },
+            "Sąd Rejonowy w Głubczycach": {
+              "jurisdiction": "dla miasta Głubczyce oraz gmin: Baborów, Branice i Kietrz"
+            },
+            "Sąd Rejonowy w Kędzierzynie-Koźlu": {
+              "jurisdiction": "dla miasta Kędzierzyn-Koźle oraz gmin: Bierawa, Cisek, Pawłowiczki, Polska Cerekiew i Reńska Wieś"
+            },
+            "Sąd Rejonowy w Kluczborku": {
+              "jurisdiction": "dla miasta Kluczbork oraz gmin: Byczyna, Lasowice Wielkie i Wołczyn"
+            },
+            "Sąd Rejonowy w Nysie": {
+              "jurisdiction": "dla miast: Głuchołazy, Nysa oraz gmin: Kamiennik, Korfantów, Łambinowice, Otmuchów, Paczków i Skoroszyce"
+            },
+            "Sąd Rejonowy w Opolu": {
+              "jurisdiction": "dla miasta Opole oraz gmin: Chrząstowice, Dąbrowa, Dobrzeń Wielki, Komprachcice, Łubniany, Murów, Niemodlin, Ozimek, Popielów, Prószków, Tarnów Opolski, Tułowice i Turawa"
+            },
+            "Sąd Rejonowy w Prudniku": {
+              "jurisdiction": "dla miasta Prudnik oraz gmin: Biała, Głogówek i Lubrza"
+            },
+            "Sąd Rejonowy w Strzelcach Opolskich": {
+              "jurisdiction": "dla miasta Strzelce Opolskie oraz gmin: Izbicko, Jemielnica, Kolonowskie, Leśnica, Ujazd i Zawadzkie"
+            }
+          }
+        },
+        "Sąd Okręgowy w Świdnicy": {
+          "local_courts": {
+            "Sąd Rejonowy w Bielawie": {
+              "jurisdiction": "dla miast: Bielawa, Pieszyce oraz gmin: Dzierżoniów i Piława Górna"
+            },
+            "Sąd Rejonowy w Dzierżoniowie": {
+              "jurisdiction": "dla miasta Dzierżoniów oraz gmin: Łagiewniki i Niemcza"
+            },
+            "Sąd Rejonowy w Kłodzku": {
+              "jurisdiction": "dla miast: Duszniki-Zdrój, Kłodzko, Kudowa-Zdrój, Polanica-Zdrój oraz gmin: Bystrzyca Kłodzka, Kłodzko, Lewin Kłodzki, Międzylesie, Radków, Stronie Śląskie i Szczytna"
+            },
+            "Sąd Rejonowy w Nowej Rudzie": {
+              "jurisdiction": "dla miasta Nowa Ruda oraz gmin: Nowa Ruda i Radków"
+            },
+            "Sąd Rejonowy w Świdnicy": {
+              "jurisdiction": "dla miast: Świdnica, Świebodzice oraz gmin: Dobromierz, Jaworzyna Śląska, Marcinowice, Strzegom, Świdnica i Żarów"
+            },
+            "Sąd Rejonowy w Wałbrzychu": {
+              "jurisdiction": "dla miasta Wałbrzych oraz gmin: Boguszów-Gorce, Czarny Bór, Głuszyca, Jedlina-Zdrój, Mieroszów, Stare Bogaczowice, Szczawno-Zdrój i Walim"
+            },
+            "Sąd Rejonowy w Ząbkowicach Śląskich": {
+              "jurisdiction": "dla miasta Ząbkowice Śląskie oraz gmin: Bardo, Ciepłowody, Kamieniec Ząbkowicki, Stoszowice, Złoty Stok i Ziębice"
+            }
+          }
+        },
+        "Sąd Okręgowy we Wrocławiu": {
+          "local_courts": {
+            "Sąd Rejonowy w Miliczu": {
+              "jurisdiction": "dla miasta Milicz oraz gmin: Cieszków i Krośnice"
+            },
+            "Sąd Rejonowy w Oleśnicy": {
+              "jurisdiction": "dla miasta Oleśnica oraz gmin: Bierutów, Dobroszyce, Dziadowa Kłoda, Międzybórz, Oleśnica i Syców"
+            },
+            "Sąd Rejonowy w Oławie": {
+              "jurisdiction": "dla miast: Jelcz-Laskowice, Oława oraz gmin: Domaniów i Oława"
+            },
+            "Sąd Rejonowy w Strzelinie": {
+              "jurisdiction": "dla miasta Strzelin oraz gmin: Borów, Kondratowice, Przeworno i Wiązów"
+            },
+            "Sąd Rejonowy w Środzie Śląskiej": {
+              "jurisdiction": "dla miasta Środa Śląska oraz gmin: Kostomłoty, Malczyce, Miękinia i Udanin"
+            },
+            "Sąd Rejonowy w Trzebnicy": {
+              "jurisdiction": "dla miasta Trzebnica oraz gmin: Oborniki Śląskie, Prusice, Wisznia Mała, Zawonia i Żmigród"
+            },
+            "Sąd Rejonowy w Wołowie": {
+              "jurisdiction": "dla miasta Wołów oraz gmin: Brzeg Dolny i Wińsko"
+            },
+            "Sąd Rejonowy dla Wrocławia-Fabrycznej we Wrocławiu": {
+              "jurisdiction": "dla części miasta Wrocław - Fabryczna oraz gmin: Czernica, Długołęka, Jordanów Śląski, Kąty Wrocławskie, Kobierzyce, Mietków, Sobótka i Żórawina"
+            },
+            "Sąd Rejonowy dla Wrocławia-Krzyków we Wrocławiu": {
+              "jurisdiction": "dla części miasta Wrocław - Krzyki"
+            },
+            "Sąd Rejonowy dla Wrocławia-Śródmieścia we Wrocławiu": {
+              "jurisdiction": "dla części miasta Wrocław - Śródmieście"
+            }
+          }
+        }
+      }
+    }
+  }
+}

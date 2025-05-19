@@ -1,4 +1,4 @@
-﻿// Route handler for form submissions with CSRF protection
+// Route handler for form submissions with CSRF protection
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -8,60 +8,22 @@ import {
   checkRateLimit,
 } from "@/lib/form-validation";
 import { verifyCSRFToken, consumeCSRFToken } from "@/lib/csrf";
-import { addToOfflineQueue, updateDatabaseStatus } from "@/lib/db-connection-helper";
 
 // Sprawdzenie środowiska uruchomieniowego i konfiguracji bazy danych
-const isDevelopment = process.env.NODE_ENV === "development";
+const isDevelopment = process.env.NODE_ENV === 'development';
 console.log(`API running in ${process.env.NODE_ENV} mode`);
 if (isDevelopment) {
-  console.log(
-    "Database URL (masked):",
-    process.env.DATABASE_URL?.substring(0, 15) + "..."
-  );
+  console.log("Database URL (masked):", process.env.DATABASE_URL?.substring(0, 15) + '...');
 }
 
 // Set security headers for API responses
 const securityHeaders = {
-  "Content-Security-Policy": "default-src self",
+  "Content-Security-Policy": "default-src 'self'",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
-
-// Define types for our form submission process
-interface OfflineSubscription {
-  id: string;
-  email: string;
-  acceptedTerms: boolean;
-  acceptedContact: boolean;
-  createdAt: Date;
-  isOfflineEntry: true;
-}
-
-interface FormData {
-  [key: string]: any;
-  sadRejonowyNazwa?: string | null;
-  sadOkregowyNazwa?: string | null;
-  apelacjaNazwa?: string | null;
-  rokDecyzjiSad?: string | null;
-  apelacjaId?: string | null;
-  sadOkregowyId?: string | null;
-  sadRejonowyId?: string | null;
-  submissionDate: string;
-}
-
-interface SubmissionData {
-  emailSubscriptionId: string;
-  formData: FormData;
-  sadRejonowyNazwa: string | null;
-  sadOkregowyNazwa: string | null;
-  apelacjaNazwa: string | null;
-  rokDecyzjiSad: string | null;
-  apelacjaId?: string | null;
-  sadOkregowyId?: string | null;
-  sadRejonowyId?: string | null;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -186,7 +148,7 @@ export async function POST(request: NextRequest) {
     
     try {
       // Try to save the email subscription with proper schema
-      let subscription: any; // Using 'any' type to avoid complex Prisma types
+      let subscription;
       try {
         console.log("Connecting to database...");
         
@@ -194,11 +156,8 @@ export async function POST(request: NextRequest) {
         try {
           await prisma.$connect();
           console.log("Database connection successful");
-          updateDatabaseStatus(true);
         } catch (connectionError) {
           console.error("Database connection failed:", connectionError);
-          const error = connectionError as Error;
-          updateDatabaseStatus(false, error);
           throw new Error("Database connection failed");
         }
         
@@ -220,12 +179,12 @@ export async function POST(request: NextRequest) {
           acceptedContact: zgodaKontakt === true,
           createdAt: new Date(),
           isOfflineEntry: true
-        } as OfflineSubscription;
+        };
         console.log("Using offline subscription:", subscription.id);
       } 
       
       // Create a new form submission with reference to the email subscription
-      const formData: FormData = { ...sanitizedBody };
+      const formData = { ...sanitizedBody };
 
       // Usunięcie pól, które są zapisywane osobno
       delete formData.contactEmail;
@@ -235,91 +194,96 @@ export async function POST(request: NextRequest) {
       delete formData.csrfToken;
 
       // Aktualizacja daty formularza dla spójności
-      formData.submissionDate = new Date().toISOString();
+      formData.submissionDate = new Date().toISOString(); 
       
       // Dodanie informacji o polach sądowych
       console.log("Zapisywane dane sądu:", {
         rokDecyzjiSad: formData.rokDecyzjiSad,
-        sadRejonowyNazwa: formData.sadRejonowyNazwa,
+        miesiacDecyzjiSad: formData.miesiacDecyzjiSad,
+        rodzajSaduSad: formData.rodzajSaduSad,
+        apelacjaSad: formData.apelacjaSad || formData.apelacjaId,
+        apelacjaId: formData.apelacjaId || formData.apelacjaSad,
+        apelacjaNazwa: formData.apelacjaNazwa,
+        sadOkregowyId: formData.sadOkregowyId,
         sadOkregowyNazwa: formData.sadOkregowyNazwa,
-        apelacjaNazwa: formData.apelacjaNazwa
-      });
+        sadRejonowyId: formData.sadRejonowyId,
+        sadRejonowyNazwa: formData.sadRejonowyNazwa,
+      }); 
       
-      // Try to create the form submission
-      let submissionId: string;
-
-      // Check if we're using an offline subscription
-      if ("isOfflineEntry" in subscription && subscription.isOfflineEntry) {
-        // We're in offline mode, so we'll generate an offline ID
-        submissionId = `offline-${Date.now()}`;
-        
-        // Add to offline queue for later sync
-        addToOfflineQueue("formSubmission", {
-          ...formData,
-          email: cleanEmail,
-          acceptedTerms: zgodaPrzetwarzanie === true,
-          acceptedContact: zgodaKontakt === true,
-          subscriptionId: subscription.id
-        });
-        
-        return NextResponse.json(
-          {
-            success: true,
-            message: "Dane zapisane w trybie offline. Zostaną zsynchronizowane automatycznie.",
-            id: submissionId,
-            isOffline: true,
-            sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
-            apelacjaNazwa: formData.apelacjaNazwa || null,
-            sadOkregowyNazwa: formData.sadOkregowyNazwa || null
-          },
-          {
-            status: 200, 
-            headers: securityHeaders,
-          }
-        );
-      }
+      // Wyodrębnienie kluczowych pól do indeksowania
+      const rodzajSaduSad = formData.rodzajSaduSad || null;
+      const apelacjaSad = formData.apelacjaSad || formData.apelacjaId || null;
+      const apelacjaId = formData.apelacjaId || formData.apelacjaSad || null;
+      const apelacjaNazwa = formData.apelacjaNazwa || null;
+      const sadOkregowyId = formData.sadOkregowyId || null;
+      const sadOkregowyNazwa = formData.sadOkregowyNazwa || null;
+      const sadRejonowyId = formData.sadRejonowyId || null;
+      const sadRejonowyNazwa = formData.sadRejonowyNazwa || null;
+      const rokDecyzjiSad = formData.rokDecyzjiSad || null;
+      const watekWiny = formData.watekWiny || null;
+      
+      // Próba zapisania danych formularza do bazy
+      let submission;
+      let submissionId = `offline-${Date.now()}`; // Domyślne ID dla trybu offline
       
       try {
-        // Create base submission data object
-        const submissionData: SubmissionData = {
-          emailSubscriptionId: subscription.id,
-          formData: formData,
-          sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
-          sadOkregowyNazwa: formData.sadOkregowyNazwa || null,
-          apelacjaNazwa: formData.apelacjaNazwa || null,
-          rokDecyzjiSad: formData.rokDecyzjiSad || null,
-        };
+        console.log("Attempting to insert form submission...");
         
-        // Add hierarchical fields only if they exist in the formData
-        if ("apelacjaId" in formData) {
-          submissionData.apelacjaId = formData.apelacjaId || null;
-        }
-        if ("sadOkregowyId" in formData) {
-          submissionData.sadOkregowyId = formData.sadOkregowyId || null;
-        }
-        if ("sadRejonowyId" in formData) {
-          submissionData.sadRejonowyId = formData.sadRejonowyId || null;
+        // Sprawdza czy mamy do czynienia z wpisem offline
+        if (subscription.isOfflineEntry) {
+          console.log("Skipping database insert for offline entry");
+          throw new Error("Offline entry - skipping database insert");
         }
 
-        const submission = await prisma.formSubmission.create({
-          data: submissionData,
-        });
-
-        submissionId = submission.id;
-        console.log("Form submission created:", submissionId);
-
-        // Success response
+        submission = (await prisma.$queryRaw`
+          INSERT INTO "FormSubmission" (
+            "id", 
+            "emailSubscriptionId", 
+            "formData", 
+            "status",
+            "rodzajSaduSad",
+            "apelacjaSad",
+            "apelacjaId",
+            "apelacjaNazwa",
+            "sadOkregowyId",
+            "sadOkregowyNazwa",
+            "sadRejonowyId",
+            "sadRejonowyNazwa",
+            "rokDecyzjiSad",
+            "watekWiny"
+          )
+          VALUES (
+            gen_random_uuid(), 
+            ${subscription.id}, 
+            ${JSON.stringify(formData)}::jsonb, 
+            'pending',
+            ${rodzajSaduSad},
+            ${apelacjaSad},
+            ${apelacjaId},
+            ${apelacjaNazwa},
+            ${sadOkregowyId},
+            ${sadOkregowyNazwa},
+            ${sadRejonowyId},
+            ${sadRejonowyNazwa},
+            ${rokDecyzjiSad},
+            ${watekWiny}
+          )
+          RETURNING "id"
+        `) as { id: string }[]; 
+        
+        // Jeśli zapis do bazy się powiódł, użyj ID z bazy danych
+        submissionId = submission[0]?.id;
+        console.log("Form submission created with ID:", submissionId);
+        
+        // Return success response with security headers
         return NextResponse.json(
           {
             success: true,
-            message: "Formularz został pomyślnie przesłany.",
+            message: "Formularz zapisany pomyślnie",
             id: submissionId,
-            sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
-            apelacjaNazwa: formData.apelacjaNazwa || null,
-            sadOkregowyNazwa: formData.sadOkregowyNazwa || null
           },
           {
-            status: 200,
+            status: 201,
             headers: securityHeaders,
           }
         );
@@ -341,15 +305,7 @@ export async function POST(request: NextRequest) {
         }
 
         // W przypadku błędu bazy danych, zwróć status offline z ID offline
-        submissionId = `offline-${Date.now()}`;
-        // Dodaj do kolejki offline
-        addToOfflineQueue("formSubmission", {
-          ...formData,
-          email: cleanEmail,
-          acceptedTerms: zgodaPrzetwarzanie === true,
-          acceptedContact: zgodaKontakt === true,
-        });
-        
+        // Umożliwi to aplikacji klienta zapisanie danych lokalnie do późniejszej synchronizacji
         return NextResponse.json(
           {
             success: true,
@@ -377,7 +333,8 @@ export async function POST(request: NextRequest) {
           id: offlineId,
           isOffline: true,
           isEmergency: true,
-          error: "Wystąpił błąd podczas przetwarzania formularza. Spróbuj ponownie.",
+          error:
+            "Wystąpił błąd podczas przetwarzania formularza. Spróbuj ponownie.",
         },
         {
           status: 500,
@@ -386,10 +343,18 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("Unexpected error in API route:", error);
+    console.error("Error processing form submission:", error);
+    // Nawet w przypadku całkowitego błędu, próbujemy umożliwić klientowi działanie offline
+    const offlineId = `emergency-${Date.now()}`;
     return NextResponse.json(
       {
-        error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie za chwilę.",
+        success: true,
+        message: "Zapisano w trybie awaryjnym. Prosimy o kontakt z obsługą.",
+        id: offlineId,
+        isOffline: true,
+        isEmergency: true,
+        error:
+          "Wystąpił błąd podczas przetwarzania formularza. Spróbuj ponownie.",
       },
       {
         status: 500,

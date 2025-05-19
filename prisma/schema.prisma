@@ -51,12 +51,15 @@ model FormSubmission {
   wiekDrugiegoRodzica     String?
   wojewodztwoDrugiegoRodzica String?
   miejscowoscDrugiegoRodzica String?
-  
-  // Dane sądowe
+    // Dane sądowe
   rodzajSaduSad       String?            // rejonowy, okregowy, nie_pamietam
-  apelacjaSad         String?            // Apelacja
+  apelacjaSad         String?            // ID apelacji (kompatybilność wsteczna)
+  apelacjaId          String?            // ID apelacji 
+  apelacjaNazwa       String?            // Nazwa apelacji
   sadOkregowyId       String?            // ID sądu okręgowego
+  sadOkregowyNazwa    String?            // Nazwa sądu okręgowego
   sadRejonowyId       String?            // ID sądu rejonowego
+  sadRejonowyNazwa    String?            // Nazwa sądu rejonowego
   rokDecyzjiSad       String?            // Rok decyzji sądu
   miesiacDecyzjiSad   String?            // Miesiąc decyzji sądu
   dataDecyzjiSad      String?            // Pełna data decyzji
@@ -86,12 +89,13 @@ model FormSubmission {
   liczbaDzieci        Int?
   dzieci              Child[]            // Relacja z dziećmi
   dochodyRodzicow     Dochody?           // Relacja z dochodami
-
   @@index([status])
   @@index([emailSubscriptionId])
   @@index([rodzajSaduSad])
   @@index([apelacjaSad])
+  @@index([apelacjaId])
   @@index([sadOkregowyId])
+  @@index([sadRejonowyId])
   @@index([rokDecyzjiSad])
   @@index([sposobFinansowania])
   @@index([podstawaUstalen])

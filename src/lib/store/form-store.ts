@@ -10,9 +10,10 @@ export type FormData = {
   // Dane dla ścieżki alternatywnej
   alternativeEmail?: string;
   alternativeConsent?: boolean;
-
   // ID zgłoszenia generowane przez system
   submissionId?: string;
+  // Flaga wskazująca czy zgłoszenie zapisano w trybie offline
+  isOfflineSubmission?: boolean;
 
   // Krok 3: Podstawa ustaleń
   podstawaUstalen?: string;
@@ -25,15 +26,19 @@ export type FormData = {
   // Krok 9: Oceny adekwatności postępowania
   ocenaAdekwatnosciSad?: number;
   ocenaAdekwatnosciPorozumienie?: number;
-  ocenaAdekwatnosciInne?: number;
-  // Krok 9: Dane postępowania sądowego
+  ocenaAdekwatnosciInne?: number; // Krok 9: Dane postępowania sądowego
   dataDecyzjiSad?: string;
   rokDecyzjiSad?: string;
   miesiacDecyzjiSad?: string;
   rodzajSaduSad?: "rejonowy" | "okregowy" | "nie_pamietam";
   apelacjaSad?: string;
+  // Nowa hierarchiczna struktura sądów
+  apelacjaId?: string;
+  apelacjaNazwa?: string;
   sadOkregowyId?: string;
+  sadOkregowyNazwa?: string;
   sadRejonowyId?: string;
+  sadRejonowyNazwa?: string;
   liczbaSedzi?: "jeden" | "trzech";
   plecSedziego?: "kobieta" | "mezczyzna";
   inicjalySedziego?: string;

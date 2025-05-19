@@ -10,7 +10,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useFormStore } from "@/lib/store/form-store";
-import { Dziecko, TabelaCzasu, WskaznikiCzasuOpieki } from "./typings";
+import {
+  Dziecko,
+  DzienCzasuOpieki,
+  TabelaCzasu,
+  TabeleCzasuOpieki,
+  WskaznikiCzasuOpieki,
+} from "./typings";
+
+// Rozszerzony typ Dziecko z tabeleCzasuOpieki
+type DzieckoRozszerzone = Dziecko & {
+  tabeleCzasuOpieki?: TabeleCzasuOpieki;
+};
 
 export default function CzasOpieki() {
   const router = useRouter();
@@ -27,27 +38,22 @@ export default function CzasOpieki() {
       -moz-appearance: textfield;
     }
   `;
-
   // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   // Inicjalizacja stanu dla aktualnego dziecka i danych tabeli
-  // setAktualneDzieckoId będzie używane w późniejszych aktualizacjach
   const [aktualneDzieckoId] = useState<number | null>(
     formData.aktualneDzieckoWTabeliCzasu || null
   );
   const [cyklOpieki, setCyklOpieki] = useState<"1" | "2" | "4" | "custom">("1");
-  const [tabelaCzasu, setTabelaCzasu] = useState<{
-    [dzien: string]: {
-      poranek: number;
-      placowkaEdukacyjna: number;
-      czasPoEdukacji: number;
-      senURodzica: number;
-      senUDrugiegoRodzica: number;
-    };
-  }>({
+  const [aktywnyTydzien, setAktywnyTydzien] = useState<number>(1);
+
+  // Funkcja do inicjalizacji pustej tabeli tygodnia
+  const inicjalizujTabeleTygodnia = (): TabelaCzasu => ({
     pn: {
       poranek: 0,
       placowkaEdukacyjna: 0,
@@ -97,45 +103,67 @@ export default function CzasOpieki() {
       senURodzica: 0,
       senUDrugiegoRodzica: 0,
     },
-  }); // Stany dla trzech wskaźników procentowych
+  });
+
+  // Inicjalizacja tabel czasu dla wszystkich tygodni
+  const [tabeleCzasuOpieki, setTabeleCzasuOpieki] = useState<TabeleCzasuOpieki>(
+    {
+      1: inicjalizujTabeleTygodnia(),
+    }
+  );
+
+  // Stany dla trzech wskaźników procentowych
   const [czasOpiekiBezEdukacji, setCzasOpiekiBezEdukacji] = useState<number>(0);
   const [czasAktywnejOpieki, setCzasAktywnejOpieki] = useState<number>(0);
   const [czasSnu, setCzasSnu] = useState<number>(0);
-
   const [error, setError] = useState<string | null>(null);
-  // Funkcja do obliczania wskaźników procentowych podziału czasu opieki
-  const obliczWskaznikiCzasuOpieki = (
-    tabela: TabelaCzasu
-  ): WskaznikiCzasuOpieki => {
-    // Stałe - łączna liczba godzin w tygodniu
-    const totalGodzinWTygodniu = 7 * 24; // 168 godzin
 
+  // Funkcja do obliczania wskaźników procentowych podziału czasu opieki na podstawie wszystkich tabel
+  const obliczWskaznikiCzasuOpieki = (
+    tabele: TabeleCzasuOpieki
+  ): WskaznikiCzasuOpieki => {
     // Zmienne do obliczania wskaźników
     let sumaGodzinOpieki = 0;
     let sumaGodzinPlacowki = 0;
     let sumaGodzinSnu = 0;
     let sumaGodzinSnuDrugiegoRodzica = 0;
+    let liczbaTygodni = Object.keys(tabele).length;
 
-    // Sumowanie godzin z tabeli
-    Object.values(tabela).forEach((dzien) => {
-      // Suma godzin opieki bez placówki
-      sumaGodzinOpieki +=
-        dzien.poranek + dzien.czasPoEdukacji + dzien.senURodzica;
+    // Stałe - łączna liczba godzin w całym cyklu opieki
+    const totalGodzinWTygodniu = 7 * 24; // 168 godzin na tydzień
+    const totalGodzinWCyklu = totalGodzinWTygodniu * liczbaTygodni;
 
-      // Suma godzin w placówce edukacyjnej
-      sumaGodzinPlacowki += dzien.placowkaEdukacyjna || 0;
+    // Sumowanie godzin ze wszystkich tygodni
+    Object.keys(tabele).forEach((tydzienKey) => {
+      const tydzien = Number(tydzienKey);
+      const tabela = tabele[tydzien];
 
-      // Suma godzin snu u wypełniającego rodzica
-      sumaGodzinSnu += dzien.senURodzica || 0;
+      if (tabela) {
+        Object.keys(tabela).forEach((dzienKey) => {
+          const dzien = tabela[dzienKey];
 
-      // Suma godzin snu u drugiego rodzica
-      sumaGodzinSnuDrugiegoRodzica += dzien.senUDrugiegoRodzica || 0;
+          if (dzien) {
+            // Suma godzin opieki bez placówki
+            sumaGodzinOpieki +=
+              dzien.poranek + dzien.czasPoEdukacji + dzien.senURodzica;
+
+            // Suma godzin w placówce edukacyjnej
+            sumaGodzinPlacowki += dzien.placowkaEdukacyjna || 0;
+
+            // Suma godzin snu u wypełniającego rodzica
+            sumaGodzinSnu += dzien.senURodzica || 0;
+
+            // Suma godzin snu u drugiego rodzica
+            sumaGodzinSnuDrugiegoRodzica += dzien.senUDrugiegoRodzica || 0;
+          }
+        });
+      }
     });
 
     // 1. Łączny czas opieki (bez placówki edukacyjnej)
     const totalCzasBezPlacowki = Math.max(
       1,
-      totalGodzinWTygodniu - sumaGodzinPlacowki
+      totalGodzinWCyklu - sumaGodzinPlacowki
     );
     const wskaznikCzasuBezEdukacji = Math.round(
       (sumaGodzinOpieki / totalCzasBezPlacowki) * 100
@@ -167,30 +195,74 @@ export default function CzasOpieki() {
       czasSnu: wskaznikSnu,
     };
   };
+
+  // Funkcja zwracająca liczbę tygodni na podstawie wybranego cyklu opieki
+  const getLiczbaTygodni = (cykl: string): number => {
+    switch (cykl) {
+      case "1":
+        return 1;
+      case "2":
+        return 2;
+      case "4":
+      case "custom":
+        return 4;
+      default:
+        return 1;
+    }
+  };
+
+  // Efekt do aktualizacji liczby tygodni po zmianie cyklu opieki
+  useEffect(() => {
+    const liczbaTygodni = getLiczbaTygodni(cyklOpieki);
+    const aktualneTygodnie = Object.keys(tabeleCzasuOpieki).map(Number);
+    const noweTabeleCzasu = { ...tabeleCzasuOpieki };
+
+    // Usuwanie nadmiarowych tygodni
+    aktualneTygodnie.forEach((tydzien) => {
+      if (tydzien > liczbaTygodni) {
+        delete noweTabeleCzasu[tydzien];
+      }
+    });
+
+    // Dodawanie brakujących tygodni
+    for (let i = 1; i <= liczbaTygodni; i++) {
+      if (!noweTabeleCzasu[i]) {
+        noweTabeleCzasu[i] = inicjalizujTabeleTygodnia();
+      }
+    }
+
+    setTabeleCzasuOpieki(noweTabeleCzasu);
+
+    // Upewniamy się, że aktywny tydzień jest w prawidłowym zakresie
+    if (aktywnyTydzien > liczbaTygodni) {
+      setAktywnyTydzien(1);
+    }
+  }, [cyklOpieki]);
+
   // Wczytaj dane dziecka i tabeli z store'a, jeśli istnieją
   useEffect(() => {
     if (formData.dzieci && aktualneDzieckoId) {
-      const dziecko = formData.dzieci.find((d) => d.id === aktualneDzieckoId);
+      const dziecko = formData.dzieci.find(
+        (d) => d.id === aktualneDzieckoId
+      ) as DzieckoRozszerzone | undefined;
+
       if (dziecko && dziecko.cyklOpieki) {
         setCyklOpieki(dziecko.cyklOpieki);
       }
-      if (dziecko && dziecko.tabelaCzasu) {
-        setTabelaCzasu(dziecko.tabelaCzasu);
+
+      if (dziecko && dziecko.tabeleCzasuOpieki) {
+        setTabeleCzasuOpieki(dziecko.tabeleCzasuOpieki);
         // Oblicz wskaźniki czasu opieki na podstawie wczytanej tabeli
-        obliczWskaznikiCzasuOpieki(dziecko.tabelaCzasu);
+        obliczWskaznikiCzasuOpieki(dziecko.tabeleCzasuOpieki);
       }
-      // Jeśli dziecko ma już zapisane wskaźniki czasu opieki, użyj ich      // Sprawdź czy istnieją zapisane wskaźniki czasu opieki
+
+      // Jeśli dziecko ma już zapisane wskaźniki czasu opieki, użyj ich
       if (
         dziecko &&
         "wskaznikiCzasuOpieki" in dziecko &&
         dziecko.wskaznikiCzasuOpieki
       ) {
-        const wskazniki = dziecko.wskaznikiCzasuOpieki as {
-          czasOpiekiBezEdukacji?: number;
-          czasAktywnejOpieki?: number;
-          czasSnu?: number;
-        };
-
+        const wskazniki = dziecko.wskaznikiCzasuOpieki;
         if (wskazniki.czasOpiekiBezEdukacji !== undefined) {
           setCzasOpiekiBezEdukacji(wskazniki.czasOpiekiBezEdukacji);
         }
@@ -212,39 +284,65 @@ export default function CzasOpieki() {
   const aktualneDziecko = formData.dzieci?.find(
     (d) => d.id === aktualneDzieckoId
   );
-  // Funkcja do aktualizacji danych w tabeli czasu
+
+  // Funkcja do aktualizacji danych w tabeli czasu dla konkretnego tygodnia
   const updateTabelaCzasu = (
+    tydzien: number,
     dzien: string,
     kategoria: string,
     wartosc: number
   ) => {
-    setTabelaCzasu((prev) => {
-      const newTabelaCzasu = {
-        ...prev,
+    setTabeleCzasuOpieki((prev) => {
+      // Bezpieczne klonowanie poprzedniego stanu
+      const newTabeleCzasu = { ...prev };
+
+      // Sprawdzenie czy istnieje dany tydzień i dzień, jeśli nie - inicjalizujemy
+      if (!newTabeleCzasu[tydzien]) {
+        newTabeleCzasu[tydzien] = inicjalizujTabeleTygodnia();
+      }
+
+      if (!newTabeleCzasu[tydzien][dzien]) {
+        newTabeleCzasu[tydzien][dzien] = {
+          poranek: 0,
+          placowkaEdukacyjna: 0,
+          czasPoEdukacji: 0,
+          senURodzica: 0,
+          senUDrugiegoRodzica: 0,
+        };
+      }
+
+      // Aktualizacja wartości
+      newTabeleCzasu[tydzien] = {
+        ...newTabeleCzasu[tydzien],
         [dzien]: {
-          ...prev[dzien],
+          ...newTabeleCzasu[tydzien][dzien],
           [kategoria]: wartosc,
         },
       };
 
-      // Po aktualizacji tabeli, oblicz wskaźniki czasu opieki
-      const wskazniki = obliczWskaznikiCzasuOpieki(newTabelaCzasu);
-
       // Weryfikacja sum godzin dziennych - nie może przekraczać 24h
-      const suma = Object.values(newTabelaCzasu[dzien]).reduce(
-        (acc, val) => acc + (val || 0),
-        0
-      );
+      const dzienData = newTabeleCzasu[tydzien][dzien];
+      const suma =
+        dzienData.poranek +
+        dzienData.placowkaEdukacyjna +
+        dzienData.czasPoEdukacji +
+        dzienData.senURodzica +
+        dzienData.senUDrugiegoRodzica;
 
       if (suma > 24) {
         setError(
-          `Suma godzin dla ${getDzienNazwa(dzien)} przekracza 24 godziny.`
+          `Suma godzin dla tygodnia ${tydzien}, ${getDzienNazwa(
+            dzien
+          )} przekracza 24 godziny.`
         );
       } else {
         setError(null);
       }
 
-      return newTabelaCzasu;
+      // Po aktualizacji tabeli, oblicz wskaźniki czasu opieki
+      obliczWskaznikiCzasuOpieki(newTabeleCzasu);
+
+      return newTabeleCzasu;
     });
   };
 
@@ -252,6 +350,7 @@ export default function CzasOpieki() {
   const handleCyklOpiekiChange = (value: string) => {
     setCyklOpieki(value as "1" | "2" | "4" | "custom");
   };
+
   // Funkcja do zapisania danych i przejścia do następnego dziecka lub następnego kroku
   const handleNext = () => {
     // Walidacja danych
@@ -259,17 +358,27 @@ export default function CzasOpieki() {
     let errorMessage = "";
 
     // Sprawdzamy czy suma godzin w każdym dniu nie przekracza 24
-    Object.entries(tabelaCzasu).forEach(([dzien, dane]) => {
-      const suma = Object.values(dane).reduce(
-        (acc, val) => acc + (val || 0),
-        0
-      );
-      if (suma > 24) {
-        hasError = true;
-        errorMessage = `Suma godzin dla ${getDzienNazwa(
-          dzien
-        )} przekracza 24 godziny.`;
-      }
+    Object.entries(tabeleCzasuOpieki).forEach(([tydzienStr, tabela]) => {
+      const tydzien = Number(tydzienStr);
+
+      Object.entries(tabela).forEach(([dzien, dane]) => {
+        // Zapewniamy, że dane to obiekt typu DzienCzasuOpieki
+        const dzienDane = dane as DzienCzasuOpieki;
+
+        const suma =
+          dzienDane.poranek +
+          dzienDane.placowkaEdukacyjna +
+          dzienDane.czasPoEdukacji +
+          dzienDane.senURodzica +
+          dzienDane.senUDrugiegoRodzica;
+
+        if (suma > 24) {
+          hasError = true;
+          errorMessage = `Suma godzin dla tygodnia ${tydzien}, ${getDzienNazwa(
+            dzien
+          )} przekracza 24 godziny.`;
+        }
+      });
     });
 
     if (hasError) {
@@ -286,7 +395,7 @@ export default function CzasOpieki() {
 
     console.log("Zapisuję wskaźniki czasu opieki:", wskaznikiDoZapisu);
 
-    // Zapisujemy dane do store'a - teraz zapisujemy trzy wskaźniki procentowe
+    // Zapisujemy dane do store'a
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {
@@ -294,15 +403,17 @@ export default function CzasOpieki() {
             ...dziecko,
             cyklOpieki,
             wskaznikiCzasuOpieki: wskaznikiDoZapisu,
-            tabelaCzasu, // Zachowanie tabeli dla referencji
-          };
+            tabeleCzasuOpieki, // Zachowanie tabeli dla referencji
+          } as DzieckoRozszerzone;
         }
         return dziecko;
       });
 
       updateFormData({
         dzieci: zaktualizowaneDzieci,
-      }); // Przewijamy stronę do góry przed przejściem do następnej strony
+      });
+
+      // Przewijamy stronę do góry przed przejściem do następnej strony
       scrollToTop();
 
       // Sprawdzamy model opieki dziecka
@@ -319,6 +430,7 @@ export default function CzasOpieki() {
       }
     }
   };
+
   // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = () => {
     // Zapisujemy aktualne wskaźniki
@@ -341,8 +453,8 @@ export default function CzasOpieki() {
             ...dziecko,
             cyklOpieki,
             wskaznikiCzasuOpieki: wskaznikiDoZapisu,
-            tabelaCzasu,
-          };
+            tabeleCzasuOpieki,
+          } as DzieckoRozszerzone;
         }
         return dziecko;
       });
@@ -356,6 +468,11 @@ export default function CzasOpieki() {
 
     // Wracamy do strony dzieci
     router.push("/dzieci");
+  };
+
+  // Funkcja do przełączania między tygodniami
+  const handleChangeTydzien = (tydzien: number) => {
+    setAktywnyTydzien(tydzien);
   };
 
   // Pomocnicza funkcja do konwersji kodu dnia na pełną nazwę
@@ -393,7 +510,9 @@ export default function CzasOpieki() {
     "Wtorek",
     "Środa",
     "Czwartek",
-  ]; // Kategorie czasu
+  ];
+
+  // Kategorie czasu
   const kategorieTabeli = [
     {
       id: "poranek",
@@ -451,6 +570,72 @@ export default function CzasOpieki() {
     },
   ];
 
+  // Renderowanie tabeli tygodnia
+  const renderTabelaTygodnia = (tydzien: number) => (
+    <div key={`tydzien-${tydzien}`} className="mb-8">
+      <h3 className="text-lg font-semibold mb-3">
+        Tydzień {tydzien} {cyklOpieki === "custom" ? "(przykładowy)" : ""}
+      </h3>
+      <div className="overflow-x-auto relative">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="bg-gray-50">
+              <th className="p-2 text-left border sticky left-0 z-10 bg-gray-50">
+                Czas
+              </th>
+              {dniTygodnia.map((dzien, index) => (
+                <th key={dzien} className="p-2 text-center border">
+                  <span className="hidden sm:inline">
+                    {dniTygodniaPelne[index]}
+                  </span>
+                  <span className="sm:hidden">{dzien.toUpperCase()}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {kategorieTabeli.map((kategoria) => (
+              <tr key={kategoria.id} className="border-b">
+                <td className="p-2 border sticky left-0 bg-white z-10">
+                  <div className="flex items-center gap-1">
+                    {kategoria.nazwa}
+                    <InfoTooltip content={kategoria.tooltip} />
+                  </div>
+                </td>
+                {dniTygodnia.map((dzien) => (
+                  <td key={dzien} className="p-2 text-center border">
+                    <select
+                      value={
+                        tabeleCzasuOpieki[tydzien]?.[dzien]?.[
+                          kategoria.id as keyof DzienCzasuOpieki
+                        ] || "0"
+                      }
+                      onChange={(e) =>
+                        updateTabelaCzasu(
+                          tydzien,
+                          dzien,
+                          kategoria.id,
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className="w-16 h-10 text-center mx-auto border rounded-md czas-opieki-input min-w-[60px] focus:ring-2 focus:ring-blue-500"
+                    >
+                      {Array.from({ length: 13 }, (_, i) => (
+                        <option key={i} value={i}>
+                          {i}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   if (!aktualneDziecko) {
     return (
       <main className="flex justify-center p-3">
@@ -480,6 +665,9 @@ export default function CzasOpieki() {
     );
   }
 
+  // Liczba tygodni do wyświetlenia
+  const liczbaTygodni = getLiczbaTygodni(cyklOpieki);
+
   return (
     <main className="flex justify-center p-3">
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
@@ -507,10 +695,12 @@ export default function CzasOpieki() {
                 Ta część może zająć chwilę – ale każda minuta ma znaczenie. Nie
                 tylko dostarczasz danych do raportu. Masz też okazję uważnie
                 przyjrzeć się swojej codzienności – temu, ile realnie czasu
-                spędzasz z dzieckiem i jak wygląda Wasz rytm tygodnia
+                spędzasz z dzieckiem i jak wygląda Wasz rytm tygodnia.
+              </p>
+              <p>
+                To często moment refleksji – i bardzo często przynosi ważne
                 spostrzeżenia.
               </p>
-              <p>To często moment refleksji – i bardzo często przynosi ważne</p>
               <p className="text-sm">
                 Wypełnienie tabeli zajmie około 10-15 minut. Pamiętaj, że zawsze
                 możesz wrócić do poprzednich sekcji i skorygować swoje
@@ -527,7 +717,7 @@ export default function CzasOpieki() {
               <ul className="list-disc list-inside text-sm space-y-1">
                 <li>
                   Wpisujesz tylko godziny, kiedy:{" "}
-                  <ol>
+                  <ol className="list-decimal list-inside pl-4 space-y-1">
                     <li>dziecko jest z Tobą</li>
                     <li>przebywa w placówce edukacyjnej</li>
                     <li>śpi u Ciebie lub u drugiego rodzica</li>
@@ -572,62 +762,32 @@ export default function CzasOpieki() {
                 Jeśli wybierzesz &quot;Brak stałego schematu&quot;, podaj dane
                 dla przykładowych 4 tygodni, żeby ustandaryzować analizę.
               </p>
-            </div>{" "}
-            {/* Jednolita responsywna tabela czasu opieki zostanie tutaj */}
-            {/* Jednolita responsywna tabela czasu opieki */}{" "}
-            <div className="overflow-x-auto relative">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="p-2 text-left border sticky left-0 z-10 bg-gray-50">
-                      Czas
-                    </th>
-                    {dniTygodnia.map((dzien, index) => (
-                      <th key={dzien} className="p-2 text-center border">
-                        <span className="hidden sm:inline">
-                          {dniTygodniaPelne[index]}
-                        </span>
-                        <span className="sm:hidden">{dzien.toUpperCase()}</span>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {kategorieTabeli.map((kategoria) => (
-                    <tr key={kategoria.id} className="border-b">
-                      <td className="p-2 border sticky left-0 bg-white z-10">
-                        <div className="flex items-center gap-1">
-                          {kategoria.nazwa}
-                          <InfoTooltip content={kategoria.tooltip} />
-                        </div>
-                      </td>
-                      {dniTygodnia.map((dzien) => (
-                        <td key={dzien} className="p-2 text-center border">
-                          <Input
-                            type="number"
-                            min="0"
-                            max="24"
-                            value={
-                              tabelaCzasu[dzien]?.[
-                                kategoria.id as keyof (typeof tabelaCzasu)[typeof dzien]
-                              ] || ""
-                            }
-                            onChange={(e) =>
-                              updateTabelaCzasu(
-                                dzien,
-                                kategoria.id,
-                                parseInt(e.target.value) || 0
-                              )
-                            }
-                            className="w-10 h-10 text-center mx-auto czas-opieki-input min-w-[60px]"
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
+            {/* Wyświetlanie przycisków wyboru tygodnia dla wielotygodniowych cykli */}
+            {liczbaTygodni > 1 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {Array.from({ length: liczbaTygodni }, (_, i) => i + 1).map(
+                  (tydzien) => (
+                    <Button
+                      key={tydzien}
+                      variant={
+                        aktywnyTydzien === tydzien ? "default" : "outline"
+                      }
+                      size="sm"
+                      onClick={() => handleChangeTydzien(tydzien)}
+                    >
+                      Tydzień {tydzien}
+                    </Button>
+                  )
+                )}
+              </div>
+            )}
+            {/* Renderowanie odpowiednich tabel tygodni */}
+            {cyklOpieki === "1"
+              ? // Dla cyklu jednotygodniowego pokazujemy tylko jedną tabelę
+                renderTabelaTygodnia(1)
+              : // Dla pozostałych cykli pokazujemy tabele dla aktywnego tygodnia
+                renderTabelaTygodnia(aktywnyTydzien)}
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {/* Podsumowanie podziału czasu opieki */}
             <div className="mt-8 p-4 rounded-lg bg-blue-50">
@@ -716,12 +876,15 @@ export default function CzasOpieki() {
                 Wstecz
               </Button>{" "}
               <Button className="flex-1" onClick={handleNext}>
-                Przejdź do kosztów utrzymania
+                Przejdź dalej
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
+      <style jsx global>
+        {hideSpinnersStyle}
+      </style>
     </main>
   );
 }

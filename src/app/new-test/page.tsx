@@ -162,8 +162,9 @@ export default function AliMatrixPage() {
   const blogRef = useRef(null);
   const ctaRef = useRef(null);
 
-  // Check if element is in view
-  const useInView = (ref) => {
+  // Dodajemy właściwy typ dla parametru ref
+  // Poprawiony hook useInView z typem generycznym
+  const useInView = <T extends Element>(ref: React.RefObject<T | null>) => {
     const [isInView, setIsInView] = useState(false);
 
     useEffect(() => {

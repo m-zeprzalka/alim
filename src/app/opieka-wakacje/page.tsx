@@ -28,10 +28,26 @@ export default function OpiekaWakacje() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  // Inicjalizacja stanu dla aktualnego dziecka
-  const [aktualneDzieckoId] = useState<number | null>(
-    formData.aktualneDzieckoWTabeliCzasu || null
-  );
+  // Funkcja do bezpiecznego pobrania ID aktualnego dziecka
+  const getSafeChildId = useCallback(() => {
+    const childId =
+      formData.aktualneDzieckoWOpiece || formData.aktualneDzieckoWTabeliCzasu;
+
+    if (childId !== undefined) return childId;
+
+    // Fallback - użyj ID dziecka o indeksie przechowywanym w currentChildIndex
+    const currentIndex = formData.currentChildIndex || 0;
+    return formData.dzieci?.[currentIndex]?.id;
+  }, [
+    formData.aktualneDzieckoWOpiece,
+    formData.aktualneDzieckoWTabeliCzasu,
+    formData.currentChildIndex,
+    formData.dzieci,
+  ]);
+
+  // Inicjalizacja stanu dla aktualnego dziecka - używamy najpierw z modułu opieka-wakacje,
+  // a jeśli nie istnieje, to z modułu tabela czasu (dla kompatybilności wstecznej)
+  const [aktualneDzieckoId] = useState<number | undefined>(getSafeChildId());
   // Stan dla danych o opiece w okresach specjalnych (wakacje, święta, itp.)
   const [wakacjeProcentCzasu, setWakacjeProcentCzasu] = useState<number>(50); // Domyślnie 50%
   const [wakacjeSzczegolowyPlan, setWakacjeSzczegolowyPlan] =
@@ -72,7 +88,6 @@ export default function OpiekaWakacje() {
       }
     }
   }, [formData.dzieci, aktualneDzieckoId]);
-
   // Funkcja do zapisywania danych
   const saveData = useCallback(async () => {
     if (aktualneDzieckoId && formData.dzieci) {
@@ -89,6 +104,9 @@ export default function OpiekaWakacje() {
 
       const operationId = generateOperationId();
       try {
+        // Znajdź indeks aktualnego dziecka w cyklu
+        const currentChildIndex = formData.currentChildIndex || 0;
+
         const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
           if (dziecko.id === aktualneDzieckoId) {
             const wakacjeData: OpiekeWakacjeData = {
@@ -105,13 +123,13 @@ export default function OpiekaWakacje() {
             };
           }
           return dziecko;
-        });
-
-        // Zapisz dane z mechanizmem ponownych prób
+        }); // Zapisz dane z mechanizmem ponownych prób
         await retryOperation(
           async () => {
             await updateFormData({
               dzieci: zaktualizowaneDzieci,
+              // Zapisujemy informację o aktualnym dziecku dla modułu kosztów
+              aktualneDzieckoKoszty: aktualneDzieckoId,
               __meta: {
                 lastUpdated: Date.now(),
                 formVersion: "1.1.0",
@@ -164,10 +182,19 @@ export default function OpiekaWakacje() {
 
     try {
       const saveSuccessful = await saveData();
-
       if (saveSuccessful) {
         // Zapisujemy informację o submisji formularza dla celów analizy
         recordSubmission();
+
+        // Zachowujemy aktualny indeks dziecka w cyklu
+        const currentChildIndex =
+          formData.currentChildIndex !== undefined
+            ? formData.currentChildIndex
+            : 0;
+        await updateFormData({
+          currentChildIndex: currentChildIndex,
+          activeChildId: getSafeChildId(),
+        });
 
         // Przewiń stronę do góry przed przejściem do następnej strony
         scrollToTop();
@@ -191,7 +218,6 @@ export default function OpiekaWakacje() {
       setIsSubmitting(false);
     }
   }, [isSubmitting, saveData, router, scrollToTop]);
-
   // Funkcja do powrotu do poprzedniego kroku
   const handleBack = useCallback(async () => {
     // Zapobieganie wielokrotnym kliknięciom
@@ -205,6 +231,16 @@ export default function OpiekaWakacje() {
 
     try {
       await saveData();
+
+      // Zachowujemy aktualny indeks dziecka w cyklu
+      const currentChildIndex =
+        formData.currentChildIndex !== undefined
+          ? formData.currentChildIndex
+          : 0;
+      await updateFormData({
+        currentChildIndex: currentChildIndex,
+        activeChildId: getSafeChildId(),
+      });
 
       // Przewiń stronę do góry przed przejściem do poprzedniej strony
       scrollToTop();
@@ -278,8 +314,7 @@ export default function OpiekaWakacje() {
                   </div>
                 }
               />
-            </div>
-
+            </div>{" "}
             <div className="bg-blue-50 p-4 rounded-lg">
               <p className="font-medium">
                 Wypełniasz dane dla Dziecka {aktualneDziecko.id} (
@@ -289,8 +324,17 @@ export default function OpiekaWakacje() {
                     1}
                 /{formData.dzieci?.length || 0}) - {aktualneDziecko.wiek} lat
               </p>
+              <p className="text-sm mt-1">
+                Określ jak wygląda opieka nad dzieckiem w okresach specjalnych
+                takich jak wakacje czy święta.
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                <p className="text-xs font-medium">
+                  Krok 3/4: Opieka w okresach specjalnych
+                </p>
+              </div>
             </div>
-
             <div className="space-y-6">
               <h2 className="font-medium text-lg">
                 Jak wygląda opieka nad dzieckiem w okresach takich jak wakacje,
@@ -389,10 +433,8 @@ export default function OpiekaWakacje() {
                 </div>
               )}
             </div>
-
             {/* Wyświetlanie błędów */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
-
             <div className="flex gap-3 pt-4">
               <Button
                 variant="outline"
@@ -413,7 +455,7 @@ export default function OpiekaWakacje() {
                     Zapisuję...
                   </>
                 ) : (
-                  "Przejdź do kosztów utrzymania"
+                  "Dalej: Koszty utrzymania dziecka"
                 )}
               </Button>
             </div>

@@ -16,6 +16,24 @@ export default function CzasOpieki() {
   const router = useRouter();
   const { formData, updateFormData } = useFormStore();
 
+  // Utility function to safely get the current child index
+  const getSafeChildIndex = () => {
+    return typeof formData.currentChildIndex !== "undefined"
+      ? formData.currentChildIndex
+      : 0;
+  };
+
+  // Utility function to safely get the active child ID
+  const getSafeChildId = () => {
+    const childId = formData.aktualneDzieckoWTabeliCzasu;
+
+    if (typeof childId !== "undefined") return childId;
+
+    // Fallback - use child ID at the current index
+    const currentIndex = getSafeChildIndex();
+    return formData.dzieci?.[currentIndex]?.id;
+  };
+
   // Style CSS dla ukrycia strzałek w polach numerycznych w tabeli
   const hideSpinnersStyle = `
     .czas-opieki-input::-webkit-inner-spin-button,
@@ -32,12 +50,9 @@ export default function CzasOpieki() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
   // Inicjalizacja stanu dla aktualnego dziecka i danych tabeli
   // setAktualneDzieckoId będzie używane w późniejszych aktualizacjach
-  const [aktualneDzieckoId] = useState<number | null>(
-    formData.aktualneDzieckoWTabeliCzasu || null
-  );
+  const [aktualneDzieckoId] = useState<number | undefined>(getSafeChildId());
   const [cyklOpieki, setCyklOpieki] = useState<"1" | "2" | "4" | "custom">("1");
   const [tabelaCzasu, setTabelaCzasu] = useState<{
     [dzien: string]: {
@@ -251,8 +266,7 @@ export default function CzasOpieki() {
   // Funkcja do obsługi zmiany cyklu opieki
   const handleCyklOpiekiChange = (value: string) => {
     setCyklOpieki(value as "1" | "2" | "4" | "custom");
-  };
-  // Funkcja do zapisania danych i przejścia do następnego dziecka lub następnego kroku
+  }; // Funkcja do zapisania danych i przejścia do następnego dziecka lub następnego kroku
   const handleNext = () => {
     // Walidacja danych
     let hasError = false;
@@ -298,43 +312,34 @@ export default function CzasOpieki() {
           };
         }
         return dziecko;
-      });
-
+      }); // Aktualizujemy dziecko i przechodzimy do następnej strony
+      const currentChildIndex = getSafeChildIndex();
       updateFormData({
         dzieci: zaktualizowaneDzieci,
-      }); // Przewijamy stronę do góry przed przejściem do następnej strony
+        // Zapisujemy aktualne dziecko w module opieki wakacje
+        aktualneDzieckoWOpiece: getSafeChildId(),
+        // Zachowujemy indeks aktualnego dziecka w cyklu
+        currentChildIndex: currentChildIndex,
+        activeChildId: getSafeChildId(),
+      });
+
+      // Przewijamy stronę do góry przed przejściem do następnej strony
       scrollToTop();
 
-      // Sprawdzamy model opieki dziecka
-      const aktualneDziecko = formData.dzieci.find(
-        (d) => d.id === aktualneDzieckoId
-      );
-
       // Jeśli model opieki to "inny", przechodzimy do strony opieki w okresach specjalnych
-      // W przeciwnym wypadku przechodzimy od razu do kosztów utrzymania
-      if (aktualneDziecko && aktualneDziecko.modelOpieki === "inny") {
-        router.push("/opieka-wakacje");
-      } else {
-        router.push("/koszty-utrzymania");
-      }
+      router.push("/opieka-wakacje");
     }
-  };
-  // Funkcja do obsługi powrotu do poprzedniego kroku
+  }; // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = () => {
     // Zapisujemy aktualne wskaźniki
     const wskaznikiDoZapisu = {
       czasOpiekiBezEdukacji: czasOpiekiBezEdukacji,
       czasAktywnejOpieki: czasAktywnejOpieki,
       czasSnu: czasSnu,
-    };
-
-    console.log(
-      "Zapisuję wskaźniki czasu opieki przed powrotem:",
-      wskaznikiDoZapisu
-    );
-
-    // Zapisujemy aktualne dane dziecka
+    }; // Zapisujemy aktualne dane dziecka
     if (aktualneDzieckoId && formData.dzieci) {
+      const currentChildIndex = getSafeChildIndex();
+
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {
           return {
@@ -345,16 +350,18 @@ export default function CzasOpieki() {
           };
         }
         return dziecko;
-      });
+      }); // Aktualizujemy dane z zachowaniem informacji o aktualnym dziecku
       updateFormData({
         dzieci: zaktualizowaneDzieci,
+        currentChildIndex: currentChildIndex,
+        activeChildId: getSafeChildId(),
       });
     }
 
     // Przewijamy stronę do góry przed przejściem do poprzedniej strony
     scrollToTop();
 
-    // Wracamy do strony dzieci
+    // Wracamy do strony dzieci z zachowaniem aktualnego indeksu dziecka
     router.push("/dzieci");
   };
 
@@ -500,6 +507,16 @@ export default function CzasOpieki() {
                     1}
                 /{formData.dzieci?.length || 0}) - {aktualneDziecko.wiek} lat
               </p>
+              <p className="text-sm mt-1">
+                Określ dokładnie, jak wygląda rozkład czasu spędzanego z
+                dzieckiem w typowym tygodniu.
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                <p className="text-xs font-medium">
+                  Krok 2/4: Czas opieki w tygodniu
+                </p>
+              </div>
             </div>
             <div>
               <p>Zanim zaczniesz: kilka słów od nas</p>
@@ -716,7 +733,7 @@ export default function CzasOpieki() {
                 Wstecz
               </Button>{" "}
               <Button className="flex-1" onClick={handleNext}>
-                Przejdź do kosztów utrzymania
+                Dalej: Opieka w wakacje i święta
               </Button>
             </div>
           </div>

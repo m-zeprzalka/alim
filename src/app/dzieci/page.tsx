@@ -76,7 +76,13 @@ export default function Dzieci() {
   // Inicjalizacja stanu dla liczby dzieci i ich danych z formStore
   const [liczbaDzieci, setLiczbaDzieci] = useState<number>(
     formData.liczbaDzieci || 1
-  ); // Typ dla błędów pól formularza
+  );
+  // Stan do śledzenia aktualnego dziecka w cyklicznym przepływie formularza
+  const [currentChildIndex, setCurrentChildIndex] = useState<number>(
+    formData.currentChildIndex !== undefined ? formData.currentChildIndex : 0
+  );
+
+  // Typ dla błędów pól formularza
   type FieldErrors = {
     [dzieckoId: number]: {
       wiek?: string;
@@ -200,15 +206,16 @@ export default function Dzieci() {
     setFieldErrors({});
 
     try {
-      // Walidacja danych przy użyciu schematu Zod
-      trackedLog(operationId, "Validating form data", {
-        liczbaDzieci,
-        dzieciCount: dzieci.length,
+      // Walidacja tylko aktualnego dziecka zamiast wszystkich dzieci
+      trackedLog(operationId, "Validating form data for child", {
+        childIndex: currentChildIndex,
+        childId: dzieci[currentChildIndex]?.id,
       });
 
-      const validationResult = childrenFormSchema.safeParse({
+      // Przygotowanie danych dziecka do walidacji
+      const childToValidate = {
         liczbaDzieci,
-        dzieci: dzieci.map((d) => ({
+        dzieci: [dzieci[currentChildIndex]].map((d) => ({
           id: d.id,
           wiek: d.wiek,
           plec: d.plec,
@@ -219,7 +226,9 @@ export default function Dzieci() {
           opiekaInnejOsoby: d.opiekaInnejOsoby,
           modelOpieki: d.modelOpieki,
         })),
-      });
+      };
+
+      const validationResult = childrenFormSchema.safeParse(childToValidate);
 
       if (!validationResult.success) {
         // Przetwarzamy błędy specyficzne dla pól formularza
@@ -262,7 +271,7 @@ export default function Dzieci() {
           ) {
             const childIndex = issue.path[1];
             const fieldName = issue.path[2];
-            const dzieckoId = dzieci[childIndex]?.id;
+            const dzieckoId = dzieci[currentChildIndex]?.id;
 
             if (dzieckoId !== undefined) {
               // Inicjalizujemy obiekt błędów dla dziecka, jeśli nie istnieje
@@ -322,37 +331,30 @@ export default function Dzieci() {
         }
         // Następnie błędy dla poszczególnych dzieci
         else {
-          for (let i = 0; i < dzieci.length; i++) {
-            const childErrors = formattedErrors.dzieci?.[i];
-            if (childErrors) {
-              // Sprawdzamy wszystkie pola z mapowania
-              for (const [field, displayName] of Object.entries(
-                fieldNameMapping
-              )) {
-                const fieldErrors =
-                  childErrors[field as keyof typeof childErrors];
-                if (
-                  fieldErrors &&
-                  "_errors" in fieldErrors &&
-                  fieldErrors._errors?.length
-                ) {
-                  errorMessage = `Dziecko ${
-                    i + 1
-                  }: ${displayName} - ${cleanErrorMessage(
-                    fieldErrors._errors[0],
-                    field
-                  )}`;
-                  break;
-                }
-              }
-
-              // Jeśli nadal nie mamy komunikatu, sprawdzamy ogólny błąd
-              if (!errorMessage && childErrors._errors?.length) {
-                errorMessage = `Dziecko ${i + 1}: ${cleanErrorMessage(
-                  childErrors._errors[0]
+          const childErrors = formattedErrors.dzieci?.[0];
+          if (childErrors) {
+            // Sprawdzamy wszystkie pola z mapowania
+            for (const [field, displayName] of Object.entries(
+              fieldNameMapping
+            )) {
+              const fieldErrors =
+                childErrors[field as keyof typeof childErrors];
+              if (
+                fieldErrors &&
+                "_errors" in fieldErrors &&
+                fieldErrors._errors?.length
+              ) {
+                errorMessage = `${displayName} - ${cleanErrorMessage(
+                  fieldErrors._errors[0],
+                  field
                 )}`;
                 break;
               }
+            }
+
+            // Jeśli nadal nie mamy komunikatu, sprawdzamy ogólny błąd
+            if (!errorMessage && childErrors._errors?.length) {
+              errorMessage = cleanErrorMessage(childErrors._errors[0]);
             }
           }
         }
@@ -363,26 +365,7 @@ export default function Dzieci() {
           const allIssues = validationResult.error.issues;
           if (allIssues.length > 0) {
             const issue = allIssues[0];
-
-            // Jeśli mamy ścieżkę do pola, próbujemy dodać numer dziecka
-            if (
-              issue.path.length >= 2 &&
-              issue.path[0] === "dzieci" &&
-              typeof issue.path[1] === "number"
-            ) {
-              const childIndex = issue.path[1];
-              const fieldName =
-                issue.path.length >= 3 ? (issue.path[2] as string) : "";
-              const displayName = fieldName
-                ? fieldNameMapping[fieldName] || fieldName
-                : "";
-
-              errorMessage = `Dziecko ${childIndex + 1}${
-                displayName ? ": " + displayName : ""
-              } - ${cleanErrorMessage(issue.message, fieldName)}`;
-            } else {
-              errorMessage = cleanErrorMessage(issue.message);
-            }
+            errorMessage = cleanErrorMessage(issue.message);
           } else {
             errorMessage = "Proszę poprawić błędy w formularzu";
           }
@@ -396,32 +379,53 @@ export default function Dzieci() {
 
       trackedLog(operationId, "Validation successful, proceeding to save data");
 
-      // Przygotowanie danych do zapisu - z odpowiednią strukturą i warunkami
-      const dzieciDoZapisu = dzieci.map((d) => ({
-        id: d.id,
-        wiek: typeof d.wiek === "number" ? d.wiek : 0,
-        plec: d.plec as "K" | "M" | "I",
-        specjalnePotrzeby: d.specjalnePotrzeby,
-        opisSpecjalnychPotrzeb: d.specjalnePotrzeby
-          ? d.opisSpecjalnychPotrzeb
+      // Przygotowanie danych bieżącego dziecka do zapisu
+      const aktualneDziecko = {
+        id: dzieci[currentChildIndex].id,
+        wiek:
+          typeof dzieci[currentChildIndex].wiek === "number"
+            ? dzieci[currentChildIndex].wiek
+            : 0,
+        plec: dzieci[currentChildIndex].plec as "K" | "M" | "I",
+        specjalnePotrzeby: dzieci[currentChildIndex].specjalnePotrzeby,
+        opisSpecjalnychPotrzeb: dzieci[currentChildIndex].specjalnePotrzeby
+          ? dzieci[currentChildIndex].opisSpecjalnychPotrzeb
           : undefined,
-        uczeszczeDoPlacowki: d.uczeszczeDoPlacowki,
-        typPlacowki: d.uczeszczeDoPlacowki ? d.typPlacowki : undefined,
-        opiekaInnejOsoby: !d.uczeszczeDoPlacowki
-          ? d.opiekaInnejOsoby
+        uczeszczeDoPlacowki: dzieci[currentChildIndex].uczeszczeDoPlacowki,
+        typPlacowki: dzieci[currentChildIndex].uczeszczeDoPlacowki
+          ? dzieci[currentChildIndex].typPlacowki
           : undefined,
-        modelOpieki: d.modelOpieki as "50/50" | "inny",
-      }));
+        opiekaInnejOsoby: !dzieci[currentChildIndex].uczeszczeDoPlacowki
+          ? dzieci[currentChildIndex].opiekaInnejOsoby
+          : undefined,
+        modelOpieki: dzieci[currentChildIndex].modelOpieki as "50/50" | "inny",
+      };
+
+      const zaktualizowaneDzieci = [...(formData.dzieci || [])];
+      // Aktualizacja lub dodanie dziecka w tablicy
+      const existingIndex = zaktualizowaneDzieci.findIndex(
+        (d) => d.id === aktualneDziecko.id
+      );
+      if (existingIndex >= 0) {
+        zaktualizowaneDzieci[existingIndex] = aktualneDziecko;
+      } else {
+        zaktualizowaneDzieci.push(aktualneDziecko);
+      }
+
+      // Sprawdź, czy to ostatnie dziecko czy nie
+      const isLastChild = currentChildIndex === liczbaDzieci - 1;
 
       // Zapisujemy dane do store'a wykorzystując mechanizm ponownych prób
       try {
         await retryOperation(
           async () => {
+            // Using type assertion to work around TypeScript issues
             await updateFormData({
               liczbaDzieci,
-              dzieci: dzieciDoZapisu,
-              // Zawsze zaczynamy od pierwszego dziecka
-              aktualneDzieckoWTabeliCzasu: dzieciDoZapisu[0].id,
+              dzieci: zaktualizowaneDzieci,
+              // Zapisz informacje o aktualnym cyklu formularza              currentChildIndex,
+              activeChildId: aktualneDziecko.id,
+              aktualneDzieckoWTabeliCzasu: aktualneDziecko.id,
               __meta: {
                 lastUpdated: Date.now(),
                 formVersion: "1.1.0",
@@ -443,23 +447,17 @@ export default function Dzieci() {
         trackedLog(operationId, "Data successfully saved");
 
         // Przewijamy stronę do góry przed przejściem do następnej strony
-        scrollToTop();
-
-        // Określenie następnego kroku na podstawie modelu opieki pierwszego dziecka
-        const pierwsze_dziecko = dzieciDoZapisu[0];
-
-        trackedLog(
-          operationId,
-          `Determining next page based on model opieki: ${pierwsze_dziecko.modelOpieki}`
-        );
-
-        // Bezpieczna nawigacja z opóźnieniem dla lepszego UX
+        scrollToTop(); // Dodajemy małe opóźnienie dla lepszego UX
         setTimeout(() => {
+          // Zawsze przechodzimy do następnej strony zgodnie z modelem opieki
           const targetPath =
-            pierwsze_dziecko.modelOpieki === "inny"
+            aktualneDziecko.modelOpieki === "inny"
               ? "/czas-opieki"
               : "/koszty-utrzymania";
-          trackedLog(operationId, `Navigating to ${targetPath}`);
+          trackedLog(
+            operationId,
+            `Navigating to ${targetPath} for current child`
+          );
           router.push(targetPath);
 
           // Zmniejszamy szansę na back button lub podwójną submisję
@@ -477,7 +475,17 @@ export default function Dzieci() {
       setIsSubmitting(false);
       setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie.");
     }
-  }, [dzieci, liczbaDzieci, router, scrollToTop, updateFormData, isSubmitting]); // Funkcja do obsługi powrotu do poprzedniego kroku
+  }, [
+    dzieci,
+    liczbaDzieci,
+    router,
+    scrollToTop,
+    updateFormData,
+    isSubmitting,
+    currentChildIndex,
+    formData.dzieci,
+  ]);
+  // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = useCallback(() => {
     // Zapobieganie wielokrotnym kliknięciom
     if (isSubmitting) return;
@@ -579,160 +587,189 @@ export default function Dzieci() {
                 </div>
               </div>
 
-              {dzieci.map((dziecko, index) => (
-                <div
-                  key={dziecko.id}
-                  className="p-4 border-2 border-gray-200 rounded-lg"
-                >
-                  <h3 className="font-medium mb-3">Dziecko {index + 1}</h3>
-
-                  {/* 1. Wiek dziecka */}
-                  <div className="mb-6">
-                    <Label
-                      htmlFor={`wiek-${dziecko.id}`}
-                      className="text-lg font-medium"
-                    >
-                      1. Wiek dziecka
-                    </Label>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Wiek dziecka wpływa na ocenę adekwatności kosztów i
-                      stopnia zaangażowania opiekuńczego. Inne potrzeby ma
-                      niemowlę, inne nastolatek.
-                    </p>{" "}
-                    <Input
-                      id={`wiek-${dziecko.id}`}
-                      type="number"
-                      min="0"
-                      max="26"
-                      value={dziecko.wiek}
-                      onChange={(e) => {
-                        // Czyścimy potencjalny błąd po zmianie wartości
-                        if (fieldErrors[dziecko.id]?.wiek) {
-                          setFieldErrors((prev) => ({
-                            ...prev,
-                            [dziecko.id]: {
-                              ...prev[dziecko.id],
-                              wiek: undefined,
-                            },
-                          }));
-                        }
-                        updateDziecko(index, {
-                          wiek: e.target.value ? parseInt(e.target.value) : "",
-                        });
-                      }}
-                      className={`mt-1 ${
-                        fieldErrors[dziecko.id]?.wiek ? "border-red-500" : ""
-                      }`}
-                    />
-                    {fieldErrors[dziecko.id]?.wiek && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldErrors[dziecko.id]?.wiek}
+              {/* Display only the current child form */}
+              {dzieci.length > 0 && (
+                <div className="mt-6">
+                  {" "}
+                  <div className="bg-blue-50 p-4 rounded-lg mb-4">
+                    <p className="font-medium">
+                      Wypełniasz dane dla Dziecka {currentChildIndex + 1} z{" "}
+                      {liczbaDzieci}
+                    </p>
+                    <p className="text-sm mt-1">
+                      Dla każdego dziecka najpierw podaj informacje podstawowe,
+                      następnie przejdź przez cały cykl formularza. Po
+                      zakończeniu cyklu dla jednego dziecka, wrócisz tutaj aby
+                      uzupełnić dane kolejnego.
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                      <p className="text-xs font-medium">
+                        Krok 1/3: Dane podstawowe dziecka
                       </p>
-                    )}
+                    </div>
                   </div>
+                  <div className="p-4 border-2 border-gray-200 rounded-lg">
+                    <h3 className="font-medium mb-3">
+                      Dziecko {currentChildIndex + 1}
+                    </h3>
 
-                  {/* 2. Płeć dziecka */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2">
+                    {/* 1. Wiek dziecka */}
+                    <div className="mb-6">
                       <Label
-                        htmlFor={`plec-${dziecko.id}`}
+                        htmlFor={`wiek-${dzieci[currentChildIndex].id}`}
                         className="text-lg font-medium"
                       >
-                        2. Płeć dziecka
+                        1. Wiek dziecka
                       </Label>
-                      <InfoTooltip
-                        content={
-                          <div className="space-y-2 text-sm">
-                            <p>
-                              Informacja ta może pomóc w lepszym dopasowaniu
-                              raportu i analizie różnic w sytuacji dzieci
-                              różnych płci. Nie zwiększa ryzyka identyfikacji
-                              danych i nie jest wymagana, jeśli nie chcesz jej
-                              podawać.
-                            </p>
-                          </div>
-                        }
-                      />
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Zaznacz, jakiej płci jest dziecko, którego dotyczą dane w
-                      formularzu.
-                    </p>
-                    <p className="text-sm text-gray-600 font-medium mb-2">
-                      Dlaczego pytamy?
-                    </p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Płeć dziecka może mieć wpływ na sposób sprawowania opieki,
-                      orzeczenia sądowe i wysokość alimentów – niekiedy z
-                      powodów kulturowych lub praktycznych. Te dane pozwolą nam
-                      lepiej zrozumieć, jak wygląda rzeczywistość rodziców w
-                      różnych sytuacjach.
-                    </p>
-                    {/* Zastąpienie radio buttonów na Select */}{" "}
-                    <Select
-                      value={dziecko.plec}
-                      onValueChange={(value) => {
-                        // Czyścimy potencjalny błąd po zmianie wartości
-                        if (fieldErrors[dziecko.id]?.plec) {
-                          setFieldErrors((prev) => ({
-                            ...prev,
-                            [dziecko.id]: {
-                              ...prev[dziecko.id],
-                              plec: undefined,
-                            },
-                          }));
-                        }
-                        updateDziecko(index, {
-                          plec: value as "K" | "M" | "I",
-                        });
-                      }}
-                    >
-                      <SelectTrigger
-                        className={`w-full ${
-                          fieldErrors[dziecko.id]?.plec
-                            ? "border-red-500 ring-red-500"
+                      <p className="text-sm text-gray-600 mb-2">
+                        Wiek dziecka wpływa na ocenę adekwatności kosztów i
+                        stopnia zaangażowania opiekuńczego. Inne potrzeby ma
+                        niemowlę, inne nastolatek.
+                      </p>{" "}
+                      <Input
+                        id={`wiek-${dzieci[currentChildIndex].id}`}
+                        type="number"
+                        min="0"
+                        max="26"
+                        value={dzieci[currentChildIndex].wiek}
+                        onChange={(e) => {
+                          // Czyścimy potencjalny błąd po zmianie wartości
+                          if (fieldErrors[dzieci[currentChildIndex].id]?.wiek) {
+                            setFieldErrors((prev) => ({
+                              ...prev,
+                              [dzieci[currentChildIndex].id]: {
+                                ...prev[dzieci[currentChildIndex].id],
+                                wiek: undefined,
+                              },
+                            }));
+                          }
+                          updateDziecko(currentChildIndex, {
+                            wiek: e.target.value
+                              ? parseInt(e.target.value)
+                              : "",
+                          });
+                        }}
+                        className={`mt-1 ${
+                          fieldErrors[dzieci[currentChildIndex].id]?.wiek
+                            ? "border-red-500"
                             : ""
                         }`}
-                      >
-                        <SelectValue placeholder="Wybierz płeć dziecka" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="M">Chłopiec</SelectItem>
-                        <SelectItem value="K">Dziewczynka</SelectItem>
-                        <SelectItem value="I">
-                          Inna / wolę nie podawać
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {fieldErrors[dziecko.id]?.plec && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {fieldErrors[dziecko.id]?.plec}
+                      />
+                      {fieldErrors[dzieci[currentChildIndex].id]?.wiek && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldErrors[dzieci[currentChildIndex].id]?.wiek}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* 2. Płeć dziecka */}
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2">
+                        <Label
+                          htmlFor={`plec-${dzieci[currentChildIndex].id}`}
+                          className="text-lg font-medium"
+                        >
+                          2. Płeć dziecka
+                        </Label>
+                        <InfoTooltip
+                          content={
+                            <div className="space-y-2 text-sm">
+                              <p>
+                                Informacja ta może pomóc w lepszym dopasowaniu
+                                raportu i analizie różnic w sytuacji dzieci
+                                różnych płci. Nie zwiększa ryzyka identyfikacji
+                                danych i nie jest wymagana, jeśli nie chcesz jej
+                                podawać.
+                              </p>
+                            </div>
+                          }
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Zaznacz, jakiej płci jest dziecko, którego dotyczą dane
+                        w formularzu.
                       </p>
-                    )}
-                  </div>
-
-                  {/* 3. Placówka edukacyjna */}
-                  <div className="mb-6">
-                    <Label
-                      htmlFor={`placowka-${dziecko.id}`}
-                      className="text-lg font-medium"
-                    >
-                      3. Czy dziecko uczęszcza do placówki edukacyjnej?
-                    </Label>
-
-                    {/* Zastąpienie radio buttonów na Select */}
-                    <div className="mt-2">
+                      <p className="text-sm text-gray-600 font-medium mb-2">
+                        Dlaczego pytamy?
+                      </p>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Płeć dziecka może mieć wpływ na sposób sprawowania
+                        opieki, orzeczenia sądowe i wysokość alimentów –
+                        niekiedy z powodów kulturowych lub praktycznych. Te dane
+                        pozwolą nam lepiej zrozumieć, jak wygląda rzeczywistość
+                        rodziców w różnych sytuacjach.
+                      </p>
+                      {/* Zastąpienie radio buttonów na Select */}{" "}
                       <Select
-                        value={dziecko.uczeszczeDoPlacowki ? "tak" : "nie"}
+                        value={dzieci[currentChildIndex].plec}
+                        onValueChange={(value) => {
+                          // Czyścimy potencjalny błąd po zmianie wartości
+                          if (fieldErrors[dzieci[currentChildIndex].id]?.plec) {
+                            setFieldErrors((prev) => ({
+                              ...prev,
+                              [dzieci[currentChildIndex].id]: {
+                                ...prev[dzieci[currentChildIndex].id],
+                                plec: undefined,
+                              },
+                            }));
+                          }
+                          updateDziecko(currentChildIndex, {
+                            plec: value as "K" | "M" | "I",
+                          });
+                        }}
+                      >
+                        <SelectTrigger
+                          className={`w-full ${
+                            fieldErrors[dzieci[currentChildIndex].id]?.plec
+                              ? "border-red-500 ring-red-500"
+                              : ""
+                          }`}
+                        >
+                          <SelectValue placeholder="Wybierz płeć dziecka" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="K">Dziewczynka</SelectItem>
+                          <SelectItem value="M">Chłopiec</SelectItem>
+                          <SelectItem value="I">
+                            Inna / wolę nie podawać
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {fieldErrors[dzieci[currentChildIndex].id]?.plec && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {fieldErrors[dzieci[currentChildIndex].id]?.plec}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* 3. Uczęszczanie do placówki edukacyjnej */}
+                    <div className="mb-6">
+                      <Label
+                        htmlFor={`placowka-${dzieci[currentChildIndex].id}`}
+                        className="text-lg font-medium"
+                      >
+                        3. Uczęszczanie do placówki edukacyjnej
+                      </Label>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Określ, czy dziecko uczęszcza do żłobka, przedszkola lub
+                        szkoły.
+                      </p>{" "}
+                      <Select
+                        value={
+                          dzieci[currentChildIndex].uczeszczeDoPlacowki
+                            ? "tak"
+                            : "nie"
+                        }
                         onValueChange={(value) => {
                           const uczeszczeDoPlacowki = value === "tak";
-                          updateDziecko(index, {
+                          updateDziecko(currentChildIndex, {
                             uczeszczeDoPlacowki,
                             typPlacowki: uczeszczeDoPlacowki
-                              ? dziecko.typPlacowki
+                              ? dzieci[currentChildIndex].typPlacowki
                               : "",
                             opiekaInnejOsoby: !uczeszczeDoPlacowki
-                              ? dziecko.opiekaInnejOsoby
+                              ? dzieci[currentChildIndex].opiekaInnejOsoby
                               : null,
                           });
                         }}
@@ -748,33 +785,39 @@ export default function Dzieci() {
                     </div>
 
                     {/* Wybór typu placówki edukacyjnej */}
-                    {dziecko.uczeszczeDoPlacowki && (
-                      <div className="mt-3">
-                        <p className="text-sm text-gray-600 mb-2">
-                          Wybierz typ placówki:
-                        </p>
-                        {/* Zastąpienie radio buttonów na Select */}{" "}
+                    {dzieci[currentChildIndex].uczeszczeDoPlacowki && (
+                      <div className="mb-6 ml-6">
+                        <Label
+                          htmlFor={`typ-placowki-${dzieci[currentChildIndex].id}`}
+                          className="font-medium"
+                        >
+                          Typ placówki edukacyjnej
+                        </Label>
                         <Select
-                          value={dziecko.typPlacowki}
+                          value={dzieci[currentChildIndex].typPlacowki}
                           onValueChange={(value) => {
                             // Czyścimy potencjalny błąd po zmianie wartości
-                            if (fieldErrors[dziecko.id]?.typPlacowki) {
+                            if (
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.typPlacowki
+                            ) {
                               setFieldErrors((prev) => ({
                                 ...prev,
-                                [dziecko.id]: {
-                                  ...prev[dziecko.id],
+                                [dzieci[currentChildIndex].id]: {
+                                  ...prev[dzieci[currentChildIndex].id],
                                   typPlacowki: undefined,
                                 },
                               }));
                             }
-                            updateDziecko(index, {
+                            updateDziecko(currentChildIndex, {
                               typPlacowki: value as PlacowkaEdukacyjna,
                             });
                           }}
                         >
                           <SelectTrigger
                             className={`w-full ${
-                              fieldErrors[dziecko.id]?.typPlacowki
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.typPlacowki
                                 ? "border-red-500 ring-red-500"
                                 : ""
                             }`}
@@ -782,7 +825,9 @@ export default function Dzieci() {
                             <SelectValue placeholder="Wybierz typ placówki" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="zlobek">Żłobek</SelectItem>
+                            <SelectItem value="zlobek">
+                              Żłobek/Klub malucha
+                            </SelectItem>
                             <SelectItem value="przedszkole">
                               Przedszkole
                             </SelectItem>
@@ -794,82 +839,61 @@ export default function Dzieci() {
                             </SelectItem>
                           </SelectContent>
                         </Select>
-                        {fieldErrors[dziecko.id]?.typPlacowki && (
+                        {fieldErrors[dzieci[currentChildIndex].id]
+                          ?.typPlacowki && (
                           <p className="text-red-500 text-xs mt-1">
-                            {fieldErrors[dziecko.id]?.typPlacowki}
+                            {
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.typPlacowki
+                            }
                           </p>
                         )}
-                        <div className="mt-2 p-3 bg-blue-50 rounded-md flex items-start">
-                          <span className="text-blue-500 mr-2">ℹ️</span>
-                          <p className="text-sm text-blue-700">
-                            Pamiętaj, by uwzględnić koszty edukacji w sekcji
-                            dotyczącej wydatków.
-                          </p>
-                        </div>
                       </div>
                     )}
 
                     {/* Opieka innej osoby, jeśli nie uczęszcza do placówki */}
-                    {dziecko.uczeszczeDoPlacowki === false && (
-                      <div className="mt-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <p className="text-sm font-medium text-gray-700">
-                            Czy ktoś inny niż rodzice sprawuje nad dzieckiem
-                            stałą, regularną opiekę?
-                          </p>
-                          <InfoTooltip
-                            content={
-                              <div className="space-y-2 text-sm">
-                                <p>
-                                  To pytanie dotyczy sytuacji, w której opieka
-                                  nad dzieckiem odbywa się poza placówką
-                                  edukacyjną, ale jest powierzona osobie
-                                  trzeciej w sposób regularny (np. codziennie
-                                  lub kilka razy w tygodniu).
-                                </p>
-                              </div>
-                            }
-                          />
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Jeśli dziecko nie uczęszcza do żłobka, przedszkola lub
-                          szkoły, wskaż, czy znajduje się pod opieką innej osoby
-                          w sposób powtarzalny (np. opiekunka, dziadkowie, inny
-                          członek rodziny).
-                        </p>
-                        {/* Zastąpienie radio buttonów na Select */}{" "}
+                    {dzieci[currentChildIndex].uczeszczeDoPlacowki ===
+                      false && (
+                      <div className="mb-6 ml-6">
+                        <Label
+                          htmlFor={`opieka-innej-${dzieci[currentChildIndex].id}`}
+                          className="font-medium"
+                        >
+                          Czy dziecko pozostaje pod opieką innej osoby (np.
+                          opiekunki, dziadków) w czasie, gdy Ty pracujesz?
+                        </Label>
                         <Select
                           value={
-                            dziecko.opiekaInnejOsoby === null
-                              ? ""
-                              : dziecko.opiekaInnejOsoby
+                            dzieci[currentChildIndex].opiekaInnejOsoby === true
                               ? "tak"
-                              : "nie"
+                              : dzieci[currentChildIndex].opiekaInnejOsoby ===
+                                false
+                              ? "nie"
+                              : ""
                           }
                           onValueChange={(value) => {
                             // Czyścimy potencjalny błąd po zmianie wartości
-                            if (fieldErrors[dziecko.id]?.opiekaInnejOsoby) {
+                            if (
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.opiekaInnejOsoby
+                            ) {
                               setFieldErrors((prev) => ({
                                 ...prev,
-                                [dziecko.id]: {
-                                  ...prev[dziecko.id],
+                                [dzieci[currentChildIndex].id]: {
+                                  ...prev[dzieci[currentChildIndex].id],
                                   opiekaInnejOsoby: undefined,
                                 },
                               }));
                             }
-                            updateDziecko(index, {
-                              opiekaInnejOsoby:
-                                value === "tak"
-                                  ? true
-                                  : value === "nie"
-                                  ? false
-                                  : null,
+                            updateDziecko(currentChildIndex, {
+                              opiekaInnejOsoby: value === "tak",
                             });
                           }}
                         >
                           <SelectTrigger
                             className={`w-full ${
-                              fieldErrors[dziecko.id]?.opiekaInnejOsoby
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.opiekaInnejOsoby
                                 ? "border-red-500 ring-red-500"
                                 : ""
                             }`}
@@ -877,159 +901,189 @@ export default function Dzieci() {
                             <SelectValue placeholder="Wybierz odpowiedź" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="tak">
-                              Tak – dziecko pozostaje pod stałą opieką innej
-                              osoby (np. opiekunki, dziadków)
-                            </SelectItem>
-                            <SelectItem value="nie">
-                              Nie – dziecko przebywa wyłącznie pod opieką
-                              rodziców
-                            </SelectItem>{" "}
+                            <SelectItem value="tak">Tak</SelectItem>
+                            <SelectItem value="nie">Nie</SelectItem>
                           </SelectContent>
                         </Select>
-                        {fieldErrors[dziecko.id]?.opiekaInnejOsoby && (
+                        {fieldErrors[dzieci[currentChildIndex].id]
+                          ?.opiekaInnejOsoby && (
                           <p className="text-red-500 text-xs mt-1">
-                            {fieldErrors[dziecko.id]?.opiekaInnejOsoby}
+                            {
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.opiekaInnejOsoby
+                            }
                           </p>
                         )}
                       </div>
                     )}
-                  </div>
 
-                  {/* 4. Specjalne potrzeby */}
-                  <div className="mb-6">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`specjalne-${dziecko.id}`}
-                        checked={dziecko.specjalnePotrzeby}
-                        onCheckedChange={(checked) =>
-                          updateDziecko(index, {
-                            specjalnePotrzeby: !!checked,
-                          })
-                        }
-                      />
-                      <Label
-                        htmlFor={`specjalne-${dziecko.id}`}
-                        className="font-medium cursor-pointer"
-                      >
-                        4. Dziecko ma specjalne potrzeby zdrowotne lub
-                        edukacyjne
-                      </Label>
+                    {/* 4. Specjalne potrzeby */}
+                    <div className="mb-6">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`specjalne-${dzieci[currentChildIndex].id}`}
+                          checked={dzieci[currentChildIndex].specjalnePotrzeby}
+                          onCheckedChange={(checked) =>
+                            updateDziecko(currentChildIndex, {
+                              specjalnePotrzeby: !!checked,
+                            })
+                          }
+                        />
+                        <Label
+                          htmlFor={`specjalne-${dzieci[currentChildIndex].id}`}
+                          className="text-lg font-medium cursor-pointer"
+                        >
+                          4. Dziecko ma specjalne potrzeby
+                        </Label>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1 mb-2 ml-6">
+                        Np. niepełnosprawność, przewlekła choroba, alergie
+                        wymagające specjalnej diety, zajęcia terapeutyczne itp.
+                      </p>
+
+                      {dzieci[currentChildIndex].specjalnePotrzeby && (
+                        <div className="mt-3">
+                          <Label
+                            htmlFor={`opis-${dzieci[currentChildIndex].id}`}
+                            className="ml-6 font-medium"
+                          >
+                            Opisz krótko specjalne potrzeby
+                          </Label>
+                          <Input
+                            id={`opis-${dzieci[currentChildIndex].id}`}
+                            type="text"
+                            value={
+                              dzieci[currentChildIndex].opisSpecjalnychPotrzeb
+                            }
+                            onChange={(e) => {
+                              // Czyścimy potencjalny błąd po zmianie wartości
+                              if (
+                                fieldErrors[dzieci[currentChildIndex].id]
+                                  ?.opisSpecjalnychPotrzeb
+                              ) {
+                                setFieldErrors((prev) => ({
+                                  ...prev,
+                                  [dzieci[currentChildIndex].id]: {
+                                    ...prev[dzieci[currentChildIndex].id],
+                                    opisSpecjalnychPotrzeb: undefined,
+                                  },
+                                }));
+                              }
+                              updateDziecko(currentChildIndex, {
+                                opisSpecjalnychPotrzeb: e.target.value,
+                              });
+                            }}
+                            className={`mt-1 ${
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.opisSpecjalnychPotrzeb
+                                ? "border-red-500"
+                                : ""
+                            }`}
+                          />
+                          {fieldErrors[dzieci[currentChildIndex].id]
+                            ?.opisSpecjalnychPotrzeb && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {
+                                fieldErrors[dzieci[currentChildIndex].id]
+                                  ?.opisSpecjalnychPotrzeb
+                              }
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
 
-                    {dziecko.specjalnePotrzeby && (
-                      <div className="mt-3">
-                        <Label htmlFor={`opis-${dziecko.id}`}>
-                          Opisz krótko specjalne potrzeby
-                        </Label>{" "}
-                        <Input
-                          id={`opis-${dziecko.id}`}
-                          value={dziecko.opisSpecjalnychPotrzeb}
-                          onChange={(e) => {
+                    {/* 5. Model opieki */}
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2">
+                        <Label
+                          htmlFor={`model-opieki-${dzieci[currentChildIndex].id}`}
+                          className="text-lg font-medium"
+                        >
+                          5. Model opieki nad dzieckiem
+                        </Label>
+                        <InfoTooltip
+                          content={
+                            <div className="space-y-2 text-sm">
+                              <p>
+                                Model opieki to kluczowy element wpływający na
+                                koszty utrzymania dziecka i obowiązki
+                                alimentacyjne.
+                              </p>
+                              <p>
+                                Jeśli wybierzesz „Opieka naprzemienna (50/50)",
+                                przyjmujemy, że dziecko spędza praktycznie równą
+                                ilość czasu z obojgiem rodziców.
+                              </p>
+                              <p>
+                                Jeśli wybierzesz „Inny układ", przejdziesz do
+                                formularza, który pomoże określić procentowy
+                                podział opieki na podstawie rzeczywistego czasu
+                                spędzanego z dzieckiem.
+                              </p>
+                            </div>
+                          }
+                        />
+                      </div>
+
+                      {/* Zastąpienie radio buttonów na Select */}
+                      <div className="mt-2">
+                        {" "}
+                        <Select
+                          value={dzieci[currentChildIndex].modelOpieki}
+                          onValueChange={(value) => {
                             // Czyścimy potencjalny błąd po zmianie wartości
                             if (
-                              fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.modelOpieki
                             ) {
                               setFieldErrors((prev) => ({
                                 ...prev,
-                                [dziecko.id]: {
-                                  ...prev[dziecko.id],
-                                  opisSpecjalnychPotrzeb: undefined,
+                                [dzieci[currentChildIndex].id]: {
+                                  ...prev[dzieci[currentChildIndex].id],
+                                  modelOpieki: undefined,
                                 },
                               }));
                             }
-                            updateDziecko(index, {
-                              opisSpecjalnychPotrzeb: e.target.value,
+                            updateDziecko(currentChildIndex, {
+                              modelOpieki: value as "50/50" | "inny",
                             });
                           }}
-                          placeholder="np. alergia, niepełnosprawność, zajęcia dodatkowe"
-                          className={`mt-1 ${
-                            fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb
-                              ? "border-red-500"
-                              : ""
-                          }`}
-                        />
-                        {fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb && (
+                        >
+                          <SelectTrigger
+                            className={`w-full ${
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.modelOpieki
+                                ? "border-red-500 ring-red-500"
+                                : ""
+                            }`}
+                          >
+                            <SelectValue placeholder="Wybierz model opieki" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="50/50">
+                              Opieka naprzemienna (50/50)
+                            </SelectItem>
+                            <SelectItem value="inny">
+                              Inny układ – np. dziecko spędza większość czasu u
+                              jednego z rodziców
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {fieldErrors[dzieci[currentChildIndex].id]
+                          ?.modelOpieki && (
                           <p className="text-red-500 text-xs mt-1">
-                            {fieldErrors[dziecko.id]?.opisSpecjalnychPotrzeb}
+                            {
+                              fieldErrors[dzieci[currentChildIndex].id]
+                                ?.modelOpieki
+                            }
                           </p>
                         )}
                       </div>
-                    )}
-                  </div>
-
-                  {/* 5. Model opieki */}
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2">
-                      <Label
-                        htmlFor={`model-opieki-${dziecko.id}`}
-                        className="text-lg font-medium"
-                      >
-                        5. Sposób sprawowania opieki
-                      </Label>
-                      <InfoTooltip
-                        content={
-                          <div className="space-y-2 text-sm">
-                            <p>
-                              Jeśli wybierzesz „Inny układ", przejdziesz do
-                              formularza, który pomoże określić procentowy
-                              podział opieki na podstawie rzeczywistego czasu
-                              spędzanego z dzieckiem.
-                            </p>
-                          </div>
-                        }
-                      />
-                    </div>
-
-                    {/* Zastąpienie radio buttonów na Select */}
-                    <div className="mt-2">
-                      {" "}
-                      <Select
-                        value={dziecko.modelOpieki}
-                        onValueChange={(value) => {
-                          // Czyścimy potencjalny błąd po zmianie wartości
-                          if (fieldErrors[dziecko.id]?.modelOpieki) {
-                            setFieldErrors((prev) => ({
-                              ...prev,
-                              [dziecko.id]: {
-                                ...prev[dziecko.id],
-                                modelOpieki: undefined,
-                              },
-                            }));
-                          }
-                          updateDziecko(index, {
-                            modelOpieki: value as "50/50" | "inny",
-                          });
-                        }}
-                      >
-                        <SelectTrigger
-                          className={`w-full ${
-                            fieldErrors[dziecko.id]?.modelOpieki
-                              ? "border-red-500 ring-red-500"
-                              : ""
-                          }`}
-                        >
-                          <SelectValue placeholder="Wybierz model opieki" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="50/50">
-                            Opieka naprzemienna (50/50)
-                          </SelectItem>
-                          <SelectItem value="inny">
-                            Inny układ – np. dziecko spędza większość czasu u
-                            jednego z rodziców
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {fieldErrors[dziecko.id]?.modelOpieki && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {fieldErrors[dziecko.id]?.modelOpieki}
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
             {/* Wyświetlanie błędu walidacji */}
             {error && <p className="text-red-500 text-sm">{error}</p>}{" "}

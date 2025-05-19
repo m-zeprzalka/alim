@@ -161,38 +161,41 @@ export default function KosztyUtrzymania() {
   };
 
   // Walidacja formularza przy użyciu schematu Zod
-  const validateForm = useCallback((dziecko: KosztyDziecka) => {
-    try {
-      kosztyDzieckaSchema.parse(dziecko);
-      setError(null);
-      setFieldErrors({});
-      return true;
-    } catch (err: any) {
-      // Obsługa błędów walidacji Zod
-      if (err.errors) {
-        const errorMessages: Record<string, string> = {};
-        let generalError: string | null = null;
+  const validateForm = useCallback(
+    (dziecko: KosztyDziecka) => {
+      try {
+        kosztyDzieckaSchema.parse(dziecko);
+        setError(null);
+        setFieldErrors({});
+        return true;
+      } catch (err: any) {
+        // Obsługa błędów walidacji Zod
+        if (err.errors) {
+          const errorMessages: Record<string, string> = {};
+          let generalError: string | null = null;
 
-        err.errors.forEach((e: any) => {
-          const path = e.path.join(".");
-          errorMessages[path] = e.message;
+          err.errors.forEach((e: any) => {
+            const path = e.path.join(".");
+            errorMessages[path] = e.message;
 
-          // Ustaw pierwszy błąd jako ogólny komunikat
-          if (!generalError) {
-            generalError = e.message;
+            // Ustaw pierwszy błąd jako ogólny komunikat
+            if (!generalError) {
+              generalError = e.message;
+            }
+          });
+
+          setFieldErrors(errorMessages);
+          if (generalError) {
+            setError(generalError);
           }
-        });
-
-        setFieldErrors(errorMessages);
-        if (generalError) {
-          setError(generalError);
+        } else {
+          setError("Wystąpiły błędy formularza. Sprawdź poprawność danych.");
         }
-      } else {
-        setError("Wystąpiły błędy formularza. Sprawdź poprawność danych.");
+        return false;
       }
-      return false;
-    }
-  }, []);
+    },
+    [setError, setFieldErrors]
+  );
 
   // Obsługa przejścia do następnego dziecka lub kroku
   const handleNext = useCallback(async () => {
@@ -302,15 +305,10 @@ export default function KosztyUtrzymania() {
           // Sprawdzamy, czy następne dziecko ma model opieki "inny"
           if (nastepneDziecko.modelOpieki === "inny") {
             // Przewijamy stronę do góry przed przejściem do następnej strony
-            scrollToTop();
-
-            // Dodajemy małe opóźnienie dla lepszego UX
+            scrollToTop(); // Dodajemy małe opóźnienie dla lepszego UX
             setTimeout(() => {
-              trackedLog(
-                operationId,
-                "Navigating to czas-opieki for next child"
-              );
-              router.push("/czas-opieki");
+              trackedLog(operationId, "Navigating to dzieci for next child");
+              router.push("/dzieci");
 
               // Zmniejszamy szansę na back button lub podwójną submisję
               setTimeout(() => {
@@ -328,14 +326,17 @@ export default function KosztyUtrzymania() {
           setIsSubmitting(false);
         }
       } else {
-        // To ostatnie dziecko, przechodzimy do następnego kroku
-        // Przewijamy stronę do góry przed przejściem do następnego kroku
+        // To ostatnie dziecko, wracamy do strony dzieci aby zakończyć cykl
+        // Przewijamy stronę do góry przed przejściem
         scrollToTop();
 
         // Dodajemy małe opóźnienie dla lepszego UX
         setTimeout(() => {
-          trackedLog(operationId, "Navigating to dochody-i-koszty");
-          router.push("/dochody-i-koszty");
+          trackedLog(
+            operationId,
+            "Navigating to dzieci - completed all children"
+          );
+          router.push("/dzieci");
 
           // Zmniejszamy szansę na back button lub podwójną submisję
           setTimeout(() => {
@@ -979,9 +980,9 @@ export default function KosztyUtrzymania() {
                     Zapisuję...
                   </>
                 ) : aktualneDzieckoIndex < kosztyDzieci.length - 1 ? (
-                  "Przejdź do następnego dziecka"
+                  "Zapisz i wypełnij dane następnego dziecka"
                 ) : (
-                  "Dalej"
+                  "Zakończ wypełnianie danych dzieci"
                 )}
               </Button>
             </div>

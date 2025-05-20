@@ -18,7 +18,6 @@ import {
   trackedLog,
   retryOperation,
 } from "@/lib/form-handlers";
-import { logChildCycleState } from "@/lib/debug-helpers";
 import { KosztyDziecka } from "./typings";
 import { kosztyDzieckaSchema } from "@/lib/schemas/koszty-utrzymania-schema";
 
@@ -295,13 +294,12 @@ export default function KosztyUtrzymania() {
 
       // Zapisujemy informację o submisji formularza dla celów analizy
       recordSubmission(); // Pobierz aktualny indeks dziecka i zakończone indeksy dzieci
-      const zakonczoneIndeksyDzieci = formData.zakonczoneIndeksyDzieci || [];
-      // Pobieramy aktualną liczbę dzieci
+      const zakonczoneIndeksyDzieci = formData.zakonczoneIndeksyDzieci || []; // Pobieramy aktualną liczbę dzieci
       const liczbaDzieci = formData.dzieci?.length || 0;
 
       // Debug logging - before changes
       console.log("DEBUG: Przed zmianami w handleNext (koszty-utrzymania)");
-      logChildCycleState(formData);
+      // Log informacji o stanie formularza został usunięty przed deploymentem
 
       // Sprawdzamy, czy zapisanie się powiodło
       if (dataSaved) {

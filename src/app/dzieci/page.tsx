@@ -34,7 +34,6 @@ import {
   trackedLog,
   retryOperation,
 } from "@/lib/form-handlers";
-import { logChildCycleState } from "@/lib/debug-helpers";
 
 export default function Dzieci() {
   const router = useRouter();
@@ -51,8 +50,7 @@ export default function Dzieci() {
       secureStore.setMetaData({ csrfToken: token });
       csrfInitialized.current = true;
     }
-  }, [secureStore]);
-  // Zabezpieczenie - sprawdzamy czy użytkownik przeszedł przez poprzednie kroki
+  }, [secureStore]); // Zabezpieczenie - sprawdzamy czy użytkownik przeszedł przez poprzednie kroki
   useEffect(() => {
     if (!formData.podstawaUstalen) {
       router.push("/podstawa-ustalen");
@@ -61,7 +59,7 @@ export default function Dzieci() {
 
     // Debug log - when /dzieci page loads
     console.log("DEBUG: Załadowano stronę dzieci");
-    logChildCycleState(formData);
+    // Log informacji o stanie formularza został usunięty przed deploymentem
   }, [formData.podstawaUstalen, router, formData]);
 
   // Funkcja scrollToTop dla lepszego UX przy przejściach

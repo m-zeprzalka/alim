@@ -1,5 +1,4 @@
--- Zoptymalizowana baza danych dla AliMatrix
--- Migracja: Dodanie rozszerzonych tabel i kolumn dla pełnych danych formularza
+-- Zmodyfikowana migracja: Dodanie rozszerzonych tabel i kolumn dla pełnych danych formularza z kontrolą istniejących indeksów
 
 -- Najpierw upewniamy się, że usuwamy wszystkie tabele, które będziemy tworzyć ponownie
 DROP TABLE IF EXISTS "Child";
@@ -103,25 +102,26 @@ CREATE TABLE "Dochody" (
 -- Indeksy dla tabeli Dochody
 CREATE UNIQUE INDEX "Dochody_formSubmissionId_idx" ON "Dochody"("formSubmissionId");
 
--- Dodatkowe indeksy dla wyszukiwania w FormSubmission
--- Sprawdzamy, czy indeks już istnieje przed próbą utworzenia go
+-- Bezpieczne tworzenie indeksów (tylko, jeśli nie istnieją)
 DO $$
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_indexes
-        WHERE indexname = 'FormSubmission_sposobFinansowania_idx'
-    ) THEN
-        EXECUTE 'CREATE INDEX "FormSubmission_sposobFinansowania_idx" ON "FormSubmission"("sposobFinansowania")';
-    END IF;
-
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_indexes
-        WHERE indexname = 'FormSubmission_podstawaUstalen_idx'
-    ) THEN
-        EXECUTE 'CREATE INDEX "FormSubmission_podstawaUstalen_idx" ON "FormSubmission"("podstawaUstalen")';
-    END IF;
+  -- Sprawdzenie czy indeks już istnieje
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_indexes 
+    WHERE indexname = 'FormSubmission_sposobFinansowania_idx'
+  ) THEN
+    -- Utworzenie indeksu, jeśli nie istnieje
+    CREATE INDEX "FormSubmission_sposobFinansowania_idx" ON "FormSubmission"("sposobFinansowania");
+  END IF;
+  
+  -- Sprawdzenie czy indeks już istnieje
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_indexes 
+    WHERE indexname = 'FormSubmission_podstawaUstalen_idx'
+  ) THEN
+    -- Utworzenie indeksu, jeśli nie istnieje
+    CREATE INDEX "FormSubmission_podstawaUstalen_idx" ON "FormSubmission"("podstawaUstalen");
+  END IF;
 END $$;
 
 -- Funkcja do wypełnienia nowych kolumn i tabel danymi z istniejących rekordów JSON

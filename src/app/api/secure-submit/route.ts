@@ -1,5 +1,5 @@
 // Route handler for form submissions with CSRF protection
-// Fixes made on May 20, 2025: fixed offline mode issues
+// Fixes made on May 20, 2025: fixed offline mode issues and proper form data storage
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
@@ -42,6 +42,22 @@ interface OfflineSubscription {
   createdAt: Date;
   isOfflineEntry: true;
 }
+
+// Helper function to convert string to number or null
+const convertToNumber = (value: any): number | null => {
+  if (value === undefined || value === null || value === "") return null;
+  const num = parseFloat(String(value));
+  return isNaN(num) ? null : num;
+};
+
+// Helper function to convert string to boolean
+const convertToBoolean = (value: any): boolean => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    return value.toLowerCase() === "true" || value === "1";
+  }
+  return Boolean(value);
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -175,98 +191,56 @@ export async function POST(request: NextRequest) {
           // Sprawdzmy czy możemy wykonać prostą operację na bazie
           const dbCheck = await prisma.$queryRaw`SELECT 1 as connected`;
           console.log("Database connection test successful:", dbCheck);
-          console.log("Database connection successful");
           updateDatabaseStatus(true);
           isConnected = true;
         } catch (connectionError) {
           console.error("Database connection failed:", connectionError);
           const error = connectionError as Error;
           updateDatabaseStatus(false, error);
-          // Nie rzucamy błędu, przechodzimy w tryb offline
-          console.log(
-            "Switching to offline mode due to database connection failure"
-          );
-          // Nie przerywamy wykonania, tylko oznaczamy, że jesteśmy offline
           isConnected = false;
         } // Sprawdzenie statusu połączenia - teraz tylko logujemy, nie wyrzucamy błędu
         if (!isConnected) {
           console.warn(
-            "Database connection issue detected, but will attempt to continue with the operation"
+            "Database connection issue detected, attempting to reconnect..."
           );
+          await prisma.$connect();
+          console.log("Reconnection attempt completed");
         }
 
-        subscription = await prisma.emailSubscription.create({
-          data: {
+        // Create or find the email subscription
+        subscription = await prisma.emailSubscription.upsert({
+          where: {
+            email: cleanEmail,
+          },
+          update: {
+            acceptedTerms: zgodaPrzetwarzanie === true,
+            acceptedContact: zgodaKontakt === true,
+            submittedAt: new Date(),
+            status: "submitted",
+          },
+          create: {
             email: cleanEmail,
             acceptedTerms: zgodaPrzetwarzanie === true,
             acceptedContact: zgodaKontakt === true,
+            submittedAt: new Date(),
+            status: "submitted",
           },
         });
-        console.log("Email subscription created:", subscription.id);
+
+        console.log("Email subscription created or updated:", subscription.id);
       } catch (err) {
         const error = err as Error & { code?: string; meta?: any };
 
-        // Sprawdź, czy to był rzeczywiście problem z połączeniem, czy inny błąd
+        // Log detailed error information
         console.error("Database error details:", {
           message: error.message,
           name: error.name,
           code: error.code,
           meta: error.meta,
+          stack: error.stack,
         });
 
-        // Dodaj diagnostykę
-        console.log("Pełny stack trace błędu:", error.stack);
-
-        // Sprawdźmy, czy błąd dotyczy unikalności adresu email
-        if (
-          error.message &&
-          error.message.includes("Unique constraint failed")
-        ) {
-          console.log(
-            "Próba utworzenia duplikatu email - próbujmy pobrać istniejący rekord"
-          );
-          try {
-            // Spróbuj pobrać istniejący rekord z tym adresem email
-            const existingSubscription =
-              await prisma.emailSubscription.findUnique({
-                where: {
-                  email: cleanEmail,
-                },
-              });
-
-            if (existingSubscription) {
-              console.log(
-                "Znaleziono istniejącą subskrypcję:",
-                existingSubscription.id
-              );
-              subscription = existingSubscription;
-              return; // Kontynuuj z istniejącą subskrypcją
-            }
-          } catch (findError) {
-            console.error(
-              "Błąd podczas szukania istniejącej subskrypcji:",
-              findError
-            );
-          }
-        }
-
-        // UWAGA: W NORMALNYM TRYBIE PRODUKCYJNYM UŻYWAMY BAZY DANYCH
-        // TYMCZASOWO WYŁĄCZAMY TRYB OFFLINE DLA TESTÓW
-
-        /* Kod trybu offline - tymczasowo zakomentowany
-        console.error("Przełączanie na tryb offline z powodu błędu bazy danych");
-        subscription = {
-          id: `offline-${Date.now()}`,
-          email: cleanEmail,
-          acceptedTerms: zgodaPrzetwarzanie === true,
-          acceptedContact: zgodaKontakt === true,
-          createdAt: new Date(),
-          isOfflineEntry: true,
-        };
-        console.log("Using offline subscription:", subscription.id);
-        */
-
-        // Użyj zamiast tego wygenerowanego ID w formacie UUID
+        // Generate UUID as a fallback if email subscription creation fails
         const uuidv4 = () => {
           return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
             /[xy]/g,
@@ -284,7 +258,6 @@ export async function POST(request: NextRequest) {
           acceptedTerms: zgodaPrzetwarzanie === true,
           acceptedContact: zgodaKontakt === true,
           createdAt: new Date(),
-          // Usuwamy flagę isOfflineEntry, aby nie wchodzić w tryb offline
         };
         console.log(
           "Using temporarily generated subscription ID:",
@@ -295,97 +268,118 @@ export async function POST(request: NextRequest) {
       // Create a new form submission with reference to the email subscription
       const formData = { ...sanitizedBody };
 
-      // Usunięcie pól, które są zapisywane osobno
+      // Remove fields that are stored separately
       delete formData.contactEmail;
       delete formData.zgodaPrzetwarzanie;
       delete formData.zgodaKontakt;
       delete formData.notHuman;
       delete formData.csrfToken;
 
-      // Aktualizacja daty formularza dla spójności
+      // Update form date for consistency
       formData.submissionDate = new Date().toISOString();
 
-      // Dodanie informacji o polach sądowych
-      console.log("Zapisywane dane sądu:", {
+      // Log information about court fields
+      console.log("Court data to be saved:", {
         rokDecyzjiSad: formData.rokDecyzjiSad,
         sadRejonowyNazwa: formData.sadRejonowyNazwa,
         sadOkregowyNazwa: formData.sadOkregowyNazwa,
         apelacjaNazwa: formData.apelacjaNazwa,
       });
 
-      // Try to create the form submission
-      let submissionId: string; // Diagnostyka - sprawdźmy co zawiera subscription
-      console.log("Subscription object check:", {
-        hasId: !!subscription?.id,
-        type: typeof subscription,
-        hasOfflineFlag: "isOfflineEntry" in subscription,
-        isOffline: subscription?.isOfflineEntry === true,
-        id: subscription?.id,
-      }); // Check if we're using an offline subscription - TYMCZASOWO WYŁĄCZONE
-      if (
-        false &&
-        "isOfflineEntry" in subscription &&
-        subscription.isOfflineEntry === true
-      ) {
-        console.log(
-          "Używamy trybu offline, bo subscription ma flagę isOfflineEntry"
-        );
-        // We're in offline mode, so we'll generate an offline ID
-        submissionId = `offline-${Date.now()}-DISABLED`; // Zmieniony format dla testów
+      let submissionId: string;
 
-        // Add to offline queue for later sync
-        addToOfflineQueue("formSubmission", {
-          ...formData,
-          email: cleanEmail,
-          acceptedTerms: zgodaPrzetwarzanie === true,
-          acceptedContact: zgodaKontakt === true,
-          subscriptionId: subscription.id,
-        });
-
-        return NextResponse.json(
-          {
-            success: true,
-            message:
-              "Formularz został pomyślnie wysłany i zapisany w naszej bazie danych.",
-            id: submissionId,
-            isOffline: false, // Ukryjmy status offline przed użytkownikiem
-            sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
-            apelacjaNazwa: formData.apelacjaNazwa || null,
-            sadOkregowyNazwa: formData.sadOkregowyNazwa || null,
-          },
-          {
-            status: 200,
-            headers: securityHeaders,
-          }
-        );
-      }
       try {
-        // Dodaj więcej logów diagnostycznych
-        console.log("Rozpoczynam zapis formularza do bazy danych");
-
-        // Upewnij się, że mamy połączenie z bazą danych
+        console.log("Starting form submission to database");
         await prisma.$connect();
         console.log("Connection established");
 
-        // Prepare basic submission data
-        let createData = {
+        // Extract children data
+        const dzieci = formData.dzieci || [];
+        delete formData.dzieci;
+
+        // Extract income data
+        const dochodyRodzicow = formData.dochodyRodzicow || null;
+        delete formData.dochodyRodzicow;
+
+        // Prepare base form submission data
+        const createData = {
           emailSubscriptionId: subscription.id,
+          // Store complete form data as JSON for backup
           formData: formData,
-          sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
-          sadOkregowyNazwa: formData.sadOkregowyNazwa || null,
+          submittedAt: new Date(),
+          status: "pending",
+
+          // Form structure fields
+          sciezkaWybor: formData.sciezkaWybor || null,
+          podstawaUstalen: formData.podstawaUstalen || null,
+          podstawaUstalenInne: formData.podstawaUstalenInne || null,
+          wariantPostepu: formData.wariantPostepu || null,
+          sposobFinansowania: formData.sposobFinansowania || null,
+
+          // Demographic data
+          plecUzytkownika: formData.plecUzytkownika || null,
+          wiekUzytkownika: formData.wiekUzytkownika || null,
+          wojewodztwoUzytkownika: formData.wojewodztwoUzytkownika || null,
+          miejscowoscUzytkownika: formData.miejscowoscUzytkownika || null,
+          stanCywilnyUzytkownika: formData.stanCywilnyUzytkownika || null,
+          plecDrugiegoRodzica: formData.plecDrugiegoRodzica || null,
+          wiekDrugiegoRodzica: formData.wiekDrugiegoRodzica || null,
+          wojewodztwoDrugiegoRodzica:
+            formData.wojewodztwoDrugiegoRodzica || null,
+          miejscowoscDrugiegoRodzica:
+            formData.miejscowoscDrugiegoRodzica || null,
+
+          // Court data
+          rodzajSaduSad: formData.rodzajSaduSad || null,
+          apelacjaSad: formData.apelacjaSad || null,
           apelacjaNazwa: formData.apelacjaNazwa || null,
+          sadOkregowyNazwa: formData.sadOkregowyNazwa || null,
+          sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
           rokDecyzjiSad: formData.rokDecyzjiSad || null,
+          miesiacDecyzjiSad: formData.miesiacDecyzjiSad || null,
+          dataDecyzjiSad: formData.dataDecyzjiSad || null,
+          liczbaSedzi: formData.liczbaSedzi || null,
+          plecSedziego: formData.plecSedziego || null,
+          inicjalySedziego: formData.inicjalySedziego || null,
+          czyPozew: formData.czyPozew || null,
+          watekWiny: formData.watekWiny || null,
+
+          // Agreement data
+          dataPorozumienia: formData.dataPorozumienia || null,
+          sposobPorozumienia: formData.sposobPorozumienia || null,
+          formaPorozumienia: formData.formaPorozumienia || null,
+          klauzulaWaloryzacyjna: formData.klauzulaWaloryzacyjna || null,
+
+          // Other arrangement data
+          dataUstalenInnych: formData.dataUstalenInnych || null,
+          uzgodnienieFinansowania: formData.uzgodnienieFinansowania || null,
+          planyWystapieniaDoSadu: formData.planyWystapieniaDoSadu || null,
+
+          // Adequacy ratings
+          ocenaAdekwatnosciSad: convertToNumber(formData.ocenaAdekwatnosciSad),
+          ocenaAdekwatnosciPorozumienie: convertToNumber(
+            formData.ocenaAdekwatnosciPorozumienie
+          ),
+          ocenaAdekwatnosciInne: convertToNumber(
+            formData.ocenaAdekwatnosciInne
+          ),
+
+          // Number of children
+          liczbaDzieci: formData.liczbaDzieci
+            ? parseInt(String(formData.liczbaDzieci))
+            : null,
         };
 
-        // Wypisz dane, które próbujemy zapisać
         console.log(
-          "Dane bazowe do zapisania:",
+          "Base form data to be saved:",
           JSON.stringify(createData, null, 2)
         );
 
-        // Build the complete submission data with conditional fields
+        // Build complete submission data with children and income
         const fullCreateData = {
           ...createData,
+
+          // Add optional IDs if present
           ...(formData.apelacjaId ? { apelacjaId: formData.apelacjaId } : {}),
           ...(formData.sadOkregowyId
             ? { sadOkregowyId: formData.sadOkregowyId }
@@ -393,32 +387,156 @@ export async function POST(request: NextRequest) {
           ...(formData.sadRejonowyId
             ? { sadRejonowyId: formData.sadRejonowyId }
             : {}),
+
+          // Add children data if present
+          ...(dzieci && dzieci.length > 0
+            ? {
+                dzieci: {
+                  create: dzieci.map((dziecko: any, index: number) => ({
+                    childId: dziecko.id
+                      ? parseInt(String(dziecko.id))
+                      : index + 1,
+                    wiek: dziecko.wiek ? parseInt(String(dziecko.wiek)) : null,
+                    plec: dziecko.plec || null,
+                    specjalnePotrzeby: convertToBoolean(
+                      dziecko.specjalnePotrzeby
+                    ),
+                    opisSpecjalnychPotrzeb:
+                      dziecko.opisSpecjalnychPotrzeb || null,
+                    uczeszczeDoPlacowki: convertToBoolean(
+                      dziecko.uczeszczeDoPlacowki
+                    ),
+                    typPlacowki: dziecko.typPlacowki || null,
+                    opiekaInnejOsoby: convertToBoolean(
+                      dziecko.opiekaInnejOsoby
+                    ),
+                    modelOpieki: dziecko.modelOpieki || null,
+                    cyklOpieki: dziecko.cyklOpieki || null,
+                    procentCzasuOpieki: convertToNumber(
+                      dziecko.procentCzasuOpieki
+                    ),
+                    kwotaAlimentow: convertToNumber(dziecko.kwotaAlimentow),
+                    twojeMiesieczneWydatki: convertToNumber(
+                      dziecko.twojeMiesieczneWydatki
+                    ),
+                    wydatkiDrugiegoRodzica: convertToNumber(
+                      dziecko.wydatkiDrugiegoRodzica
+                    ),
+                    kosztyUznanePrzezSad: convertToNumber(
+                      dziecko.kosztyUznanePrzezSad
+                    ),
+                    rentaRodzinna: convertToBoolean(dziecko.rentaRodzinna),
+                    rentaRodzinnaKwota: convertToNumber(
+                      dziecko.rentaRodzinnaKwota
+                    ),
+                    swiadczeniePielegnacyjne: convertToBoolean(
+                      dziecko.swiadczeniePielegnacyjne
+                    ),
+                    swiadczeniePielegnacyjneKwota: convertToNumber(
+                      dziecko.swiadczeniePielegnacyjneKwota
+                    ),
+                    inneZrodla: convertToBoolean(dziecko.inneZrodla),
+                    inneZrodlaOpis: dziecko.inneZrodlaOpis || null,
+                    inneZrodlaKwota: convertToNumber(dziecko.inneZrodlaKwota),
+                    brakDodatkowychZrodel:
+                      dziecko.brakDodatkowychZrodel !== false,
+                    tabelaCzasu: dziecko.tabelaCzasu || null,
+                    wskaznikiCzasuOpieki: dziecko.wskaznikiCzasuOpieki || null,
+                    wakacjeProcentCzasu: convertToNumber(
+                      dziecko.wakacjeProcentCzasu
+                    ),
+                    wakacjeSzczegolowyPlan: convertToBoolean(
+                      dziecko.wakacjeSzczegolowyPlan
+                    ),
+                    wakacjeOpisPlan: dziecko.wakacjeOpisPlan || null,
+                  })),
+                },
+              }
+            : {}),
+
+          // Add income data if present
+          ...(dochodyRodzicow
+            ? {
+                dochodyRodzicow: {
+                  create: {
+                    // Submitting parent income
+                    wlasneDochodyNetto: convertToNumber(
+                      dochodyRodzicow.wlasne?.oficjalneDochodyNetto
+                    ),
+                    wlasnePotencjalDochodowy: convertToNumber(
+                      dochodyRodzicow.wlasne?.potencjalDochodowy
+                    ),
+                    wlasneKosztyUtrzymania: convertToNumber(
+                      dochodyRodzicow.wlasne?.kosztyUtrzymaniaSiebie
+                    ),
+                    wlasneKosztyInni: convertToNumber(
+                      dochodyRodzicow.wlasne?.kosztyUtrzymaniaInnychOsob
+                    ),
+                    wlasneDodatkoweZobowiazania: convertToNumber(
+                      dochodyRodzicow.wlasne?.dodatkoweZobowiazania
+                    ),
+
+                    // Other parent income
+                    drugiRodzicDochody: convertToNumber(
+                      dochodyRodzicow.drugiRodzic?.oficjalneDochodyNetto
+                    ),
+                    drugiRodzicPotencjal: convertToNumber(
+                      dochodyRodzicow.drugiRodzic?.potencjalDochodowy
+                    ),
+                    drugiRodzicKoszty: convertToNumber(
+                      dochodyRodzicow.drugiRodzic?.kosztyUtrzymaniaSiebie
+                    ),
+                    drugiRodzicKosztyInni: convertToNumber(
+                      dochodyRodzicow.drugiRodzic?.kosztyUtrzymaniaInnychOsob
+                    ),
+                    drugiRodzicDodatkowe: convertToNumber(
+                      dochodyRodzicow.drugiRodzic?.dodatkoweZobowiazania
+                    ),
+                  },
+                },
+              }
+            : {}),
         };
 
-        // Wypisz pełne dane z polami opcjonalnymi
         console.log(
-          "Pełne dane do zapisania:",
+          "Full data to be saved:",
           JSON.stringify(fullCreateData, null, 2)
         );
+        console.log("Executing prisma.formSubmission.create...");
 
-        console.log("Wykonuję operację prisma.formSubmission.create...");
-        // Create the submission with properly typed data
+        // Create the submission with all related data
         const submission = await prisma.formSubmission.create({
           data: fullCreateData,
+          include: {
+            dzieci: true,
+            dochodyRodzicow: true,
+          },
         });
 
         submissionId = submission.id;
         console.log("Form submission created successfully:", submissionId);
 
-        // Success response
+        // Log child and income data
+        if (submission.dzieci && submission.dzieci.length > 0) {
+          console.log(`Saved ${submission.dzieci.length} children records`);
+        }
+
+        if (submission.dochodyRodzicow) {
+          console.log("Income data saved successfully");
+        }
+
+        // Return success response with details
         return NextResponse.json(
           {
             success: true,
-            message: "Formularz został pomyślnie przesłany.",
+            message:
+              "Formularz został pomyślnie przesłany i zapisany w bazie danych.",
             id: submissionId,
             sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
             apelacjaNazwa: formData.apelacjaNazwa || null,
             sadOkregowyNazwa: formData.sadOkregowyNazwa || null,
+            childrenCount: submission.dzieci?.length || 0,
+            hasIncomeData: !!submission.dochodyRodzicow,
           },
           {
             status: 200,
@@ -426,21 +544,9 @@ export async function POST(request: NextRequest) {
           }
         );
       } catch (dbError) {
-        console.error("Database error:", dbError);
+        console.error("Database error during form submission:", dbError);
 
-        // Check for duplicate email error
-        if (
-          dbError instanceof Error &&
-          dbError.message.includes("Unique constraint failed")
-        ) {
-          return NextResponse.json(
-            { error: "Ten adres email jest już zarejestrowany." },
-            {
-              status: 409,
-              headers: securityHeaders,
-            }
-          );
-        } // Generuj ID w stylu UUID (nie offline)
+        // Use UUID as fallback
         const uuidv4 = () => {
           return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
             /[xy]/g,
@@ -452,24 +558,19 @@ export async function POST(request: NextRequest) {
           );
         };
 
-        // W przypadku błędu bazy danych, użyj wygenerowanego ID
         submissionId = uuidv4();
-        console.log("Używam wygenerowanego ID w formacie UUID:", submissionId);
+        console.log(
+          "Using generated UUID for failed submission:",
+          submissionId
+        );
 
-        /* Tymczasowo wyłączamy tryb offline
-        addToOfflineQueue("formSubmission", {
-          ...formData,
-          email: cleanEmail,
-          acceptedTerms: zgodaPrzetwarzanie === true,
-          acceptedContact: zgodaKontakt === true,
-        });
-        */ return NextResponse.json(
+        return NextResponse.json(
           {
-            success: true,
+            success: true, // Return success to client despite error
             message:
-              "Formularz został pomyślnie wysłany i zapisany w naszej bazie danych.",
+              "Formularz został przyjęty, ale wystąpił problem z zapisem w bazie. Prosimy o kontakt.",
             id: submissionId,
-            isOffline: false, // Ukrywamy status offline przed użytkownikiem
+            isOffline: false, // Hide offline status from user
             sadRejonowyNazwa: formData.sadRejonowyNazwa || null,
             apelacjaNazwa: formData.apelacjaNazwa || null,
             sadOkregowyNazwa: formData.sadOkregowyNazwa || null,
@@ -481,7 +582,9 @@ export async function POST(request: NextRequest) {
         );
       }
     } catch (error) {
-      console.error("Error processing form submission:", error); // Generujemy ID w stylu UUID zamiast emergency-timestamp
+      console.error("Error processing form submission:", error);
+
+      // Generate UUID for emergency response
       const uuidv4 = () => {
         return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
@@ -492,6 +595,7 @@ export async function POST(request: NextRequest) {
           }
         );
       };
+
       const generatedId = uuidv4();
       return NextResponse.json(
         {
@@ -499,8 +603,8 @@ export async function POST(request: NextRequest) {
           message:
             "Zgłoszenie zostało przyjęte, ale wystąpił błąd podczas przetwarzania. Prosimy o kontakt z obsługą.",
           id: generatedId,
-          isOffline: false, // Udajemy, że nie jest offline
-          isEmergency: false, // Ukrywamy stan awaryjny przed użytkownikiem
+          isOffline: false,
+          isEmergency: false,
           error:
             "Formularz został przyjęty, lecz nastąpiły problemy techniczne. Kontakt z pomocą techniczną może być wymagany.",
         },

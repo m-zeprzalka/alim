@@ -198,6 +198,9 @@ export default function InformacjeOTobie() {
                         <SelectItem value="zachodniopomorskie">
                           Zachodniopomorskie
                         </SelectItem>
+                        <SelectItem value="nie_dotyczy">
+                          Nie wiem / Nie chcę podawać
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -223,6 +226,9 @@ export default function InformacjeOTobie() {
                         </SelectItem>
                         <SelectItem value="miasto_powyzej_200">
                           Miasto powyżej 200 tys. mieszkańców
+                        </SelectItem>
+                        <SelectItem value="nie_dotyczy">
+                          Nie wiem / Nie chcę podawać
                         </SelectItem>
                       </SelectContent>
                     </Select>

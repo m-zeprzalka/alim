@@ -1,4 +1,5 @@
 // Endpoint do generowania pliku Excel z pełnymi danymi z bazy
+// Ulepszony eksport - naprawia problemy z relacjami i brakującymi kolumnami
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as ExcelJS from "exceljs";
@@ -16,7 +17,7 @@ const API_KEY = process.env.ADMIN_API_KEY || "tajny_klucz_admin_2025";
 export async function GET(request: NextRequest) {
   try {
     console.log(
-      "Żądanie eksportu Excel otrzymane - FIXED VERSION - " +
+      "Żądanie eksportu Excel otrzymane - COMPLETE VERSION - " +
         new Date().toISOString()
     );
 
@@ -49,7 +50,9 @@ export async function GET(request: NextRequest) {
       emailSubscriptions = await prisma.emailSubscription.findMany({
         orderBy: { createdAt: "desc" },
       });
-      console.log(`Pobrano ${emailSubscriptions.length} subskrypcji email`); // Bezpieczne pobieranie formularzy - WSZYSTKIE pola z bazy
+      console.log(`Pobrano ${emailSubscriptions.length} subskrypcji email`);
+
+      // Bezpieczne pobieranie formularzy - WSZYSTKIE pola z bazy
       console.log("Rozpoczynam pobieranie danych formularzy...");
       formSubmissions = await prisma.formSubmission.findMany({
         select: {
@@ -61,15 +64,11 @@ export async function GET(request: NextRequest) {
           status: true,
           reportUrl: true,
 
-          // Dane sądowe
+          // Dane sądowe - tylko te pola, które istnieją w bazie
           rodzajSaduSad: true,
           apelacjaSad: true,
-          // apelacjaId: true, // Usunięte - kolumna nie istnieje w bazie
-          // apelacjaNazwa: true, // Usunięte - kolumna nie istnieje w bazie
           sadOkregowyId: true,
-          // sadOkregowyNazwa: true, // Usunięte - kolumna nie istnieje w bazie
           sadRejonowyId: true,
-          // sadRejonowyNazwa: true, // Usunięte - kolumna nie istnieje w bazie
           rokDecyzjiSad: true,
           miesiacDecyzjiSad: true,
           dataDecyzjiSad: true,
@@ -181,8 +180,22 @@ export async function GET(request: NextRequest) {
           formSubmissions[formSubmissions.length - 1]?.id
         }`
       );
+
+      // Sprawdzanie dzieci w formData
+      let childrenInFormData = 0;
+      formSubmissions.forEach((form) => {
+        if (
+          form.formData &&
+          form.formData.dzieci &&
+          Array.isArray(form.formData.dzieci)
+        ) {
+          childrenInFormData += form.formData.dzieci.length;
+        }
+      });
+
+      console.log(`- Liczba dzieci w formData JSON: ${childrenInFormData}`);
       console.log(
-        `- Liczba dzieci we wszystkich formularzach: ${formSubmissions.reduce(
+        `- Liczba dzieci w relacji dzieci: ${formSubmissions.reduce(
           (sum, form) => sum + (form.dzieci?.length || 0),
           0
         )}`
@@ -221,24 +234,40 @@ export async function GET(request: NextRequest) {
     summarySheet.getCell("B5").value = emailSubscriptions.length;
 
     // Dodajemy więcej szczegółów dla większej pewności poprawności danych
-    summarySheet.getCell("A6").value =
-      "Liczba dzieci we wszystkich formularzach:";
+    const childrenInFormData = formSubmissions.reduce((sum, form) => {
+      if (
+        form.formData &&
+        form.formData.dzieci &&
+        Array.isArray(form.formData.dzieci)
+      ) {
+        return sum + form.formData.dzieci.length;
+      }
+      return sum;
+    }, 0);
+
+    summarySheet.getCell("A6").value = "Liczba dzieci w relacji dzieci:";
     summarySheet.getCell("B6").value = formSubmissions.reduce(
       (sum, form) => sum + (form.dzieci?.length || 0),
       0
     );
-    summarySheet.getCell("A7").value = "Zawartość arkuszy:";
-    summarySheet.getCell("A8").value = "1. Podsumowanie - ten arkusz";
-    summarySheet.getCell("A9").value =
-      "2. Subskrypcje - dane subskrypcji email";
-    summarySheet.getCell("A10").value =
-      "3. Formularze - wszystkie podstawowe dane formularzy";
+
+    summarySheet.getCell("A7").value = "Liczba dzieci w formData JSON:";
+    summarySheet.getCell("B7").value = childrenInFormData;
+
+    summarySheet.getCell("A9").value = "Zawartość arkuszy:";
+    summarySheet.getCell("A10").value = "1. Podsumowanie - ten arkusz";
     summarySheet.getCell("A11").value =
-      "4. Dane o dzieciach - szczegółowe informacje o dzieciach i kosztach opieki";
+      "2. Subskrypcje - dane subskrypcji email";
     summarySheet.getCell("A12").value =
-      "5. Dochody - dane o dochodach rodziców";
+      "3. Formularze - wszystkie podstawowe dane formularzy";
     summarySheet.getCell("A13").value =
-      "6. Dane JSON - pełne dane formularzy w formacie JSON";
+      "4. Dane o dzieciach - szczegółowe informacje o dzieciach i kosztach opieki";
+    summarySheet.getCell("A14").value =
+      "5. Dane o dzieciach z formData - dane dzieci wyekstrahowane z JSON";
+    summarySheet.getCell("A15").value =
+      "6. Dochody - dane o dochodach rodziców";
+    summarySheet.getCell("A16").value =
+      "7. Dane JSON - pełne dane formularzy w formacie JSON";
 
     // --- ARKUSZ 2: Subskrypcje ---
     const subscriptionSheet = workbook.addWorksheet("Subskrypcje");
@@ -265,7 +294,9 @@ export async function GET(request: NextRequest) {
         acceptedContact: subscription.acceptedContact ? "Tak" : "Nie",
         acceptedTerms: subscription.acceptedTerms ? "Tak" : "Nie",
       });
-    }); // --- ARKUSZ 3: Formularze ---
+    });
+
+    // --- ARKUSZ 3: Formularze ---
     const formSheet = workbook.addWorksheet("Formularze");
 
     // Nagłówki - tylko pola które istnieją w bazie danych
@@ -336,14 +367,14 @@ export async function GET(request: NextRequest) {
       { header: "Apelacja (legacy)", key: "apelacjaSad", width: 15 },
       { header: "Sąd okręgowy ID", key: "sadOkregowyId", width: 20 },
       { header: "Sąd rejonowy ID", key: "sadRejonowyId", width: 20 },
-      { header: "Rok decyzji", key: "rokDecyzjiSad", width: 15 },
-      { header: "Miesiąc decyzji", key: "miesiacDecyzjiSad", width: 15 },
-      { header: "Data decyzji", key: "dataDecyzjiSad", width: 15 },
+      { header: "Rok decyzji sądu", key: "rokDecyzjiSad", width: 15 },
+      { header: "Miesiąc decyzji sądu", key: "miesiacDecyzjiSad", width: 15 },
+      { header: "Data decyzji sądu", key: "dataDecyzjiSad", width: 15 },
       { header: "Liczba sędziów", key: "liczbaSedzi", width: 15 },
       { header: "Płeć sędziego", key: "plecSedziego", width: 15 },
       { header: "Inicjały sędziego", key: "inicjalySedziego", width: 15 },
       { header: "Czy pozew", key: "czyPozew", width: 15 },
-      { header: "Wątek winy", key: "watekWiny", width: 20 },
+      { header: "Wątek winy", key: "watekWiny", width: 15 },
 
       // Dane porozumienia
       { header: "Data porozumienia", key: "dataPorozumienia", width: 15 },
@@ -370,65 +401,69 @@ export async function GET(request: NextRequest) {
 
       // Oceny adekwatności
       {
-        header: "Ocena adekwatności sądu",
+        header: "Ocena adekwatności - sąd",
         key: "ocenaAdekwatnosciSad",
-        width: 15,
+        width: 20,
       },
       {
-        header: "Ocena adekwatności porozumienia",
+        header: "Ocena adekwatności - porozumienie",
         key: "ocenaAdekwatnosciPorozumienie",
-        width: 15,
+        width: 25,
       },
       {
-        header: "Ocena adekwatności inne",
+        header: "Ocena adekwatności - inne",
         key: "ocenaAdekwatnosciInne",
-        width: 15,
+        width: 20,
       },
 
-      // Dodatkowe dane
+      // Dane liczbowe
       {
-        header: "Całkowita liczba dzieci",
+        header: "Liczba dzieci (relacja)",
         key: "calkowitaLiczbaDzieci",
         width: 15,
       },
       {
         header: "Sumaryczne wydatki na dzieci",
         key: "sumaryczneWydatkiNaDzieci",
-        width: 20,
+        width: 25,
       },
-      { header: "Własne dochody netto", key: "wlasneDochodyNetto", width: 15 },
+      { header: "Własne dochody netto", key: "wlasneDochodyNetto", width: 20 },
       {
         header: "Dochody drugiego rodzica",
         key: "drugiRodzicDochody",
-        width: 15,
+        width: 20,
       },
     ];
 
-    // Dane
-    formSubmissions.forEach((submission) => {
-      // Ekstrahujemy dodatkowe dane z JSON, jeśli są dostępne
-      const formData = submission.formData || {};
-      // Obliczenie sumarycznych wydatków na dzieci
+    // Dodanie danych formularzy
+    for (const submission of formSubmissions) {
+      // Wyliczamy sumaryczne wydatki na dzieci
       const sumaryczneWydatki =
         submission.dzieci?.reduce(
-          (sum: number, dziecko: any) =>
-            sum + (dziecko.twojeMiesieczneWydatki || 0),
+          (sum, dziecko) =>
+            sum +
+            (parseFloat(dziecko.twojeMiesieczneWydatki || "0") +
+              parseFloat(dziecko.wydatkiDrugiegoRodzica || "0")),
           0
         ) || 0;
 
       // Pobieramy dane o dochodach
-      const dochodyData = submission.dochodyRodzicow || {};
+      const dochodyData = submission.dochodyRodzicow;
 
+      // Kluczowe - formData
+      const formData = submission.formData || {};
+
+      // Dodajemy wiersz
       formSheet.addRow({
         // Podstawowe dane
         id: submission.id,
-        email: submission.emailSubscription?.email || "",
+        email: submission.emailSubscription?.email,
         submittedAt: submission.submittedAt?.toLocaleString("pl-PL") || "",
         processedAt: submission.processedAt?.toLocaleString("pl-PL") || "",
         status: submission.status,
-        reportUrl: submission.reportUrl || "",
+        reportUrl: submission.reportUrl,
 
-        // Główne informacje
+        // Dane główne
         sciezkaWybor: submission.sciezkaWybor || formData.sciezkaWybor || "",
         podstawaUstalen:
           submission.podstawaUstalen || formData.podstawaUstalen || "",
@@ -438,7 +473,7 @@ export async function GET(request: NextRequest) {
           submission.wariantPostepu || formData.wariantPostepu || "",
         sposobFinansowania:
           submission.sposobFinansowania || formData.sposobFinansowania || "",
-        liczbaDzieci: submission.liczbaDzieci || submission.dzieci?.length || 0,
+        liczbaDzieci: submission.liczbaDzieci || formData.liczbaDzieci || "",
 
         // Dane demograficzne - użytkownik
         plecUzytkownika:
@@ -524,7 +559,9 @@ export async function GET(request: NextRequest) {
         wlasneDochodyNetto: dochodyData?.wlasneDochodyNetto || 0,
         drugiRodzicDochody: dochodyData?.drugiRodzicDochody || 0,
       });
-    }); // --- ARKUSZ 4: Dane o dzieciach ---
+    }
+
+    // --- ARKUSZ 4: Dane o dzieciach ---
     const childrenSheet = workbook.addWorksheet("Dane o dzieciach");
 
     // Nagłówki
@@ -599,71 +636,131 @@ export async function GET(request: NextRequest) {
       { header: "Wakacje opis planu", key: "wakacjeOpisPlan", width: 30 },
     ];
 
-    // Dane o dzieciach
+    // Dodanie danych o dzieciach
     formSubmissions.forEach((submission) => {
+      const formEmail = submission.emailSubscription?.email;
+
+      // Jeśli są dane dzieci w relacji, dodajemy je
       if (submission.dzieci && submission.dzieci.length > 0) {
-        submission.dzieci.forEach((dziecko: any) => {
+        submission.dzieci.forEach((dziecko, index) => {
           childrenSheet.addRow({
             formId: submission.id,
             childId: dziecko.id,
-            childNumber: dziecko.childId,
+            childNumber: index + 1,
             wiek: dziecko.wiek,
             plec: dziecko.plec,
-            specjalnePotrzeby: dziecko.specjalnePotrzeby ? "Tak" : "Nie",
-            opisSpecjalnychPotrzeb: dziecko.opisSpecjalnychPotrzeb || "",
-            uczeszczeDoPlacowki: dziecko.uczeszczeDoPlacowki ? "Tak" : "Nie",
-            typPlacowki: dziecko.typPlacowki || "",
-            opiekaInnejOsoby: dziecko.opiekaInnejOsoby ? "Tak" : "Nie",
-            modelOpieki: dziecko.modelOpieki || "",
-            cyklOpieki: dziecko.cyklOpieki || "",
+            specjalnePotrzeby: dziecko.specjalnePotrzeby,
+            opisSpecjalnychPotrzeb: dziecko.opisSpecjalnychPotrzeb,
+            uczeszczeDoPlacowki: dziecko.uczeszczeDoPlacowki,
+            typPlacowki: dziecko.typPlacowki,
+            opiekaInnejOsoby: dziecko.opiekaInnejOsoby,
+            modelOpieki: dziecko.modelOpieki,
+            cyklOpieki: dziecko.cyklOpieki,
             procentCzasuOpieki: dziecko.procentCzasuOpieki,
             kwotaAlimentow: dziecko.kwotaAlimentow,
             twojeMiesieczneWydatki: dziecko.twojeMiesieczneWydatki,
             wydatkiDrugiegoRodzica: dziecko.wydatkiDrugiegoRodzica,
             kosztyUznanePrzezSad: dziecko.kosztyUznanePrzezSad,
-            rentaRodzinna: dziecko.rentaRodzinna ? "Tak" : "Nie",
+            rentaRodzinna: dziecko.rentaRodzinna,
             rentaRodzinnaKwota: dziecko.rentaRodzinnaKwota,
-            swiadczeniePielegnacyjne: dziecko.swiadczeniePielegnacyjne
-              ? "Tak"
-              : "Nie",
+            swiadczeniePielegnacyjne: dziecko.swiadczeniePielegnacyjne,
             swiadczeniePielegnacyjneKwota:
               dziecko.swiadczeniePielegnacyjneKwota,
-            inneZrodla: dziecko.inneZrodla ? "Tak" : "Nie",
-            inneZrodlaOpis: dziecko.inneZrodlaOpis || "",
+            inneZrodla: dziecko.inneZrodla,
+            inneZrodlaOpis: dziecko.inneZrodlaOpis,
             inneZrodlaKwota: dziecko.inneZrodlaKwota,
-            brakDodatkowychZrodel: dziecko.brakDodatkowychZrodel
-              ? "Tak"
-              : "Nie",
+            brakDodatkowychZrodel: dziecko.brakDodatkowychZrodel,
             wakacjeProcentCzasu: dziecko.wakacjeProcentCzasu,
-            wakacjeSzczegolowyPlan: dziecko.wakacjeSzczegolowyPlan
-              ? "Tak"
-              : "Nie",
-            wakacjeOpisPlan: dziecko.wakacjeOpisPlan || "",
+            wakacjeSzczegolowyPlan: dziecko.wakacjeSzczegolowyPlan,
+            wakacjeOpisPlan: dziecko.wakacjeOpisPlan,
           });
         });
       }
     });
 
-    // --- ARKUSZ 5: Dochody ---
+    // --- ARKUSZ 5: Dane dzieci z formData ---
+    const childrenFromFormDataSheet = workbook.addWorksheet(
+      "Dane o dzieciach z formData"
+    );
+
+    // Nagłówki
+    childrenFromFormDataSheet.columns = [
+      { header: "ID formularza", key: "formId", width: 25 },
+      { header: "Email", key: "email", width: 30 },
+      { header: "Nr dziecka", key: "childNumber", width: 10 },
+      { header: "Wiek", key: "wiek", width: 10 },
+      { header: "Płeć", key: "plec", width: 10 },
+      { header: "Specjalne potrzeby", key: "specjalnePotrzeby", width: 15 },
+      {
+        header: "Opis specjalnych potrzeb",
+        key: "opisSpecjalnychPotrzeb",
+        width: 30,
+      },
+      {
+        header: "Uczęszcza do placówki",
+        key: "uczeszczeDoPlacowki",
+        width: 15,
+      },
+      { header: "Typ placówki", key: "typPlacowki", width: 15 },
+      { header: "Procent czasu opieki", key: "procentCzasuOpieki", width: 15 },
+      { header: "Kwota alimentów", key: "kwotaAlimentow", width: 15 },
+      {
+        header: "Miesięczne wydatki użytkownika",
+        key: "twojeMiesieczneWydatki",
+        width: 20,
+      },
+      {
+        header: "Wydatki drugiego rodzica",
+        key: "wydatkiDrugiegoRodzica",
+        width: 20,
+      },
+    ];
+
+    // Dodanie danych o dzieciach z formData JSON
+    formSubmissions.forEach((submission) => {
+      const formEmail = submission.emailSubscription?.email;
+      const formData = submission.formData || {};
+
+      // Jeśli są dane dzieci w formData JSON, dodajemy je
+      if (
+        formData.dzieci &&
+        Array.isArray(formData.dzieci) &&
+        formData.dzieci.length > 0
+      ) {
+        formData.dzieci.forEach((dziecko, index) => {
+          childrenFromFormDataSheet.addRow({
+            formId: submission.id,
+            email: formEmail,
+            childNumber: index + 1,
+            wiek: dziecko.wiek,
+            plec: dziecko.plec,
+            specjalnePotrzeby: dziecko.specjalnePotrzeby,
+            opisSpecjalnychPotrzeb: dziecko.opisSpecjalnychPotrzeb,
+            uczeszczeDoPlacowki: dziecko.uczeszczeDoPlacowki,
+            typPlacowki: dziecko.typPlacowki,
+            procentCzasuOpieki: dziecko.procentCzasuOpieki,
+            kwotaAlimentow: dziecko.kwotaAlimentow,
+            twojeMiesieczneWydatki: dziecko.twojeMiesieczneWydatki,
+            wydatkiDrugiegoRodzica: dziecko.wydatkiDrugiegoRodzica,
+          });
+        });
+      }
+    });
+
+    // --- ARKUSZ 6: Dane o dochodach ---
     const incomeSheet = workbook.addWorksheet("Dochody");
 
     // Nagłówki
     incomeSheet.columns = [
       { header: "ID formularza", key: "formId", width: 25 },
-      { header: "ID dochodów", key: "incomeId", width: 25 },
       { header: "Email", key: "email", width: 30 },
-      // Dochody wypełniającego
-      { header: "Własne dochody netto", key: "wlasneDochodyNetto", width: 20 },
+      { header: "Własne dochody netto", key: "wlasneDochodyNetto", width: 15 },
       {
         header: "Własny potencjał dochodowy",
-        key: "wlasnePotencjalDochodowy",
+        key: "wlasnePotencjal",
         width: 20,
       },
-      {
-        header: "Własne koszty utrzymania",
-        key: "wlasneKosztyUtrzymania",
-        width: 20,
-      },
+      { header: "Własne koszty utrzymania", key: "wlasneKoszty", width: 20 },
       {
         header: "Własne koszty innych osób",
         key: "wlasneKosztyInni",
@@ -671,103 +768,110 @@ export async function GET(request: NextRequest) {
       },
       {
         header: "Własne dodatkowe zobowiązania",
-        key: "wlasneDodatkoweZobowiazania",
+        key: "wlasneDodatkowe",
         width: 25,
       },
-      // Dochody drugiego rodzica
-      {
-        header: "Dochody drugiego rodzica",
-        key: "drugiRodzicDochody",
-        width: 20,
-      },
+      { header: "Dochody drugiego rodzica", key: "drugiDochody", width: 15 },
       {
         header: "Potencjał drugiego rodzica",
-        key: "drugiRodzicPotencjal",
+        key: "drugiPotencjal",
         width: 20,
       },
-      {
-        header: "Koszty drugiego rodzica",
-        key: "drugiRodzicKoszty",
-        width: 20,
-      },
+      { header: "Koszty drugiego rodzica", key: "drugiKoszty", width: 20 },
       {
         header: "Koszty innych osób (drugi rodzic)",
-        key: "drugiRodzicKosztyInni",
+        key: "drugiKosztyInni",
         width: 25,
       },
       {
         header: "Dodatkowe zobowiązania (drugi rodzic)",
-        key: "drugiRodzicDodatkowe",
+        key: "drugiDodatkowe",
         width: 25,
       },
     ];
 
-    // Dane o dochodach
+    // Dodanie danych o dochodach
     formSubmissions.forEach((submission) => {
       if (submission.dochodyRodzicow) {
+        const dochody = submission.dochodyRodzicow;
+
         incomeSheet.addRow({
           formId: submission.id,
-          incomeId: submission.dochodyRodzicow.id,
-          email: submission.emailSubscription?.email || "",
-          wlasneDochodyNetto: submission.dochodyRodzicow.wlasneDochodyNetto,
-          wlasnePotencjalDochodowy:
-            submission.dochodyRodzicow.wlasnePotencjalDochodowy,
-          wlasneKosztyUtrzymania:
-            submission.dochodyRodzicow.wlasneKosztyUtrzymania,
-          wlasneKosztyInni: submission.dochodyRodzicow.wlasneKosztyInni,
-          wlasneDodatkoweZobowiazania:
-            submission.dochodyRodzicow.wlasneDodatkoweZobowiazania,
-          drugiRodzicDochody: submission.dochodyRodzicow.drugiRodzicDochody,
-          drugiRodzicPotencjal: submission.dochodyRodzicow.drugiRodzicPotencjal,
-          drugiRodzicKoszty: submission.dochodyRodzicow.drugiRodzicKoszty,
-          drugiRodzicKosztyInni:
-            submission.dochodyRodzicow.drugiRodzicKosztyInni,
-          drugiRodzicDodatkowe: submission.dochodyRodzicow.drugiRodzicDodatkowe,
+          email: submission.emailSubscription?.email,
+          wlasneDochodyNetto: dochody.wlasneDochodyNetto,
+          wlasnePotencjal: dochody.wlasnePotencjalDochodowy,
+          wlasneKoszty: dochody.wlasneKosztyUtrzymania,
+          wlasneKosztyInni: dochody.wlasneKosztyInni,
+          wlasneDodatkowe: dochody.wlasneDodatkoweZobowiazania,
+          drugiDochody: dochody.drugiRodzicDochody,
+          drugiPotencjal: dochody.drugiRodzicPotencjal,
+          drugiKoszty: dochody.drugiRodzicKoszty,
+          drugiKosztyInni: dochody.drugiRodzicKosztyInni,
+          drugiDodatkowe: dochody.drugiRodzicDodatkowe,
+        });
+      } else if (submission.formData && submission.formData.dochodyRodzicow) {
+        // Jeśli nie ma bezpośredniej relacji, spróbuj pobrać z formData
+        const dochodyFormData = submission.formData.dochodyRodzicow;
+
+        incomeSheet.addRow({
+          formId: submission.id,
+          email: submission.emailSubscription?.email,
+          wlasneDochodyNetto: dochodyFormData.wlasneDochodyNetto,
+          wlasnePotencjal: dochodyFormData.wlasnePotencjalDochodowy,
+          wlasneKoszty: dochodyFormData.wlasneKosztyUtrzymania,
+          wlasneKosztyInni: dochodyFormData.wlasneKosztyInni,
+          wlasneDodatkowe: dochodyFormData.wlasneDodatkoweZobowiazania,
+          drugiDochody: dochodyFormData.drugiRodzicDochody,
+          drugiPotencjal: dochodyFormData.drugiRodzicPotencjal,
+          drugiKoszty: dochodyFormData.drugiRodzicKoszty,
+          drugiKosztyInni: dochodyFormData.drugiRodzicKosztyInni,
+          drugiDodatkowe: dochodyFormData.drugiRodzicDodatkowe,
         });
       }
     });
 
-    // --- ARKUSZ 6: Pełne dane JSON ---
+    // --- ARKUSZ 7: Dane JSON ---
     const jsonSheet = workbook.addWorksheet("Dane JSON");
 
     // Nagłówki
     jsonSheet.columns = [
-      { header: "ID", key: "id", width: 25 },
-      { header: "Pełne dane formularza (JSON)", key: "jsonData", width: 150 },
+      { header: "ID formularza", key: "id", width: 25 },
+      { header: "Email", key: "email", width: 30 },
+      { header: "Data przesłania", key: "submittedAt", width: 20 },
+      { header: "JSON formularza", key: "formData", width: 150 },
     ];
 
     // Dane JSON
     formSubmissions.forEach((submission) => {
       jsonSheet.addRow({
         id: submission.id,
-        jsonData: JSON.stringify(submission.formData || {}),
+        email: submission.emailSubscription?.email,
+        submittedAt: submission.submittedAt?.toLocaleString("pl-PL") || "",
+        formData: JSON.stringify(submission.formData || {}),
       });
-    }); // Zapisz workbook do bufora
-    console.log("Generowanie pliku Excel...");
+    });
+
+    // Tworzenie bufora z danymi Excel
+    console.log("Pakowanie pliku Excel do bufora...");
     const buffer = await workbook.xlsx.writeBuffer();
 
-    // Oblicz rozmiar pliku w MB
-    const fileSizeInMB = (buffer.byteLength / (1024 * 1024)).toFixed(2);
-    console.log(`Rozmiar pliku: ${fileSizeInMB} MB`);
-
-    // Zwróć plik Excel jako odpowiedź
-    console.log("Eksport Excel zakończony sukcesem");
+    // Zwrócenie pliku Excel jako odpowiedzi
+    console.log("Zwracanie pliku Excel jako odpowiedzi HTTP...");
     return new NextResponse(buffer, {
       headers: {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition": `attachment; filename="alimatrix-export-${new Date()
+        "Content-Disposition": `attachment; filename=alimatrix-export-${new Date()
           .toISOString()
-          .slice(0, 10)}.xlsx"`,
-        "X-File-Size": fileSizeInMB,
+          .slice(0, 10)}.xlsx`,
       },
     });
   } catch (error) {
-    console.error("Błąd podczas generowania pliku Excel:", error);
+    console.error("Błąd generowania Excela:", error);
     return NextResponse.json(
       {
-        error: `Error generating Excel: ${
-          error instanceof Error ? error.message : "Unknown error"
+        error: `Wystąpił błąd: ${
+          error instanceof Error ? error.message : "Nieznany błąd"
         }`,
       },
       { status: 500 }

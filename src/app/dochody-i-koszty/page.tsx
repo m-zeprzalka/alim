@@ -447,10 +447,6 @@ export default function DochodyIKoszty() {
                 bywa też momentem refleksji nad tym, jak naprawdę wygląda ich
                 codzienność finansowa.
               </p>
-              <p>
-                Dla wielu osób ta część formularza bywa też momentem refleksji
-                nad tym, jak naprawdę wygląda ich codzienność finansowa.
-              </p>
             </div>
             {/* Twoje dochody */}
             <div className="p-4 border border-gray-200 rounded-lg">
@@ -591,9 +587,9 @@ export default function DochodyIKoszty() {
                     Koszty utrzymania innych osób (miesięcznie)
                   </Label>
                   <p className="text-xs text-gray-500 mb-2">
-                    Jeśli wspierasz finansowo inne osoby (np. dzieci z
-                    poprzedniego związku, partnera/partnerkę, rodziców), wskaż
-                    ich łączny koszt miesięczny.
+                    Jeśli wspierasz finansowo inne osoby (np. dzieci z innego
+                    związku, partnera/partnerkę, rodziców), wskaż ich łączny
+                    koszt miesięczny.
                   </p>
                   <Input
                     id="koszty-utrzymania-innych"
@@ -651,7 +647,7 @@ export default function DochodyIKoszty() {
               <p className="text-sm text-gray-600 mb-4">
                 Jeśli posiadasz informacje na temat sytuacji drugiego rodzica,
                 podaj je w analogiczny sposób. Nie masz pewności? Pozostaw pola
-                liczbowe puste/0 – formularz nadal zostanie prawidłowo
+                liczbowe puste – formularz nadal zostanie prawidłowo
                 przetworzony.
               </p>
 
@@ -663,7 +659,7 @@ export default function DochodyIKoszty() {
                   <div className="space-y-4">
                     <div>
                       <Label htmlFor="oficjalne-dochody-dr">
-                        Oficjalne dochody netto drugiego rodzica (miesięcznie)
+                        Oficjalne dochody netto drugiego rodzica
                       </Label>
                       <p className="text-xs text-gray-500 mb-2">
                         Średnia miesięczna kwota.

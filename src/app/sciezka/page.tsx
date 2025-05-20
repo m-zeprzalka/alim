@@ -247,10 +247,10 @@ export default function WyborSciezki() {
             <div className="space-y-2">
               <h1 className="text-3xl font-bold text-left text-sky-950">
                 Na jakim etapie ustaleń dotyczących finansowania potrzeb dziecka
-                jesteś?
+                lub dzieci jesteś?
               </h1>
               <p className="text-text-sky-950">
-                Zanim przejdziesz dalej, odpowiedz proszę na jedno pytanie:
+                Zanim przejdziesz dalej, prosimy odpowiedz na jedno pytanie:
               </p>
               <p className="text-text-sky-950 font-bold">
                 Czy w Twojej sytuacji zostało już ustalone, w jaki sposób

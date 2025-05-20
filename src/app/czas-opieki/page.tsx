@@ -499,7 +499,7 @@ export default function CzasOpieki() {
   }, [dzieciZModelemInnym.length, formData.dzieci, router]);
 
   // Tabela dni tygodnia - zaczynamy od piątku zgodnie z wytycznymi klienta
-  const dniTygodnia = ["pt", "sb", "nd", "pn", "wt", "sr", "cz"];
+  const dniTygodnia = ["pt", "sb", "nd", "pn", "wt", "śr", "cz"];
   const dniTygodniaPelne = [
     "Piątek",
     "Sobota",
@@ -695,10 +695,7 @@ export default function CzasOpieki() {
                 przyjrzeć się swojej codzienności – temu, ile realnie czasu
                 spędzasz z dzieckiem i jak wygląda Wasz rytm tygodnia.
               </p>
-              <p>
-                To często moment refleksji – i bardzo często przynosi ważne
-                spostrzeżenia.
-              </p>
+
               <p className="text-sm">
                 Wypełnienie tabeli zajmie około 10-15 minut. Pamiętaj, że zawsze
                 możesz wrócić do poprzednich sekcji i skorygować swoje
@@ -707,7 +704,8 @@ export default function CzasOpieki() {
             </div>
             <div className="bg-amber-50 p-4 rounded-lg">
               <p className="text-sm font-semibold">
-                🧠 To może być moment refleksji – i bardzo często jest.
+                To często moment refleksji – i bardzo często przynosi ważne
+                spostrzeżenia.
               </p>
               <p className="text-sm font-semibold">
                 Uwaga techniczna – jak wypełniać
@@ -735,9 +733,7 @@ export default function CzasOpieki() {
               </ul>
             </div>
             <div>
-              <Label htmlFor="care-cycle">
-                🔄 Cykl opieki – jak często powtarza się Wasz układ?
-              </Label>
+              <Label htmlFor="care-cycle">🔄 Cykl opieki</Label>
               <p>
                 Wskaż, w jakim rytmie powtarza się Wasz podział opieki nad
                 dzieckiem. To ważne, by system mógł dokładnie obliczyć, jak

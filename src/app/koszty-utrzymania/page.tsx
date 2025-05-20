@@ -310,10 +310,9 @@ export default function KosztyUtrzymania() {
 
         // Sprawdzamy, czy wszystkie dzieci zostały już wypełnione
         const czyWszystkieDzieciZakonczone =
-          noweZakonczoneIndeksyDzieci.length >= liczbaDzieci;
-
-        if (czyWszystkieDzieciZakonczone) {
+          noweZakonczoneIndeksyDzieci.length >= liczbaDzieci;        if (czyWszystkieDzieciZakonczone) {
           // Wszystkie dzieci są już zakończone, przechodzimy do następnego kroku
+          console.log(`Wszystkie dzieci zakończone (${liczbaDzieci}/${liczbaDzieci}). Przechodzę do dochody-i-koszty`);
           // Zapisujemy aktualizację
           await updateFormData({
             zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
@@ -352,11 +351,11 @@ export default function KosztyUtrzymania() {
           });
 
           // Przewijamy stronę do góry przed przejściem do następnej strony/dziecka
-          scrollToTop();
-
-          // Dodajemy małe opóźnienie dla lepszego UX
+          scrollToTop();          // Dodajemy małe opóźnienie dla lepszego UX
           setTimeout(() => {
             // Wracamy do strony dzieci, aby rozpocząć proces od nowa dla kolejnego dziecka
+            console.log(`Zakończono cykl dla dziecka #${aktualneDzieckoIndex + 1}, przechodzę do dziecka #${nextIndex + 1}`);
+            console.log(`Zakończone dzieci: ${JSON.stringify(noweZakonczoneIndeksyDzieci)}, Liczba dzieci: ${liczbaDzieci}`);
             trackedLog(operationId, "Navigating back to dzieci for next child");
             router.push("/dzieci");
 

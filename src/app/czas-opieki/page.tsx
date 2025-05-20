@@ -410,11 +410,11 @@ export default function CzasOpieki() {
       }); // Aktualizujemy dane dziecka
       updateFormData({
         dzieci: zaktualizowaneDzieci,
-      });
-
-      // Przewijamy stronę do góry przed przejściem do następnej strony
+      });      // Przewijamy stronę do góry przed przejściem do następnej strony
       scrollToTop();
 
+      console.log(`Przechodzimy do następnego kroku dla dziecka - opieka wakacyjna`);
+      
       // Zawsze przechodzimy do strony opieki w okresach specjalnych dla tego dziecka
       router.push("/opieka-wakacje");
     }
@@ -450,12 +450,10 @@ export default function CzasOpieki() {
       updateFormData({
         dzieci: zaktualizowaneDzieci,
       });
-    }
-
-    // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+    }    // Przewijamy stronę do góry przed przejściem do poprzedniej strony
     scrollToTop();
 
-    // Wracamy do strony dzieci
+    // Wracamy do strony dzieci dla tego samego dziecka
     router.push("/dzieci");
   };
 

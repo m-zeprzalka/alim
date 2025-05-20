@@ -421,20 +421,15 @@ export default function Dzieci() {
       let noweZakonczoneIndeksyDzieci = [...zakonczoneIndeksyDzieci];
       if (!noweZakonczoneIndeksyDzieci.includes(aktualneDzieckoIndex)) {
         noweZakonczoneIndeksyDzieci.push(aktualneDzieckoIndex);
-      }
-
-      // Zapisujemy dane do store'a wykorzystując mechanizm ponownych prób
+      }      // Zapisujemy dane do store'a wykorzystując mechanizm ponownych prób
       try {
         await retryOperation(
           async () => {
             await updateFormData({
               liczbaDzieci,
               dzieci: dzieciDoZapisu,
-              // Zapisujemy aktualny indeks dziecka i zakończone dzieci
-              aktualneDzieckoIndex:
-                aktualneDzieckoIndex < liczbaDzieci - 1
-                  ? aktualneDzieckoIndex + 1
-                  : aktualneDzieckoIndex,
+              // Zachowujemy aktualny indeks dziecka (nie inkrementujemy go tutaj)
+              aktualneDzieckoIndex: aktualneDzieckoIndex,
               zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
               // Ustawiamy ID dziecka dla tabeli czasu
               aktualneDzieckoWTabeliCzasu:
@@ -462,36 +457,30 @@ export default function Dzieci() {
         scrollToTop();
 
         // Określenie następnego kroku na podstawie modelu opieki aktualnego dziecka
-        const aktualneDzieckoData = dzieciDoZapisu[aktualneDzieckoIndex];
+        const aktualneDzieckoData = dzieciDoZapisu[aktualneDzieckoIndex];        // Dla każdego dziecka (niezależnie czy pierwsze, ostatnie czy pośrednie)
+        // przechodzimy do kolejnej strony w cyklu tego dziecka 
+        trackedLog(
+          operationId,
+          `Moving to the next page in the child cycle for child ${aktualneDzieckoIndex + 1}`
+        );
 
-        // Sprawdź czy to ostatnie dziecko i jeśli tak, przejdź do następnej sekcji
-        if (aktualneDzieckoIndex >= liczbaDzieci - 1) {
-          // Zakończyliśmy wypełnianie formularza dla wszystkich dzieci
-          trackedLog(
-            operationId,
-            "All children completed, moving to next section"
-          );
+    // Bezpieczna nawigacja z opóźnieniem dla lepszego UX
+        setTimeout(() => {
+          // Wybieramy ścieżkę w zależności od modelu opieki
+          const targetPath =
+            aktualneDzieckoData.modelOpieki === "inny"
+              ? "/czas-opieki"
+              : "/koszty-utrzymania";
 
-          // Bezpieczna nawigacja z opóźnieniem dla lepszego UX
+          console.log(`Dziecko #${aktualneDzieckoIndex + 1} - Przechodzę do ${targetPath}`);
+          trackedLog(operationId, `Navigating to ${targetPath}`);
+          router.push(targetPath);
+
+          // Zmniejszamy szansę na back button lub podwójną submisję
           setTimeout(() => {
-            const targetPath =
-              aktualneDzieckoData.modelOpieki === "inny"
-                ? "/czas-opieki"
-                : "/koszty-utrzymania";
-
-            trackedLog(operationId, `Navigating to ${targetPath}`);
-            router.push(targetPath);
-
-            // Zmniejszamy szansę na back button lub podwójną submisję
-            setTimeout(() => {
-              setIsSubmitting(false);
-            }, 500);
-          }, 100);
-        } else {
-          // Przejście do następnego dziecka
-          setAktualneDzieckoIndex(aktualneDzieckoIndex + 1);
-          setIsSubmitting(false);
-        }
+            setIsSubmitting(false);
+          }, 500);
+        }, 100);
       } catch (error) {
         trackedLog(operationId, "Error saving data", error, "error");
         setIsSubmitting(false);
@@ -626,8 +615,7 @@ export default function Dzieci() {
                 </div>
               </div>
 
-              {/* Pasek postępu dzieci */}
-              <div className="flex justify-between items-center mb-4">
+              {/* Pasek postępu dzieci */}              <div className="flex justify-between items-center mb-1">
                 <div className="text-lg font-medium">
                   Dziecko {aktualneDzieckoIndex + 1} z {liczbaDzieci}
                 </div>
@@ -640,12 +628,17 @@ export default function Dzieci() {
                           ? "bg-green-500"
                           : idx === aktualneDzieckoIndex
                           ? "bg-blue-500"
-                          : "bg-gray-200"
-                      }`}
+                          : "bg-gray-200"                      }`}
                       title={`Dziecko ${idx + 1}`}
                     />
                   ))}
                 </div>
+              </div>
+              
+              <div className="bg-blue-50 p-3 rounded-lg mb-4">
+                <p className="text-sm text-blue-700">
+                  <strong>Ważne:</strong> Po wypełnieniu podstawowych informacji dla tego dziecka, przejdziesz do kolejnych formularzy dotyczących tego samego dziecka. Po wypełnieniu pełnego cyklu dla jednego dziecka, wrócisz tutaj, aby podać dane kolejnego dziecka.
+                </p>
               </div>
 
               {/* Wyświetlanie tylko aktualnego dziecka */}
@@ -1123,20 +1116,17 @@ export default function Dzieci() {
                 onClick={handleBack}
                 disabled={isSubmitting}
               >
-                {aktualneDzieckoIndex > 0 ? "Poprzednie dziecko" : "Wstecz"}
+                Wstecz
               </Button>
               <Button
                 className="flex-1"
                 onClick={handleNext}
                 disabled={isSubmitting}
-              >
-                {isSubmitting ? (
+              >                {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Zapisuję...
                   </>
-                ) : aktualneDzieckoIndex < liczbaDzieci - 1 ? (
-                  "Następne dziecko"
                 ) : (
                   "Dalej"
                 )}

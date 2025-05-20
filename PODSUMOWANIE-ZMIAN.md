@@ -1,5 +1,42 @@
 # Podsumowanie wprowadzonych zmian przed deploymentem
 
+## Zmiany w bazie danych (20 maja 2025)
+
+### Cel aktualizacji
+
+Eliminacja luki między danymi zbieranymi w formularzach frontendowych a ich przechowywaniem w bazie danych. Zapewnienie, że wszystkie informacje wprowadzane przez użytkowników są w pełni zapisywane w strukturalnej formie w bazie danych i mogą być wykorzystane w analizie danych.
+
+### Wykonane zmiany
+
+1. **Rozszerzenie schematu bazy danych**:
+
+   - Dodano nowe pola do tabeli `FormSubmission` (dane użytkownika, adres, szczegóły sądowe)
+   - Dodano nowe pola do tabeli `Child` (poziom edukacji, koszty szkoły, zajęcia dodatkowe)
+   - Utworzono nową tabelę `KosztyUtrzymania` dla szczegółowych kosztów utrzymania
+
+2. **Migracja danych**:
+
+   - Stworzono i uruchomiono skrypt migrujący dane z pola JSON do nowej struktury
+   - Podzielono zagregowane dane (np. media) na poszczególne składniki
+
+3. **Aktualizacja funkcji eksportu**:
+   - Zaktualizowano funkcję eksportu Excel, aby uwzględniała wszystkie nowe pola
+   - Dodano obsługę wielu arkuszy dla różnych typów danych
+   - Dodano formatowanie dat i kwot
+
+### Status wdrożenia bazy danych
+
+✅ Zaktualizowany schemat bazy danych  
+✅ Wykonana migracja SQL  
+✅ Przeniesione dane z pola JSON  
+✅ Zaktualizowana funkcja eksportu Excel
+
+### Co pozostało do zrobienia
+
+- Aktualizacja komponentów frontendowych, aby wykorzystywały nowe pola
+- Testy funkcjonalności wykorzystujących nowe pola
+- Weryfikacja eksportu danych do Excel
+
 ## Wprowadzone zmiany w kodzie
 
 1. **Usunięto importy i wywołania funkcji debugujących**:

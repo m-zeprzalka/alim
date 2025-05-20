@@ -1,4 +1,3 @@
-// Zoptymalizowany schemat bazy danych dla AliMatrix
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,82 +12,86 @@ model EmailSubscription {
   email             String           @unique
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
-  submittedAt       DateTime?
   acceptedTerms     Boolean          @default(false)
-  acceptedContact   Boolean          @default(false)
-  status            String           @default("pending") // pending, verified, submitted
+  status            String           @default("pending")
   verificationToken String?
   verifiedAt        DateTime?
+  acceptedContact   Boolean          @default(false)
+  submittedAt       DateTime?
   formSubmissions   FormSubmission[]
 
   @@index([status])
 }
 
 model FormSubmission {
-  id                  String            @id @default(cuid())
-  emailSubscriptionId String
-  emailSubscription   EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
-  formData            Json // Pełne dane formularza w JSON
-  submittedAt         DateTime          @default(now())
-  processedAt         DateTime?
-  status              String            @default("pending") // pending, processed
-  reportUrl           String?
-
-  // Główne informacje o formularzu
-  sciezkaWybor        String? // established, not-established
-  podstawaUstalen     String? // postanowienie-zabezpieczajace, wyrok-rozwodowy, porozumienie-sad, porozumienie-mediacja, porozumienie-prywatne, inne
-  podstawaUstalenInne String? // Szczegóły dla opcji "inne"
-  wariantPostepu      String? // court, agreement, other
-  sposobFinansowania  String? // i-pay, i-receive, shared
-
-  // Dane demograficzne
-  plecUzytkownika            String?
-  wiekUzytkownika            String?
-  wojewodztwoUzytkownika     String?
-  miejscowoscUzytkownika     String?
-  stanCywilnyUzytkownika     String?
-  plecDrugiegoRodzica        String?
-  wiekDrugiegoRodzica        String?
-  wojewodztwoDrugiegoRodzica String?
-  miejscowoscDrugiegoRodzica String?
-  // Dane sądowe
-  rodzajSaduSad              String? // rejonowy, okregowy, nie_pamietam
-  apelacjaSad                String? // ID apelacji (kompatybilność wsteczna)
-  apelacjaId                 String? // ID apelacji 
-  apelacjaNazwa              String? // Nazwa apelacji
-  sadOkregowyId              String? // ID sądu okręgowego
-  sadOkregowyNazwa           String? // Nazwa sądu okręgowego
-  sadRejonowyId              String? // ID sądu rejonowego
-  sadRejonowyNazwa           String? // Nazwa sądu rejonowego
-  rokDecyzjiSad              String? // Rok decyzji sądu
-  miesiacDecyzjiSad          String? // Miesiąc decyzji sądu
-  dataDecyzjiSad             String? // Pełna data decyzji
-  liczbaSedzi                String? // jeden, trzech
-  plecSedziego               String? // kobieta, mezczyzna
-  inicjalySedziego           String? // Inicjały sędziego
-  czyPozew                   String? // tak, nie
-  watekWiny                  String? // nie, tak-ja, tak-druga-strona, tak-oboje
-
-  // Dane porozumienia
-  dataPorozumienia      String?
-  sposobPorozumienia    String?
-  formaPorozumienia     String?
-  klauzulaWaloryzacyjna String?
-
-  // Dane ustaleń innych
-  dataUstalenInnych       String?
-  uzgodnienieFinansowania String?
-  planyWystapieniaDoSadu  String?
-
-  // Oceny adekwatności
+  id                            String            @id @default(cuid())
+  emailSubscriptionId           String
+  formData                      Json
+  submittedAt                   DateTime          @default(now())
+  processedAt                   DateTime?
+  status                        String            @default("pending")
+  reportUrl                     String?
+  rodzajSaduSad                 String?
+  apelacjaSad                   String?
+  sadOkregowyId                 String?
+  rokDecyzjiSad                 String?
+  watekWiny                     String?
+  sciezkaWybor                  String?
+  podstawaUstalen               String?
+  podstawaUstalenInne           String?
+  wariantPostepu                String?
+  sposobFinansowania            String?
+  plecUzytkownika               String?
+  wiekUzytkownika               String?
+  wojewodztwoUzytkownika        String?
+  miejscowoscUzytkownika        String?
+  stanCywilnyUzytkownika        String?
+  plecDrugiegoRodzica           String?
+  wiekDrugiegoRodzica           String?
+  wojewodztwoDrugiegoRodzica    String?
+  miejscowoscDrugiegoRodzica    String?
+  sadRejonowyId                 String?
+  dataDecyzjiSad                String?
+  miesiacDecyzjiSad             String?
+  liczbaSedzi                   String?
+  plecSedziego                  String?
+  inicjalySedziego              String?
+  czyPozew                      String?
+  dataPorozumienia              String?
+  sposobPorozumienia            String?
+  formaPorozumienia             String?
+  klauzulaWaloryzacyjna         String?
+  dataUstalenInnych             String?
+  uzgodnienieFinansowania       String?
+  planyWystapieniaDoSadu        String?
   ocenaAdekwatnosciSad          Float?
   ocenaAdekwatnosciPorozumienie Float?
   ocenaAdekwatnosciInne         Float?
-
-  // Powiązane dane
-  liczbaDzieci    Int?
-  dzieci          Child[] // Relacja z dziećmi
-  dochodyRodzicow Dochody? // Relacja z dochodami
+  liczbaDzieci                  Int?
+  apelacjaId                    String?
+  apelacjaNazwa                 String?
+  sadOkregowyNazwa              String?
+  sadRejonowyNazwa              String?
+  adresUlica                    String?
+  adresKodPocztowy              String?
+  adresMiasto                   String?
+  pesel                         String?
+  telefon                       String?
+  statusZatrudnienia            String?
+  dochodMiesieczny              Decimal?          @db.Decimal(10, 2)
+  imieSedziego                  String?
+  nazwiskoSedziego              String?
+  typReprezentacji              String?
+  imieReprezentanta             String?
+  nazwiskoReprezentanta         String?
+  kosztReprezentacji            Decimal?          @db.Decimal(10, 2)
+  dataRozprawy                  DateTime?         @db.Timestamp(6)
+  dataZlozeniaPozwu             DateTime?         @db.Timestamp(6)
+  liczbaRozpraw                 Int?
+  dzieci                        Child[]
+  dochodyRodzicow               Dochody?
+  emailSubscription             EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
+  kosztyUtrzymania              KosztyUtrzymania?
 
   @@index([status])
   @@index([emailSubscriptionId])
@@ -102,67 +105,83 @@ model FormSubmission {
   @@index([podstawaUstalen])
 }
 
-// Model dziecka
 model Child {
-  id                     String         @id @default(cuid())
-  formSubmissionId       String
-  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-  childId                Int // ID dziecka w obrębie formularza (1, 2, 3, ...)
-  wiek                   Int?
-  plec                   String? // K, M, I
-  specjalnePotrzeby      Boolean        @default(false)
-  opisSpecjalnychPotrzeb String?
-  uczeszczeDoPlacowki    Boolean?
-  typPlacowki            String? // zlobek, przedszkole, podstawowa, ponadpodstawowa
-  opiekaInnejOsoby       Boolean?
-  modelOpieki            String? // 50/50, inny
-  cyklOpieki             String? // 1, 2, 4, custom
-  procentCzasuOpieki     Float?
-
-  // Dane o kosztach utrzymania dziecka
-  kwotaAlimentow         Float?
-  twojeMiesieczneWydatki Float?
-  wydatkiDrugiegoRodzica Float?
-  kosztyUznanePrzezSad   Float?
-
-  // Inne źródła utrzymania dziecka
-  rentaRodzinna                 Boolean @default(false)
+  id                            String         @id @default(cuid())
+  formSubmissionId              String
+  childId                       Int
+  wiek                          Int?
+  plec                          String?
+  specjalnePotrzeby             Boolean        @default(false)
+  opisSpecjalnychPotrzeb        String?
+  uczeszczeDoPlacowki           Boolean?
+  typPlacowki                   String?
+  opiekaInnejOsoby              Boolean?
+  modelOpieki                   String?
+  cyklOpieki                    String?
+  procentCzasuOpieki            Float?
+  kwotaAlimentow                Float?
+  twojeMiesieczneWydatki        Float?
+  wydatkiDrugiegoRodzica        Float?
+  kosztyUznanePrzezSad          Float?
+  rentaRodzinna                 Boolean        @default(false)
   rentaRodzinnaKwota            Float?
-  swiadczeniePielegnacyjne      Boolean @default(false)
+  swiadczeniePielegnacyjne      Boolean        @default(false)
   swiadczeniePielegnacyjneKwota Float?
-  inneZrodla                    Boolean @default(false)
+  inneZrodla                    Boolean        @default(false)
   inneZrodlaOpis                String?
   inneZrodlaKwota               Float?
-  brakDodatkowychZrodel         Boolean @default(true)
+  brakDodatkowychZrodel         Boolean        @default(true)
+  tabelaCzasu                   Json?
+  wskaznikiCzasuOpieki          Json?
+  wakacjeProcentCzasu           Float?
+  wakacjeSzczegolowyPlan        Boolean        @default(false)
+  wakacjeOpisPlan               String?
+  poziomEdukacji                String?
+  kosztySzkoly                  Decimal?       @db.Decimal(10, 2)
+  dodatkZajeciaCena             Decimal?       @db.Decimal(10, 2)
+  rodzajZajec                   String?
+  szczegolowyProcentCzasu       Json?
+  formSubmission                FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 
-  // Dane o czasie opieki
-  tabelaCzasu            Json? // Szczegółowe dane o tabeli czasu w formacie JSON
-  wskaznikiCzasuOpieki   Json? // Wskaźniki czasu opieki w formacie JSON
-  wakacjeProcentCzasu    Float?
-  wakacjeSzczegolowyPlan Boolean @default(false)
-  wakacjeOpisPlan        String?
-
-  @@unique([formSubmissionId, childId])
+  @@unique([formSubmissionId, childId], map: "Child_formSubmissionId_childId_idx")
   @@index([formSubmissionId])
 }
 
-// Model dochodów rodziców
 model Dochody {
-  id               String         @id @default(cuid())
-  formSubmissionId String         @unique
-  formSubmission   FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-
-  // Dochody wypełniającego
+  id                          String         @id @default(cuid())
+  formSubmissionId            String         @unique(map: "Dochody_formSubmissionId_idx")
   wlasneDochodyNetto          Float?
   wlasnePotencjalDochodowy    Float?
   wlasneKosztyUtrzymania      Float?
   wlasneKosztyInni            Float?
   wlasneDodatkoweZobowiazania Float?
+  drugiRodzicDochody          Float?
+  drugiRodzicPotencjal        Float?
+  drugiRodzicKoszty           Float?
+  drugiRodzicKosztyInni       Float?
+  drugiRodzicDodatkowe        Float?
+  formSubmission              FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+}
 
-  // Dochody drugiego rodzica
-  drugiRodzicDochody    Float?
-  drugiRodzicPotencjal  Float?
-  drugiRodzicKoszty     Float?
-  drugiRodzicKosztyInni Float?
-  drugiRodzicDodatkowe  Float?
+model KosztyUtrzymania {
+  id                     String         @id @default(cuid())
+  formSubmissionId       String         @unique
+  kosztyUtrzymania       Decimal?       @db.Decimal(10, 2)
+  czynsz                 Decimal?       @db.Decimal(10, 2)
+  media                  Decimal?       @db.Decimal(10, 2)
+  energia                Decimal?       @db.Decimal(10, 2)
+  woda                   Decimal?       @db.Decimal(10, 2)
+  ogrzewanie             Decimal?       @db.Decimal(10, 2)
+  internet               Decimal?       @db.Decimal(10, 2)
+  telefon                Decimal?       @db.Decimal(10, 2)
+  transport              Decimal?       @db.Decimal(10, 2)
+  zywnosc                Decimal?       @db.Decimal(10, 2)
+  lekarstwa              Decimal?       @db.Decimal(10, 2)
+  typZamieszkania        String?
+  czestotliwoscOplat     String?
+  powierzchniaMieszkania Decimal?       @db.Decimal(10, 2)
+  liczbaOsob             Int?
+  inneKosztyMiesieczne   Decimal?       @db.Decimal(10, 2)
+  inneKosztyOpis         String?
+  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 }

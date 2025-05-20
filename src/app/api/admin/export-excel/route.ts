@@ -19,19 +19,66 @@ export async function GET(request: NextRequest) {
     const apiKey = request.headers.get("x-api-key");
     if (apiKey !== API_KEY) {
       return NextResponse.json({ error: "Brak autoryzacji" }, { status: 401 });
-    }
+    } // Zmienna do przechowywania formularzy
+    let formSubmissions: any[] = [];
 
-    // Pobieranie wszystkich danych z bazy (wykorzystanie nowego schematu)
-    const formSubmissions = await prisma.formSubmission.findMany({
-      include: {
-        emailSubscription: true,
-        dzieci: true,
-        dochodyRodzicow: true,
-      },
-      orderBy: {
-        submittedAt: "desc",
-      },
-    });
+    // Pobieranie wszystkich danych z bazy (bezpieczna wersja)
+    try {
+      console.log("Rozpoczynam pobieranie danych formularzy...");
+
+      // Najpierw sprawdzamy strukturę tabeli FormSubmission
+      const tableInfo = await prisma.$queryRaw`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'FormSubmission'
+      `;
+      console.log("Dostępne kolumny w tabeli FormSubmission:", tableInfo);
+      // Pobieramy dane z bezpiecznym zapytaniem z określonymi polami (unikając nieistniejących kolumn)
+      formSubmissions = await prisma.formSubmission.findMany({
+        select: {
+          id: true,
+          emailSubscriptionId: true,
+          formData: true,
+          submittedAt: true,
+          processedAt: true,
+          status: true,
+          reportUrl: true,
+          rodzajSaduSad: true,
+          apelacjaSad: true,
+          sadOkregowyId: true,
+          sadRejonowyId: true,
+          rokDecyzjiSad: true,
+          miesiacDecyzjiSad: true,
+          dataDecyzjiSad: true,
+          liczbaSedzi: true,
+          plecSedziego: true,
+          inicjalySedziego: true,
+          czyPozew: true,
+          watekWiny: true,
+          sciezkaWybor: true,
+          podstawaUstalen: true,
+          podstawaUstalenInne: true,
+          wariantPostepu: true,
+          sposobFinansowania: true,
+          // Relacje
+          emailSubscription: true,
+          dzieci: true,
+          dochodyRodzicow: true,
+        },
+        orderBy: {
+          submittedAt: "desc",
+        },
+      });
+
+      console.log(`Pobrano ${formSubmissions.length} formularzy z bazy danych`);
+    } catch (error) {
+      console.error("Błąd podczas pobierania danych z bazy:", error);
+      throw new Error(
+        `Błąd pobierania danych: ${
+          error instanceof Error ? error.message : "Nieznany błąd"
+        }`
+      );
+    }
 
     // Tworzenie workbooka Excel
     const workbook = new ExcelJS.Workbook();
@@ -396,11 +443,9 @@ export async function GET(request: NextRequest) {
 
       // Dane o liczbie dzieci do wykorzystania w tabelach
       const liczbaDzieci =
-        formData.liczbaDzieci || submission.dzieci?.length || 0;
-
-      // Dane dzieci z relacji
+        formData.liczbaDzieci || submission.dzieci?.length || 0; // Dane dzieci z relacji
       if (submission.dzieci && submission.dzieci.length > 0) {
-        submission.dzieci.forEach((dziecko) => {
+        submission.dzieci.forEach((dziecko: Child) => {
           childrenSheet.addRow({
             formid: submission.id,
             email: submission.emailSubscription.email,
@@ -449,7 +494,7 @@ export async function GET(request: NextRequest) {
         });
       } else if (formData.dzieci && Array.isArray(formData.dzieci)) {
         // Fallback dla istniejących danych zapisanych w JSON
-        formData.dzieci.forEach((dziecko: any) => {
+        formData.dzieci.forEach((dziecko: Record<string, any>) => {
           childrenSheet.addRow({
             formid: submission.id,
             email: submission.emailSubscription.email,
@@ -475,7 +520,7 @@ export async function GET(request: NextRequest) {
 
         // Dane finansowania z JSON dla istniejących danych
         if (formData.kosztyDzieci && Array.isArray(formData.kosztyDzieci)) {
-          formData.kosztyDzieci.forEach((koszt: any) => {
+          formData.kosztyDzieci.forEach((koszt: Record<string, any>) => {
             financeSheet.addRow({
               formid: submission.id,
               email: submission.emailSubscription.email,

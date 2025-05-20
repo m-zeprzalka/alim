@@ -15,6 +15,10 @@ export type FormData = {
   // Flaga wskazująca czy zgłoszenie zapisano w trybie offline
   isOfflineSubmission?: boolean;
 
+  // Śledzenie postępu wypełniania formularza dla dzieci
+  aktualneDzieckoIndex?: number; // Indeks aktualnie wypełnianego dziecka
+  zakonczoneIndeksyDzieci?: number[]; // Indeksy dzieci, dla których został ukończony cykl wypełniania
+
   // Krok 3: Podstawa ustaleń
   podstawaUstalen?: string;
   podstawaUstalenInne?: string;

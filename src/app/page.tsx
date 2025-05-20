@@ -10,9 +10,6 @@ export default function Home() {
         <CardContent className="pt-2">
           <Logo size="large" />
           <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-left text-sky-950">
-              AliMatrix - Alimenty bez tajemnic
-            </h1>
             <div className="space-y-4 text-sky-950">
               <p>
                 <strong>AliMatrix</strong> to niezależna inicjatywa oparta na
@@ -46,6 +43,11 @@ export default function Home() {
                       pierwszą w Polsce bazę danych alimentacyjnych
                     </strong>
                     , która może realnie zmienić system
+                  </li>
+                  <li>
+                    masz wpływ na{" "}
+                    <strong>większą przewidywalność i uczciwość</strong> w
+                    sprawach dotyczących dzieci.
                   </li>
                 </ul>
               </div>
@@ -93,7 +95,7 @@ export default function Home() {
               <p className="font-semibold mt-4">
                 Formularz został podzielony na kilka przejrzystych części:
               </p>
-              <ul className="list-disc list-inside space-y-1 text-sm">
+              <ul className="list-disc list-inside space-y-1 text-sm mt-4">
                 <li>
                   <strong>Informacje o dzieciach</strong> – obejmujące m.in.
                   opiekę, edukację oraz miesięczne wydatki związane z
@@ -117,7 +119,7 @@ export default function Home() {
               </ul>
               <p className="text-sm mt-2">
                 Po zakończeniu wypełniania formularza poprosimy Cię o wyrażenie
-                <strong>osobnej zgody na przetwarzanie danych</strong> w celu
+                <strong> osobnej zgody na przetwarzanie danych</strong> w celu
                 przygotowania spersonalizowanego raportu.{" "}
                 <strong>Jeśli zdecydujesz się podać adres e‑mail</strong>,
                 będzie on przechowywany oddzielnie od pozostałych informacji.

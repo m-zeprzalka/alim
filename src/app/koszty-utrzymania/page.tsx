@@ -28,10 +28,13 @@ export default function KosztyUtrzymania() {
   // Funkcja scrollToTop zaimplementowana bezpośrednio w komponencie
   const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
-
-  // Stan dla aktualnego dziecka i danych kosztów
-  const [aktualneDzieckoIndex, setAktualneDzieckoIndex] = useState<number>(0);
+  }, []); // Stan dla aktualnego dziecka i danych kosztów
+  const [aktualneDzieckoIndex, setAktualneDzieckoIndex] = useState<number>(
+    formData.aktualneDzieckoIndex || 0
+  );
+  const [zakonczoneIndeksyDzieci, setZakonczoneIndeksyDzieci] = useState<
+    number[]
+  >(formData.zakonczoneIndeksyDzieci || []);
   const [kosztyDzieci, setKosztyDzieci] = useState<KosztyDziecka[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -268,6 +271,7 @@ export default function KosztyUtrzymania() {
       }));
 
       // Zapisz dane z mechanizmem ponownych prób
+      let dataSaved = false;
       await retryOperation(
         async () => {
           await updateFormData({
@@ -277,6 +281,7 @@ export default function KosztyUtrzymania() {
               formVersion: "1.1.0",
             },
           });
+          dataSaved = true;
           return true;
         },
         {
@@ -290,58 +295,79 @@ export default function KosztyUtrzymania() {
       // Zapisujemy informację o submisji formularza dla celów analizy
       recordSubmission();
 
-      // Sprawdzamy, czy to ostatnie dziecko
-      if (aktualneDzieckoIndex < kosztyDzieci.length - 1) {
-        // Ustawiamy następne dziecko jako aktualne
-        const nastepneDziecko = formData.dzieci?.[aktualneDzieckoIndex + 1];
-        if (nastepneDziecko) {
+      // Pobierz aktualny indeks dziecka i zakończone indeksy dzieci
+      const zakonczoneIndeksyDzieci = formData.zakonczoneIndeksyDzieci || [];
+      // Pobieramy aktualną liczbę dzieci
+      const liczbaDzieci = formData.dzieci?.length || 0;
+
+      // Sprawdzamy, czy zapisanie się powiodło
+      if (dataSaved) {
+        // Dodajemy aktualne dziecko do zakończonych
+        let noweZakonczoneIndeksyDzieci = [...zakonczoneIndeksyDzieci];
+        if (!noweZakonczoneIndeksyDzieci.includes(aktualneDzieckoIndex)) {
+          noweZakonczoneIndeksyDzieci.push(aktualneDzieckoIndex);
+        }
+
+        // Sprawdzamy, czy wszystkie dzieci zostały już wypełnione
+        const czyWszystkieDzieciZakonczone =
+          noweZakonczoneIndeksyDzieci.length >= liczbaDzieci;
+
+        if (czyWszystkieDzieciZakonczone) {
+          // Wszystkie dzieci są już zakończone, przechodzimy do następnego kroku
+          // Zapisujemy aktualizację
           await updateFormData({
-            aktualneDzieckoWTabeliCzasu: nastepneDziecko.id,
+            zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
           });
 
-          // Sprawdzamy, czy następne dziecko ma model opieki "inny"
-          if (nastepneDziecko.modelOpieki === "inny") {
-            // Przewijamy stronę do góry przed przejściem do następnej strony
-            scrollToTop();
+          // Przewijamy stronę do góry przed przejściem do następnego kroku
+          scrollToTop();
 
-            // Dodajemy małe opóźnienie dla lepszego UX
+          // Dodajemy małe opóźnienie dla lepszego UX
+          setTimeout(() => {
+            trackedLog(
+              operationId,
+              "All children completed, navigating to dochody-i-koszty"
+            );
+            router.push("/dochody-i-koszty");
+
+            // Zmniejszamy szansę na back button lub podwójną submisję
             setTimeout(() => {
-              trackedLog(
-                operationId,
-                "Navigating to czas-opieki for next child"
-              );
-              router.push("/czas-opieki");
-
-              // Zmniejszamy szansę na back button lub podwójną submisję
-              setTimeout(() => {
-                setIsSubmitting(false);
-              }, 500);
-            }, 100);
-          } else {
-            // Jeśli nie, zostajemy na tej samej stronie, ale zmieniamy indeks na następne dziecko
-            setAktualneDzieckoIndex(aktualneDzieckoIndex + 1);
-            // Przewijamy stronę do góry, aby użytkownik wiedział, że zaczyna wypełniać dane dla nowego dziecka
-            scrollToTop();
-            setIsSubmitting(false);
-          }
+              setIsSubmitting(false);
+            }, 500);
+          }, 100);
         } else {
-          setIsSubmitting(false);
+          // Określamy następne dziecko do wypełnienia
+          // Szukamy pierwszego dziecka, które nie zostało jeszcze zakończone
+          let nextIndex = 0;
+          for (let i = 0; i < liczbaDzieci; i++) {
+            if (!noweZakonczoneIndeksyDzieci.includes(i)) {
+              nextIndex = i;
+              break;
+            }
+          } // Aktualizujemy formData z nowym indeksem i listą zakończonych dzieci
+          await updateFormData({
+            aktualneDzieckoIndex: nextIndex,
+            aktualneDzieckoWTabeliCzasu: formData.dzieci?.[nextIndex]?.id,
+            zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
+          });
+
+          // Przewijamy stronę do góry przed przejściem do następnej strony/dziecka
+          scrollToTop();
+
+          // Dodajemy małe opóźnienie dla lepszego UX
+          setTimeout(() => {
+            // Wracamy do strony dzieci, aby rozpocząć proces od nowa dla kolejnego dziecka
+            trackedLog(operationId, "Navigating back to dzieci for next child");
+            router.push("/dzieci");
+
+            // Zmniejszamy szansę na back button lub podwójną submisję
+            setTimeout(() => {
+              setIsSubmitting(false);
+            }, 500);
+          }, 100);
         }
       } else {
-        // To ostatnie dziecko, przechodzimy do następnego kroku
-        // Przewijamy stronę do góry przed przejściem do następnego kroku
-        scrollToTop();
-
-        // Dodajemy małe opóźnienie dla lepszego UX
-        setTimeout(() => {
-          trackedLog(operationId, "Navigating to dochody-i-koszty");
-          router.push("/dochody-i-koszty");
-
-          // Zmniejszamy szansę na back button lub podwójną submisję
-          setTimeout(() => {
-            setIsSubmitting(false);
-          }, 500);
-        }, 100);
+        setIsSubmitting(false);
       }
     } catch (error) {
       trackedLog(
@@ -358,6 +384,8 @@ export default function KosztyUtrzymania() {
     kosztyDzieci,
     aktualneDzieckoIndex,
     formData.dzieci,
+    formData.zakonczoneIndeksyDzieci,
+    zakonczoneIndeksyDzieci,
     updateFormData,
     router,
     scrollToTop,
@@ -560,11 +588,31 @@ export default function KosztyUtrzymania() {
               />
             </div>{" "}
             <div className="bg-blue-50 p-4 rounded-lg">
-              <p className="font-medium">
-                Wypełniasz dane o kosztach dla Dziecka {aktualneDziecko.id} (
-                {aktualneDzieckoIndex + 1}/{formData.dzieci?.length || 0}) -{" "}
-                {aktualneDziecko.wiek} lat
-              </p>
+              {" "}
+              <div className="flex justify-between items-center">
+                <p className="font-medium">
+                  Wypełniasz dane o kosztach dla Dziecka {aktualneDziecko.id} (
+                  {aktualneDzieckoIndex + 1}/{formData.dzieci?.length || 0}) -{" "}
+                  {aktualneDziecko.wiek} lat
+                </p>
+                <div className="flex gap-2">
+                  {Array.from({ length: formData.dzieci?.length || 0 }).map(
+                    (_, idx) => (
+                      <div
+                        key={idx}
+                        className={`w-3 h-3 rounded-full ${
+                          zakonczoneIndeksyDzieci.includes(idx)
+                            ? "bg-green-500"
+                            : idx === aktualneDzieckoIndex
+                            ? "bg-blue-500"
+                            : "bg-gray-200"
+                        }`}
+                        title={`Dziecko ${idx + 1}`}
+                      />
+                    )
+                  )}
+                </div>
+              </div>
               <p className="text-sm mt-1">
                 Podaj rzeczywiste koszty, które ponosisz na utrzymanie dziecka.
               </p>

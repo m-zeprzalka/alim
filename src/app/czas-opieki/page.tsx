@@ -407,8 +407,7 @@ export default function CzasOpieki() {
           } as DzieckoRozszerzone;
         }
         return dziecko;
-      });
-
+      }); // Aktualizujemy dane dziecka
       updateFormData({
         dzieci: zaktualizowaneDzieci,
       });
@@ -416,18 +415,8 @@ export default function CzasOpieki() {
       // Przewijamy stronę do góry przed przejściem do następnej strony
       scrollToTop();
 
-      // Sprawdzamy model opieki dziecka
-      const aktualneDziecko = formData.dzieci.find(
-        (d) => d.id === aktualneDzieckoId
-      );
-
-      // Jeśli model opieki to "inny", przechodzimy do strony opieki w okresach specjalnych
-      // W przeciwnym wypadku przechodzimy od razu do kosztów utrzymania
-      if (aktualneDziecko && aktualneDziecko.modelOpieki === "inny") {
-        router.push("/opieka-wakacje");
-      } else {
-        router.push("/koszty-utrzymania");
-      }
+      // Zawsze przechodzimy do strony opieki w okresach specjalnych dla tego dziecka
+      router.push("/opieka-wakacje");
     }
   };
 

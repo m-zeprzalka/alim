@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Image from "next/image";
 
 // Konfiguracja fontu
 const inter = Inter({
@@ -56,6 +57,13 @@ export default function RootLayout({
 
         {/* Stopka */}
         <footer className="py-3 text-center text-sm mt-8">
+          <Image
+            className="block mx-auto"
+            src="/image_from_ios.gif"
+            width={500}
+            height={500}
+            alt="Dofinansowano ze środków Unii Europejskiej"
+          />
           <p>
             © {new Date().getFullYear()} AliMatrix -
             <a href="/rodo" className="hover:underline ml-1 mr-1">

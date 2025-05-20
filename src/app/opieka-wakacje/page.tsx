@@ -144,7 +144,6 @@ export default function OpiekaWakacje() {
     wakacjeOpisPlan,
     updateFormData,
   ]);
-
   // Funkcja do zapisywania danych i przechodzenia do następnego kroku
   const handleNext = useCallback(async () => {
     // Zapobieganie wielokrotnym kliknięciom
@@ -174,6 +173,7 @@ export default function OpiekaWakacje() {
 
         // Dodajemy małe opóźnienie dla lepszego UX
         setTimeout(() => {
+          // Zawsze przechodzimy do strony kosztów utrzymania dla tego dziecka
           trackedLog(operationId, "Navigating to koszty-utrzymania");
           router.push("/koszty-utrzymania");
 

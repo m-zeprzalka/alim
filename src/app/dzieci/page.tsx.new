@@ -72,22 +72,22 @@ export default function Dzieci() {
     | "podstawowa"
     | "ponadpodstawowa"
     | "";
-
+  
   // Inicjalizacja stanu dla liczby dzieci i ich danych z formStore
   const [liczbaDzieci, setLiczbaDzieci] = useState<number>(
     formData.liczbaDzieci || 1
-  );
-
+  ); 
+  
   // Inicjalizacja stanu dla śledzenia aktualnie wypełnianego dziecka
   const [aktualneDzieckoIndex, setAktualneDzieckoIndex] = useState<number>(
     formData.aktualneDzieckoIndex || 0
   );
-
+  
   // Stan dla dzieci, które zostały już wypełnione
-  const [zakonczoneIndeksyDzieci, setZakonczoneIndeksyDzieci] = useState<
-    number[]
-  >(formData.zakonczoneIndeksyDzieci || []);
-
+  const [zakonczoneIndeksyDzieci, setZakonczoneIndeksyDzieci] = useState<number[]>(
+    formData.zakonczoneIndeksyDzieci || []
+  );
+  
   // Typ dla błędów pól formularza
   type FieldErrors = {
     [dzieckoId: number]: {
@@ -154,8 +154,8 @@ export default function Dzieci() {
   const [error, setError] = useState<string | null>(null);
 
   // Stan przycisku do zapobiegania wielokrotnym kliknięciom
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [isSubmitting, setIsSubmitting] = useState(false); 
+  
   // Aktualizacja dzieci, gdy zmieni się liczba dzieci
   useEffect(() => {
     // Jeśli brakuje dzieci, dodajemy nowe
@@ -367,7 +367,9 @@ export default function Dzieci() {
 
             // Jeśli nadal nie mamy komunikatu, sprawdzamy ogólny błąd
             if (!errorMessage && childErrors._errors?.length) {
-              errorMessage = `${cleanErrorMessage(childErrors._errors[0])}`;
+              errorMessage = `${cleanErrorMessage(
+                childErrors._errors[0]
+              )}`;
             }
           }
         }
@@ -431,14 +433,13 @@ export default function Dzieci() {
               liczbaDzieci,
               dzieci: dzieciDoZapisu,
               // Zapisujemy aktualny indeks dziecka i zakończone dzieci
-              aktualneDzieckoIndex:
-                aktualneDzieckoIndex < liczbaDzieci - 1
-                  ? aktualneDzieckoIndex + 1
-                  : aktualneDzieckoIndex,
+              aktualneDzieckoIndex: 
+                aktualneDzieckoIndex < liczbaDzieci - 1 
+                ? aktualneDzieckoIndex + 1 
+                : aktualneDzieckoIndex,
               zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
               // Ustawiamy ID dziecka dla tabeli czasu
-              aktualneDzieckoWTabeliCzasu:
-                dzieciDoZapisu[aktualneDzieckoIndex].id,
+              aktualneDzieckoWTabeliCzasu: dzieciDoZapisu[aktualneDzieckoIndex].id,
               __meta: {
                 lastUpdated: Date.now(),
                 formVersion: "1.1.0",
@@ -467,18 +468,15 @@ export default function Dzieci() {
         // Sprawdź czy to ostatnie dziecko i jeśli tak, przejdź do następnej sekcji
         if (aktualneDzieckoIndex >= liczbaDzieci - 1) {
           // Zakończyliśmy wypełnianie formularza dla wszystkich dzieci
-          trackedLog(
-            operationId,
-            "All children completed, moving to next section"
-          );
-
+          trackedLog(operationId, "All children completed, moving to next section");
+          
           // Bezpieczna nawigacja z opóźnieniem dla lepszego UX
           setTimeout(() => {
             const targetPath =
               aktualneDzieckoData.modelOpieki === "inny"
                 ? "/czas-opieki"
                 : "/koszty-utrzymania";
-
+                
             trackedLog(operationId, `Navigating to ${targetPath}`);
             router.push(targetPath);
 
@@ -502,16 +500,7 @@ export default function Dzieci() {
       setIsSubmitting(false);
       setError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie.");
     }
-  }, [
-    dzieci,
-    liczbaDzieci,
-    aktualneDzieckoIndex,
-    zakonczoneIndeksyDzieci,
-    router,
-    scrollToTop,
-    updateFormData,
-    isSubmitting,
-  ]);
+  }, [dzieci, liczbaDzieci, aktualneDzieckoIndex, zakonczoneIndeksyDzieci, router, scrollToTop, updateFormData, isSubmitting]);
 
   // Funkcja do obsługi powrotu do poprzedniego kroku
   const handleBack = useCallback(() => {
@@ -519,7 +508,7 @@ export default function Dzieci() {
     if (isSubmitting) return;
 
     const operationId = generateOperationId();
-
+    
     // Jeśli jesteśmy przy pierwszym dziecku, wracamy do poprzedniego kroku
     if (aktualneDzieckoIndex === 0) {
       trackedLog(operationId, "Navigating back to podstawa-ustalen");
@@ -540,7 +529,7 @@ export default function Dzieci() {
 
   // Pobierz aktualne dziecko
   const aktualneDziecko = dzieci[aktualneDzieckoIndex];
-
+  
   return (
     <main className="flex justify-center p-3">
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
@@ -647,13 +636,11 @@ export default function Dzieci() {
                   ))}
                 </div>
               </div>
-
+              
               {/* Wyświetlanie tylko aktualnego dziecka */}
               {aktualneDziecko && (
                 <div className="p-4 border-2 border-gray-200 rounded-lg">
-                  <h3 className="font-medium mb-3">
-                    Dziecko {aktualneDzieckoIndex + 1}
-                  </h3>
+                  <h3 className="font-medium mb-3">Dziecko {aktualneDzieckoIndex + 1}</h3>
 
                   {/* 1. Wiek dziecka */}
                   <div className="mb-6">
@@ -690,9 +677,7 @@ export default function Dzieci() {
                         });
                       }}
                       className={`mt-1 ${
-                        fieldErrors[aktualneDziecko.id]?.wiek
-                          ? "border-red-500"
-                          : ""
+                        fieldErrors[aktualneDziecko.id]?.wiek ? "border-red-500" : ""
                       }`}
                     />
                     {fieldErrors[aktualneDziecko.id]?.wiek && (
@@ -794,9 +779,7 @@ export default function Dzieci() {
                     {/* Zastąpienie radio buttonów na Select */}
                     <div className="mt-2">
                       <Select
-                        value={
-                          aktualneDziecko.uczeszczeDoPlacowki ? "tak" : "nie"
-                        }
+                        value={aktualneDziecko.uczeszczeDoPlacowki ? "tak" : "nie"}
                         onValueChange={(value) => {
                           const uczeszczeDoPlacowki = value === "tak";
                           updateDziecko(aktualneDzieckoIndex, {
@@ -921,9 +904,7 @@ export default function Dzieci() {
                           }
                           onValueChange={(value) => {
                             // Czyścimy potencjalny błąd po zmianie wartości
-                            if (
-                              fieldErrors[aktualneDziecko.id]?.opiekaInnejOsoby
-                            ) {
+                            if (fieldErrors[aktualneDziecko.id]?.opiekaInnejOsoby) {
                               setFieldErrors((prev) => ({
                                 ...prev,
                                 [aktualneDziecko.id]: {
@@ -1003,8 +984,7 @@ export default function Dzieci() {
                           onChange={(e) => {
                             // Czyścimy potencjalny błąd po zmianie wartości
                             if (
-                              fieldErrors[aktualneDziecko.id]
-                                ?.opisSpecjalnychPotrzeb
+                              fieldErrors[aktualneDziecko.id]?.opisSpecjalnychPotrzeb
                             ) {
                               setFieldErrors((prev) => ({
                                 ...prev,
@@ -1020,19 +1000,14 @@ export default function Dzieci() {
                           }}
                           placeholder="np. alergia, niepełnosprawność, zajęcia dodatkowe"
                           className={`mt-1 ${
-                            fieldErrors[aktualneDziecko.id]
-                              ?.opisSpecjalnychPotrzeb
+                            fieldErrors[aktualneDziecko.id]?.opisSpecjalnychPotrzeb
                               ? "border-red-500"
                               : ""
                           }`}
                         />
-                        {fieldErrors[aktualneDziecko.id]
-                          ?.opisSpecjalnychPotrzeb && (
+                        {fieldErrors[aktualneDziecko.id]?.opisSpecjalnychPotrzeb && (
                           <p className="text-red-500 text-xs mt-1">
-                            {
-                              fieldErrors[aktualneDziecko.id]
-                                ?.opisSpecjalnychPotrzeb
-                            }
+                            {fieldErrors[aktualneDziecko.id]?.opisSpecjalnychPotrzeb}
                           </p>
                         )}
                       </div>
@@ -1112,10 +1087,10 @@ export default function Dzieci() {
                 </div>
               )}
             </div>
-
+            
             {/* Wyświetlanie błędu walidacji */}
             {error && <p className="text-red-500 text-sm">{error}</p>}
-
+            
             <div className="flex gap-3 pt-4">
               <Button
                 variant="outline"

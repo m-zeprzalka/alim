@@ -54,7 +54,7 @@ export default function PostepowanieInne() {
 
   // Funkcja obsługująca powrót do poprzedniego kroku
   const handleBack = () => {
-    router.push("/dochody");
+    router.push("/dochody-i-koszty");
   };
 
   return (

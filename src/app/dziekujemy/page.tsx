@@ -7,6 +7,7 @@ import { Logo } from "@/components/ui/custom/Logo";
 import { SecurityBanner } from "@/components/ui/custom/SecurityBanner";
 import Link from "next/link";
 import { useFormStore } from "@/lib/store/form-store";
+import { FormProgress } from "@/components/ui/custom/FormProgress";
 
 export default function ThankYouPage() {
   const { formData, resetForm } = useFormStore();
@@ -54,13 +55,11 @@ export default function ThankYouPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <Card className="w-full max-w-lg shadow-lg">
-        <CardContent className="pt-6">
-          <div className="flex justify-center mb-6">
-            <Logo size="medium" />
-          </div>
-
+    <main className="flex justify-center p-3">
+      <Card className="w-full max-w-lg shadow-lg border-sky-100">
+        <CardContent className="pt-2">
+          <Logo size="large" />
+          <FormProgress currentStep={12} totalSteps={12} />
           <div className="text-center space-y-6 py-8">
             {" "}
             <div className="inline-flex justify-center items-center w-20 h-20 bg-green-100 rounded-full">
@@ -134,7 +133,7 @@ export default function ThankYouPage() {
             <div className="space-y-4">
               <p className="text-gray-700">
                 Twój raport jest już przygotowywany. Wyślemy go na podany adres
-                e-mail w ciągu najbliższych 24 godzin.
+                e-mail.
               </p>
 
               <p className="text-gray-700">
@@ -148,6 +147,24 @@ export default function ThankYouPage() {
                 </a>
                 .
               </p>
+            </div>
+            <div className="bg-pink-50 p-4 rounded-lg">
+              <p className="font-semibold mb-2">
+                Chcesz dodatkowo wesprzeć rozwój AliMatrixa?
+              </p>
+              <p className="text-sm mb-2">
+                Jeśli masz ochotę – możesz również pomóc nam przyspieszyć
+                powstanie pierwszych raportów. Każde wsparcie, nawet
+                symboliczne, realnie wpływa na szybkość tworzenia narzędzia,
+                które może zmienić sposób ustalania alimentów w Polsce.
+              </p>
+              <Button
+                variant="secondary"
+                className="mt-2 bg-pink-500 hover:bg-pink-600 text-white w-full"
+                onClick={() => window.open("https://zrzutka.pl", "_blank")}
+              >
+                Przejdź do wsparcia na zrzutka.pl
+              </Button>
             </div>
             <SecurityBanner className="mt-6" />
             <div className="pt-6">

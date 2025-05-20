@@ -568,7 +568,7 @@ export default function KosztyUtrzymania() {
         <Card className="w-full max-w-lg shadow-lg border-sky-100">
           <CardContent className="pt-2">
             <Logo size="large" />
-            <FormProgress currentStep={8} totalSteps={12} />
+            <FormProgress currentStep={7} totalSteps={12} />
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold">
@@ -598,7 +598,7 @@ export default function KosztyUtrzymania() {
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
         <CardContent className="pt-2">
           <Logo size="large" />
-          <FormProgress currentStep={8} totalSteps={12} />
+          <FormProgress currentStep={7} totalSteps={12} />
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">Koszty utrzymania dziecka</h1>

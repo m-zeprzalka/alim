@@ -12,7 +12,7 @@ export function SecurityBanner({ className = "" }: SecurityBannerProps) {
     <div
       className={`bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800 ${className}`}
     >
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center justify-center gap-2 mb-2">
         <Shield className="h-5 w-5 text-blue-500" />
         <p className="font-semibold">Bezpieczeństwo danych</p>
       </div>

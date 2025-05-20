@@ -113,7 +113,7 @@ export default function Alternatywna() {
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
         <CardContent className="pt-2">
           <Logo size="medium" />
-          <FormProgress currentStep={2} totalSteps={3} />
+          <FormProgress currentStep={2} totalSteps={2} />
 
           <div className="space-y-6">
             <h1 className="text-2xl font-bold">
@@ -154,25 +154,46 @@ export default function Alternatywna() {
                         <span className="font-mono text-md flex-1">
                           {submissionId}
                         </span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={copyToClipboard}
-                          className={
-                            copySuccess
-                              ? "text-green-600 border-green-600"
-                              : "text-blue-600"
-                          }
-                        >
-                          {copySuccess ? "Skopiowano!" : "Kopiuj"}
-                        </Button>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={copyToClipboard}
+                        className={
+                          copySuccess
+                            ? "text-green-600 border-green-600"
+                            : "text-blue-600"
+                        }
+                      >
+                        {copySuccess ? "Skopiowano!" : "Kopiuj"}
+                      </Button>
                       <p className="text-xs text-gray-500 mt-1">
                         Zachowaj to ID - może być potrzebne w przypadku kontaktu
                         z nami.
                       </p>
                     </div>
                   )}
+                  <div className="bg-pink-50 p-4 rounded-lg">
+                    <p className="font-semibold mb-2">
+                      Chcesz dodatkowo wesprzeć rozwój AliMatrixa?
+                    </p>
+                    <p className="text-sm mb-2">
+                      Jeśli masz ochotę – możesz również pomóc nam przyspieszyć
+                      powstanie pierwszych raportów. Każde wsparcie, nawet
+                      symboliczne, realnie wpływa na szybkość tworzenia
+                      narzędzia, które może zmienić sposób ustalania alimentów w
+                      Polsce.
+                    </p>
+                    <Button
+                      variant="secondary"
+                      className="mt-2 bg-pink-500 hover:bg-pink-600 text-white w-full"
+                      onClick={() =>
+                        window.open("https://zrzutka.pl", "_blank")
+                      }
+                    >
+                      Przejdź do wsparcia na zrzutka.pl
+                    </Button>
+                  </div>
                   <Button onClick={() => router.push("/")} className="mt-2">
                     Wróć do strony głównej
                   </Button>
@@ -254,25 +275,6 @@ export default function Alternatywna() {
                   </div>
 
                   {error && <p className="text-red-500 text-sm">{error}</p>}
-                </div>
-
-                <div className="bg-pink-50 p-4 rounded-lg">
-                  <p className="font-semibold mb-2">
-                    Chcesz dodatkowo wesprzeć rozwój AliMatrixa?
-                  </p>
-                  <p className="text-sm mb-2">
-                    Jeśli masz ochotę – możesz również pomóc nam przyspieszyć
-                    powstanie pierwszych raportów. Każde wsparcie, nawet
-                    symboliczne, realnie wpływa na szybkość tworzenia narzędzia,
-                    które może zmienić sposób ustalania alimentów w Polsce.
-                  </p>
-                  <Button
-                    variant="secondary"
-                    className="mt-2 bg-pink-500 hover:bg-pink-600 text-white w-full"
-                    onClick={() => window.open("https://zrzutka.pl", "_blank")}
-                  >
-                    Przejdź do wsparcia na zrzutka.pl
-                  </Button>
                 </div>
 
                 <p className="text-center font-semibold">

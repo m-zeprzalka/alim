@@ -70,7 +70,7 @@ export default function PostepowaniePorozumienie() {
       klauzulaWaloryzacyjna: klauzulaWaloryzacyjna,
     });
 
-    router.push("/postepowanie");
+    router.push("/dochody-i-koszty");
   };
 
   return (

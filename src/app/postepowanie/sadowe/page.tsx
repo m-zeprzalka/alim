@@ -385,12 +385,10 @@ export default function PostepowanieSadowe() {
       });
 
       // Przewijamy stronę do góry przed przejściem do poprzedniej strony
-      scrollToTop();
-
-      // Dodajemy małe opóźnienie dla lepszego UX
+      scrollToTop(); // Dodajemy małe opóźnienie dla lepszego UX
       setTimeout(() => {
-        trackedLog(operationId, "Navigating back to postepowanie");
-        router.push("/postepowanie");
+        trackedLog(operationId, "Navigating back to dochody-i-koszty");
+        router.push("/dochody-i-koszty");
         setIsSubmitting(false);
       }, 100);
     } catch (error) {

@@ -671,7 +671,7 @@ export default function CzasOpieki() {
       <Card className="w-full max-w-lg shadow-lg border-sky-100">
         <CardContent className="pt-2">
           <Logo size="large" />
-          <FormProgress currentStep={6} totalSteps={12} />
+          <FormProgress currentStep={5} totalSteps={12} />
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">Tabela czasu opieki</h1>
@@ -870,7 +870,7 @@ export default function CzasOpieki() {
                 Wstecz
               </Button>{" "}
               <Button className="flex-1" onClick={handleNext}>
-                Przejdź dalej
+                Dalej
               </Button>
             </div>
           </div>

@@ -12,29 +12,23 @@ export default function ThankYouPage() {
   const { formData, resetForm } = useFormStore();
   const [submissionId, setSubmissionId] = useState<string>("");
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
-  const [isOfflineSubmission, setIsOfflineSubmission] =
-    useState<boolean>(false);
 
   // Pobierz ID zgłoszenia z URL lub z formData
   useEffect(() => {
     let id = "";
-    let offline = false;
 
     // Sprawdź URL
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       id = urlParams.get("id") || "";
-      offline = urlParams.get("offline") === "true";
     }
 
     // Jeśli nie ma w URL, sprawdź formData
     if (!id && formData.submissionId) {
       id = formData.submissionId;
-      offline = formData.isOfflineSubmission === true;
     }
 
     setSubmissionId(id);
-    setIsOfflineSubmission(offline);
 
     // Resetuj formularz przy wejściu na stronę podziękowania z opóźnieniem
     const timeoutId = setTimeout(() => {
@@ -68,10 +62,11 @@ export default function ThankYouPage() {
           </div>
 
           <div className="text-center space-y-6 py-8">
-            <div className="inline-flex justify-center items-center w-16 h-16 bg-green-100 rounded-full">
+            {" "}
+            <div className="inline-flex justify-center items-center w-20 h-20 bg-green-100 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 text-green-600"
+                className="h-10 w-10 text-green-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -83,43 +78,38 @@ export default function ThankYouPage() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
+            </div>
+            <h1 className="text-3xl font-bold">Zgłoszenie zostało przyjęte!</h1>
+            <div className="bg-green-50 border border-green-200 p-5 rounded-lg my-6 shadow-sm">
+              <p className="flex items-center justify-center gap-2 text-green-800 font-medium mb-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Operacja zakończona sukcesem
+              </p>
+              <p className="text-green-700 mt-2">
+                Twój formularz został pomyślnie wysłany i zapisany w naszej
+                bazie danych. Dziękujemy za wypełnienie formularza!
+              </p>
             </div>{" "}
-            <h1 className="text-2xl font-bold">
-              Dziękujemy za wypełnienie formularza!{" "}
-            </h1>
-            {isOfflineSubmission && (
-              <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg my-4">
-                <p className="flex items-center gap-2 text-amber-800 font-medium">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                  </svg>
-                  Tryb offline
-                </p>
-                <p className="text-sm text-amber-700 mt-2">
-                  Twoje zgłoszenie zostało zapisane w trybie offline. Dane
-                  zostaną przesłane do serwera automatycznie, gdy połączenie
-                  internetowe zostanie przywrócone.
-                </p>
-              </div>
-            )}
             {submissionId && (
-              <div className="bg-blue-50 p-4 rounded-lg my-4">
-                <p className="text-sm text-gray-700 font-medium mb-1">
-                  ID Twojego zgłoszenia:
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg my-6 shadow-sm">
+                <p className="text-sm font-semibold text-blue-800 mb-2">
+                  Numer Twojego zgłoszenia:
                 </p>
                 <div className="flex items-center gap-2 bg-white p-3 rounded border border-gray-200">
-                  <span className="font-mono text-md flex-1">
+                  <span className="font-mono text-md flex-1 text-blue-900">
                     {submissionId}
                   </span>
                   <Button
@@ -135,16 +125,16 @@ export default function ThankYouPage() {
                     {copySuccess ? "Skopiowano!" : "Kopiuj"}
                   </Button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Zachowaj to ID - może być potrzebne w przypadku kontaktu z
+                <p className="text-xs text-blue-700 mt-2">
+                  Zachowaj ten numer - może być potrzebny w przypadku kontaktu z
                   nami.
                 </p>
               </div>
-            )}
+            )}{" "}
             <div className="space-y-4">
               <p className="text-gray-700">
-                Twój raport jest teraz przygotowywany. Wyślemy go na podany
-                adres e-mail w ciągu najbliższych 24 godzin.
+                Twój raport jest już przygotowywany. Wyślemy go na podany adres
+                e-mail w ciągu najbliższych 24 godzin.
               </p>
 
               <p className="text-gray-700">

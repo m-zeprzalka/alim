@@ -69,7 +69,7 @@ export default function AdminSubscriptions() {
     setError(null);
 
     try {
-      const response = await fetch("/api/admin/export-excel", {
+      const response = await fetch("/api/admin/export-excel-fixed", {
         headers: {
           "x-api-key": apiKey,
         },

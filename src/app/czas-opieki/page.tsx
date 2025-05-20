@@ -17,6 +17,11 @@ import {
   TabeleCzasuOpieki,
   WskaznikiCzasuOpieki,
 } from "./typings";
+import {
+  generateOperationId,
+  trackedLog,
+  retryOperation,
+} from "@/lib/form-handlers";
 
 // Rozszerzony typ Dziecko z tabeleCzasuOpieki
 type DzieckoRozszerzone = Dziecko & {
@@ -410,12 +415,18 @@ export default function CzasOpieki() {
       }); // Aktualizujemy dane dziecka
       updateFormData({
         dzieci: zaktualizowaneDzieci,
-      });      // Przewijamy stronę do góry przed przejściem do następnej strony
+      }); // Przewijamy stronę do góry przed przejściem do następnej strony
       scrollToTop();
+      const aktualneDzieckoIndex = formData.aktualneDzieckoIndex || 0;
+      console.log(
+        `Zakończono wypełnianie czasu opieki dla dziecka ${
+          aktualneDzieckoIndex + 1
+        }, przechodzimy do opieki wakacyjnej`
+      );
 
-      console.log(`Przechodzimy do następnego kroku dla dziecka - opieka wakacyjna`);
-      
       // Zawsze przechodzimy do strony opieki w okresach specjalnych dla tego dziecka
+      const operationId = Date.now().toString();
+      trackedLog(operationId, "Navigating to opieka-wakacje");
       router.push("/opieka-wakacje");
     }
   };
@@ -450,7 +461,7 @@ export default function CzasOpieki() {
       updateFormData({
         dzieci: zaktualizowaneDzieci,
       });
-    }    // Przewijamy stronę do góry przed przejściem do poprzedniej strony
+    } // Przewijamy stronę do góry przed przejściem do poprzedniej strony
     scrollToTop();
 
     // Wracamy do strony dzieci dla tego samego dziecka

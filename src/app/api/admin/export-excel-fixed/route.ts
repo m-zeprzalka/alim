@@ -15,7 +15,10 @@ const API_KEY = process.env.ADMIN_API_KEY || "tajny_klucz_admin_2025";
 
 export async function GET(request: NextRequest) {
   try {
-    console.log("Żądanie eksportu Excel otrzymane");
+    console.log(
+      "Żądanie eksportu Excel otrzymane - FIXED VERSION - " +
+        new Date().toISOString()
+    );
 
     // Sprawdzenie klucza API
     const apiKey = request.headers.get("x-api-key");
@@ -134,27 +137,22 @@ export async function GET(request: NextRequest) {
           submittedAt: "desc",
         },
       });
+      console.log(`Pobrano ${formSubmissions.length} formularzy z bazy danych`);
 
-      console.log(`Pobrano ${formSubmissions.length} formularzy z bazy danych`);
-      console.log("Pobieranie formularzy zgłoszeń...");
-      formSubmissions = await prisma.formSubmission.findMany({
-        select: {
-          id: true,
-          emailSubscriptionId: true,
-          formData: true,
-          submittedAt: true,
-          status: true,
-          reportUrl: true,
-          // Relacje
-          emailSubscription: true,
-          dzieci: true,
-          dochodyRodzicow: true,
-        },
-        orderBy: {
-          submittedAt: "desc",
-        },
-      });
-      console.log(`Pobrano ${formSubmissions.length} formularzy z bazy danych`);
+      // Dodatkowa diagnostyka danych
+      console.log(`Szczegóły formularzy:`);
+      console.log(`- Pierwszy formularz ID: ${formSubmissions[0]?.id}`);
+      console.log(
+        `- Ostatni formularz ID: ${
+          formSubmissions[formSubmissions.length - 1]?.id
+        }`
+      );
+      console.log(
+        `- Liczba dzieci we wszystkich formularzach: ${formSubmissions.reduce(
+          (sum, form) => sum + (form.dzieci?.length || 0),
+          0
+        )}`
+      );
     } catch (error) {
       console.error("Błąd podczas pobierania danych z bazy:", error);
       throw new Error(
@@ -182,12 +180,19 @@ export async function GET(request: NextRequest) {
 
     summarySheet.getCell("A3").value = "Data eksportu:";
     summarySheet.getCell("B3").value = new Date().toLocaleString("pl-PL");
-
     summarySheet.getCell("A4").value = "Liczba formularzy:";
     summarySheet.getCell("B4").value = formSubmissions.length;
 
     summarySheet.getCell("A5").value = "Liczba subskrypcji:";
     summarySheet.getCell("B5").value = emailSubscriptions.length;
+
+    // Dodajemy więcej szczegółów dla większej pewności poprawności danych
+    summarySheet.getCell("A6").value =
+      "Liczba dzieci we wszystkich formularzach:";
+    summarySheet.getCell("B6").value = formSubmissions.reduce(
+      (sum, form) => sum + (form.dzieci?.length || 0),
+      0
+    );
 
     summarySheet.getCell("A7").value = "Zawartość arkuszy:";
     summarySheet.getCell("A8").value = "1. Podsumowanie - ten arkusz";

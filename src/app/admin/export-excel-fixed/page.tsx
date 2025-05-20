@@ -18,6 +18,7 @@ export default function ExportExcelFixed() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [fileSize, setFileSize] = useState<string | null>(null);
 
   const handleExport = async () => {
     if (!apiKey) {
@@ -42,10 +43,12 @@ export default function ExportExcelFixed() {
         throw new Error(
           errorData.error || "Wystąpił błąd podczas eksportowania danych"
         );
-      }
-
-      // Pobierz blob i utwórz URL do pobrania
+      } // Pobierz blob i utwórz URL do pobrania
       const blob = await response.blob();
+      const blobSizeMB = (blob.size / (1024 * 1024)).toFixed(2); // Convert to MB
+      setFileSize(blobSizeMB);
+      console.log(`Pobrano plik Excel o rozmiarze ${blobSizeMB} MB`);
+
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
 
@@ -67,8 +70,7 @@ export default function ExportExcelFixed() {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(downloadUrl);
-      document.body.removeChild(a);
-
+      document.body.removeChild(a); // Add success information with file size
       setSuccess(true);
     } catch (err) {
       console.error("Błąd podczas eksportowania danych:", err);
@@ -99,21 +101,23 @@ export default function ExportExcelFixed() {
               className="max-w-md"
             />
           </div>
-
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
             </Alert>
-          )}
-
+          )}{" "}
           {success && (
             <Alert className="bg-green-50 text-green-800 border-green-200">
               <AlertDescription>
                 Plik Excel został wygenerowany i pobrany pomyślnie.
+                {fileSize && (
+                  <div className="mt-2">
+                    <strong>Rozmiar pliku:</strong> {fileSize} MB
+                  </div>
+                )}
               </AlertDescription>
             </Alert>
           )}
-
           <Button onClick={handleExport} disabled={loading} className="w-full">
             {loading ? "Generowanie pliku..." : "Eksportuj dane do Excel"}
           </Button>

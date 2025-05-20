@@ -18,6 +18,7 @@ import {
   trackedLog,
   retryOperation,
 } from "@/lib/form-handlers";
+import { logChildCycleState } from "@/lib/debug-helpers";
 import { KosztyDziecka } from "./typings";
 import { kosztyDzieckaSchema } from "@/lib/schemas/koszty-utrzymania-schema";
 
@@ -293,12 +294,14 @@ export default function KosztyUtrzymania() {
       );
 
       // Zapisujemy informację o submisji formularza dla celów analizy
-      recordSubmission();
-
-      // Pobierz aktualny indeks dziecka i zakończone indeksy dzieci
+      recordSubmission(); // Pobierz aktualny indeks dziecka i zakończone indeksy dzieci
       const zakonczoneIndeksyDzieci = formData.zakonczoneIndeksyDzieci || [];
       // Pobieramy aktualną liczbę dzieci
       const liczbaDzieci = formData.dzieci?.length || 0;
+
+      // Debug logging - before changes
+      console.log("DEBUG: Przed zmianami w handleNext (koszty-utrzymania)");
+      logChildCycleState(formData);
 
       // Sprawdzamy, czy zapisanie się powiodło
       if (dataSaved) {
@@ -310,9 +313,12 @@ export default function KosztyUtrzymania() {
 
         // Sprawdzamy, czy wszystkie dzieci zostały już wypełnione
         const czyWszystkieDzieciZakonczone =
-          noweZakonczoneIndeksyDzieci.length >= liczbaDzieci;        if (czyWszystkieDzieciZakonczone) {
+          noweZakonczoneIndeksyDzieci.length >= liczbaDzieci;
+        if (czyWszystkieDzieciZakonczone) {
           // Wszystkie dzieci są już zakończone, przechodzimy do następnego kroku
-          console.log(`Wszystkie dzieci zakończone (${liczbaDzieci}/${liczbaDzieci}). Przechodzę do dochody-i-koszty`);
+          console.log(
+            `Wszystkie dzieci zakończone (${liczbaDzieci}/${liczbaDzieci}). Przechodzę do dochody-i-koszty`
+          );
           // Zapisujemy aktualizację
           await updateFormData({
             zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
@@ -350,12 +356,33 @@ export default function KosztyUtrzymania() {
             zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
           });
 
+          // Debug logging - after assigning next child
+          console.log(
+            "DEBUG: Po ustawieniu następnego dziecka (koszty-utrzymania)"
+          );
+          console.log(
+            `Ustawiono następny indeks dziecka: ${nextIndex}, ID: ${formData.dzieci?.[nextIndex]?.id}`
+          );
+          console.log(
+            `Aktualizacja zakończonych indeksów: ${JSON.stringify(
+              noweZakonczoneIndeksyDzieci
+            )}`
+          );
+
           // Przewijamy stronę do góry przed przejściem do następnej strony/dziecka
-          scrollToTop();          // Dodajemy małe opóźnienie dla lepszego UX
+          scrollToTop(); // Dodajemy małe opóźnienie dla lepszego UX
           setTimeout(() => {
             // Wracamy do strony dzieci, aby rozpocząć proces od nowa dla kolejnego dziecka
-            console.log(`Zakończono cykl dla dziecka #${aktualneDzieckoIndex + 1}, przechodzę do dziecka #${nextIndex + 1}`);
-            console.log(`Zakończone dzieci: ${JSON.stringify(noweZakonczoneIndeksyDzieci)}, Liczba dzieci: ${liczbaDzieci}`);
+            console.log(
+              `Zakończono cykl dla dziecka #${
+                aktualneDzieckoIndex + 1
+              }, przechodzę do dziecka #${nextIndex + 1}`
+            );
+            console.log(
+              `Zakończone dzieci: ${JSON.stringify(
+                noweZakonczoneIndeksyDzieci
+              )}, Liczba dzieci: ${liczbaDzieci}`
+            );
             trackedLog(operationId, "Navigating back to dzieci for next child");
             router.push("/dzieci");
 

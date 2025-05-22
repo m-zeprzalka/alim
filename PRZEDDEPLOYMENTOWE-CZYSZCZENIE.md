@@ -10,75 +10,7 @@ Poniżej znajduje się lista plików i katalogów, które powinny zostać usuni�
 
 ```powershell
 # Usuwanie plików testowych w głównym katalogu
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\test-connection.js" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\test-db-connection.js" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\test-nowe-pola.js" -Force
 Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\testy-manualne.md" -Force
-
-# Usuwanie katalogów testowych
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\src\app\test" -Recurse -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\src\app\test-courts" -Recurse -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\src\app\test-courts-hierarchical" -Recurse -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\src\app\new-test" -Recurse -Force
-
-# Usuwanie pliku z pomocniczymi funkcjami debugowania
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\src\lib\debug-helpers.js" -Force
-```
-
-### 2. Pliki dokumentacji wewnętrznej i notatki
-
-```powershell
-# Usuwanie dokumentacji deweloperskiej, która nie jest potrzebna na produkcji
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\braki.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\DOKUMENTACJA-AKTUALIZACJI-BAZY.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\INSTRUKCJA-IMPLEMENTACJI-KORELACJI.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\INSTRUKCJA-KORELACJI-FRONTEND-BAZA.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\LISTA-PLIKOW-DO-USUNIECIA.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\MVP.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\pliki.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\PODSUMOWANIE-ZMIAN.md" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\ZAKTUALIZOWANA-LISTA-PLIKOW.md" -Force
-
-# Zachowaj DOKUMENTACJA-PRZED-DEPLOYMENTEM.md, jeśli zawiera istotne informacje potrzebne przy deployu
-```
-
-### 3. Skrypty pomocnicze i tymczasowe
-
-```powershell
-# Usuwanie skryptów pomocniczych do czyszczenia i migracji
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\db-fix.js" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\db-reset.ps1" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\final-cleanup.ps1" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\komendy-usuwania.ps1" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\migracja-nowy.ps1" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\sync-schema.js" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\usun-pliki-przed-deploymentem.ps1" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\uzupelnij-braki-w-bazie.ps1" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\zaktualizowany-skrypt-czyszczacy.ps1" -Force
-```
-
-### 4. Katalogi i pliki z alternatywnymi/nieużywanymi funkcjonalnościami
-
-```powershell
-# Usuwanie katalogu z alternatywną wersją
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\src\app\alternatywna" -Recurse -Force
-```
-
-### 5. Pliki kopii zapasowych i tymczasowe
-
-```powershell
-# Usuwanie plików kopii zapasowych Prisma
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\prisma\schema.prisma.bak" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\prisma\schema.prisma.new" -Force
-
-# Usuwanie plików SQL do naprawy i resetowania bazy
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\prisma\fix-indexes.sql" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\prisma\fix-migration.sql" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\prisma\reset-database.sql" -Force
-
-# Usuwanie skryptów migracji danych
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\prisma\migrateData.js" -Force
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\prisma\migrateFormData.js" -Force
 ```
 
 ### 6. Dane testowe i debugujące w kodzie

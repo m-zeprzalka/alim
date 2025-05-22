@@ -25,8 +25,6 @@ Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\testy-manualne.md" -Forc
 ### 7. Cache i pliki tymczasowe
 
 ```powershell
-# Usuwanie katalogu cache Next.js
-Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new\.next\cache" -Recurse -Force
 
 # Usuwanie plików tymczasowych
 Remove-Item -Path "C:\Users\micha\Desktop\AliMatrix-new" -Include "*.tmp", "*.temp", "*.log" -Recurse -Force

@@ -155,7 +155,7 @@ export default function StartPage() {
                 size="lg"
                 className="hover:bg-blue-700 text-white text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
               >
-                <Link href="/formularz">
+                <Link href="/podstawa-ustalen">
                   <span className="flex items-center justify-center">
                     Wypełnij formularz
                     <ArrowRight className="ml-2" size={18} />
@@ -247,7 +247,7 @@ export default function StartPage() {
                         variant="ghost"
                         className="text-blue-600 hover:bg-blue-50 p-0 h-auto flex items-center gap-1.5 group"
                       >
-                        <Link href="/formularz">
+                        <Link href="/podstawa-ustalen">
                           <span>Rozpocznij</span>
                           <ArrowRight
                             size={14}
@@ -275,6 +275,21 @@ export default function StartPage() {
                       Dane są bezpieczne i anonimowe – zgodnie z RODO i
                       zabezpieczone technologicznie.
                     </p>
+                    <div className="pt-2">
+                      <Button
+                        asChild
+                        variant="ghost"
+                        className="text-green-600 hover:bg-green-50 p-0 h-auto flex items-center gap-1.5 group"
+                      >
+                        <Link href="/polityka-prywatnosci">
+                          <span>Polityka prywatności</span>
+                          <ArrowRight
+                            size={14}
+                            className="group-hover:translate-x-1 transition-transform"
+                          />
+                        </Link>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -294,6 +309,16 @@ export default function StartPage() {
                       Wkrótce udostępnimy rzetelne raporty i statystyki dla
                       Ciebie i innych użytkowników.
                     </p>
+                    <div className="pt-2">
+                      <Button
+                        variant="ghost"
+                        className="text-purple-600 p-0 h-auto flex items-center gap-1.5 opacity-70 cursor-not-allowed"
+                        disabled
+                      >
+                        <span>Wkrótce dostępne</span>
+                        <ArrowRight size={14} />
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -313,6 +338,21 @@ export default function StartPage() {
                       Twoje zgłoszenie zwiększa przejrzystość i przewidywalność
                       systemu alimentacyjnego w Polsce.
                     </p>
+                    <div className="pt-2">
+                      <Button
+                        asChild
+                        variant="ghost"
+                        className="text-amber-600 hover:bg-amber-50 p-0 h-auto flex items-center gap-1.5 group"
+                      >
+                        <a href="#o-inicjatywie">
+                          <span>O inicjatywie</span>
+                          <ArrowRight
+                            size={14}
+                            className="group-hover:translate-x-1 transition-transform"
+                          />
+                        </a>
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -452,7 +492,7 @@ export default function StartPage() {
                           variant="secondary"
                           className="bg-white text-blue-700 hover:bg-blue-50 text-lg px-6 py-5 rounded-full shadow-lg w-full"
                         >
-                          <Link href="/formularz">
+                          <Link href="/podstawa-ustalen">
                             <span className="flex items-center justify-center">
                               Wypełnij formularz
                               <ArrowRight className="ml-2" size={16} />

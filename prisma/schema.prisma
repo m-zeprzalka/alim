@@ -24,48 +24,6 @@ model EmailSubscription {
 }
 
 model FormSubmission {
-<<<<<<< HEAD
-  id                            String            @id @default(cuid())
-  emailSubscriptionId           String
-  formData                      Json
-  submittedAt                   DateTime          @default(now())
-  processedAt                   DateTime?
-  status                        String            @default("pending")
-  reportUrl                     String?
-  rodzajSaduSad                 String?
-  apelacjaSad                   String?
-  sadOkregowyId                 String?
-  rokDecyzjiSad                 String?
-  watekWiny                     String?
-  sciezkaWybor                  String?
-  podstawaUstalen               String?
-  podstawaUstalenInne           String?
-  wariantPostepu                String?
-  sposobFinansowania            String?
-  plecUzytkownika               String?
-  wiekUzytkownika               String?
-  wojewodztwoUzytkownika        String?
-  miejscowoscUzytkownika        String?
-  stanCywilnyUzytkownika        String?
-  plecDrugiegoRodzica           String?
-  wiekDrugiegoRodzica           String?
-  wojewodztwoDrugiegoRodzica    String?
-  miejscowoscDrugiegoRodzica    String?
-  sadRejonowyId                 String?
-  dataDecyzjiSad                String?
-  miesiacDecyzjiSad             String?
-  liczbaSedzi                   String?
-  plecSedziego                  String?
-  inicjalySedziego              String?
-  czyPozew                      String?
-  dataPorozumienia              String?
-  sposobPorozumienia            String?
-  formaPorozumienia             String?
-  klauzulaWaloryzacyjna         String?
-  dataUstalenInnych             String?
-  uzgodnienieFinansowania       String?
-  planyWystapieniaDoSadu        String?
-=======
   id                  String            @id @default(cuid())
   emailSubscriptionId String
   emailSubscription   EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
@@ -123,15 +81,12 @@ model FormSubmission {
   planyWystapieniaDoSadu  String?
 
   // Oceny adekwatności
->>>>>>> temp-branch
   ocenaAdekwatnosciSad          Float?
   ocenaAdekwatnosciPorozumienie Float?
   ocenaAdekwatnosciInne         Float?
   liczbaDzieci                  Int?
-  apelacjaId                    String?
-  apelacjaNazwa                 String?
-  sadOkregowyNazwa              String?
-  sadRejonowyNazwa              String?
+  
+  // Pozostałe pola
   adresUlica                    String?
   adresKodPocztowy              String?
   adresMiasto                   String?
@@ -148,9 +103,10 @@ model FormSubmission {
   dataRozprawy                  DateTime?         @db.Timestamp(6)
   dataZlozeniaPozwu             DateTime?         @db.Timestamp(6)
   liczbaRozpraw                 Int?
+  
+  // Relacje
   dzieci                        Child[]
   dochodyRodzicow               Dochody?
-  emailSubscription             EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
   kosztyUtrzymania              KosztyUtrzymania?
 
   @@index([status])
@@ -166,26 +122,6 @@ model FormSubmission {
 }
 
 model Child {
-<<<<<<< HEAD
-  id                            String         @id @default(cuid())
-  formSubmissionId              String
-  childId                       Int
-  wiek                          Int?
-  plec                          String?
-  specjalnePotrzeby             Boolean        @default(false)
-  opisSpecjalnychPotrzeb        String?
-  uczeszczeDoPlacowki           Boolean?
-  typPlacowki                   String?
-  opiekaInnejOsoby              Boolean?
-  modelOpieki                   String?
-  cyklOpieki                    String?
-  procentCzasuOpieki            Float?
-  kwotaAlimentow                Float?
-  twojeMiesieczneWydatki        Float?
-  wydatkiDrugiegoRodzica        Float?
-  kosztyUznanePrzezSad          Float?
-  rentaRodzinna                 Boolean        @default(false)
-=======
   id                     String         @id @default(cuid())
   formSubmissionId       String
   formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
@@ -213,8 +149,7 @@ model Child {
   kosztyUznanePrzezSad   Float?
 
   // Inne źródła utrzymania dziecka
-  rentaRodzinna                 Boolean @default(false)
->>>>>>> temp-branch
+  rentaRodzinna                 Boolean        @default(false)
   rentaRodzinnaKwota            Float?
   swiadczeniePielegnacyjne      Boolean        @default(false)
   swiadczeniePielegnacyjneKwota Float?
@@ -222,6 +157,8 @@ model Child {
   inneZrodlaOpis                String?
   inneZrodlaKwota               Float?
   brakDodatkowychZrodel         Boolean        @default(true)
+  
+  // Pozostałe dane
   tabelaCzasu                   Json?
   wskaznikiCzasuOpieki          Json?
   wakacjeProcentCzasu           Float?
@@ -232,32 +169,36 @@ model Child {
   dodatkZajeciaCena             Decimal?       @db.Decimal(10, 2)
   rodzajZajec                   String?
   szczegolowyProcentCzasu       Json?
-  formSubmission                FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 
-  @@unique([formSubmissionId, childId], map: "Child_formSubmissionId_childId_idx")
+  @@unique([formSubmissionId, childId], map: "Child_formSubmissionId_childId_key")
   @@index([formSubmissionId])
 }
 
 model Dochody {
   id                          String         @id @default(cuid())
-  formSubmissionId            String         @unique(map: "Dochody_formSubmissionId_idx")
+  formSubmissionId            String         @unique(map: "Dochody_formSubmissionId_key")
+  formSubmission              FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+  
+  // Własne dochody
   wlasneDochodyNetto          Float?
   wlasnePotencjalDochodowy    Float?
   wlasneKosztyUtrzymania      Float?
   wlasneKosztyInni            Float?
   wlasneDodatkoweZobowiazania Float?
-<<<<<<< HEAD
+
+  // Dochody drugiego rodzica
   drugiRodzicDochody          Float?
   drugiRodzicPotencjal        Float?
   drugiRodzicKoszty           Float?
   drugiRodzicKosztyInni       Float?
   drugiRodzicDodatkowe        Float?
-  formSubmission              FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 }
 
 model KosztyUtrzymania {
   id                     String         @id @default(cuid())
   formSubmissionId       String         @unique
+  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
+  
   kosztyUtrzymania       Decimal?       @db.Decimal(10, 2)
   czynsz                 Decimal?       @db.Decimal(10, 2)
   media                  Decimal?       @db.Decimal(10, 2)
@@ -275,15 +216,4 @@ model KosztyUtrzymania {
   liczbaOsob             Int?
   inneKosztyMiesieczne   Decimal?       @db.Decimal(10, 2)
   inneKosztyOpis         String?
-  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 }
-=======
-
-  // Dochody drugiego rodzica
-  drugiRodzicDochody    Float?
-  drugiRodzicPotencjal  Float?
-  drugiRodzicKoszty     Float?
-  drugiRodzicKosztyInni Float?
-  drugiRodzicDodatkowe  Float?
-}
->>>>>>> temp-branch

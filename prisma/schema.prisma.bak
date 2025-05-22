@@ -51,7 +51,6 @@ model FormSubmission {
   wiekDrugiegoRodzica        String?
   wojewodztwoDrugiegoRodzica String?
   miejscowoscDrugiegoRodzica String?
-  
   // Dane sądowe
   rodzajSaduSad              String? // rejonowy, okregowy, nie_pamietam
   apelacjaSad                String? // ID apelacji (kompatybilność wsteczna)
@@ -105,8 +104,7 @@ model FormSubmission {
 
 // Model dziecka
 model Child {
-  id                     String         @id @default(cuid())
-  formSubmissionId       String
+  id                     String         @id @default(cuid())  formSubmissionId       String
   formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   childId                Int // ID dziecka w obrębie formularza (1, 2, 3, ...)
   wiek                   Int?

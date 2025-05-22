@@ -415,6 +415,14 @@ export async function POST(request: NextRequest) {
                     procentCzasuOpieki: convertToNumber(
                       dziecko.procentCzasuOpieki
                     ),
+                    // Dodatkowe wskaźniki czasu opieki
+                    procentCzasuOpiekiBezEdukacji: convertToNumber(
+                      dziecko.procentCzasuOpiekiBezEdukacji
+                    ),
+                    procentCzasuAktywnejOpieki: convertToNumber(
+                      dziecko.procentCzasuAktywnejOpieki
+                    ),
+                    procentCzasuSnu: convertToNumber(dziecko.procentCzasuSnu),
                     kwotaAlimentow: convertToNumber(dziecko.kwotaAlimentow),
                     twojeMiesieczneWydatki: convertToNumber(
                       dziecko.twojeMiesieczneWydatki

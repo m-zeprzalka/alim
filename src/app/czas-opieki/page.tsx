@@ -398,16 +398,22 @@ export default function CzasOpieki() {
       czasSnu: czasSnu,
     };
 
-    console.log("Zapisuję wskaźniki czasu opieki:", wskaznikiDoZapisu);
-
-    // Zapisujemy dane do store'a
+    console.log("Zapisuję wskaźniki czasu opieki:", wskaznikiDoZapisu); // Zapisujemy dane do store'a
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {
           return {
             ...dziecko,
             cyklOpieki,
+            // Zapisz wskaźniki zarówno jako obiekt JSON jak i do poszczególnych pól
             wskaznikiCzasuOpieki: wskaznikiDoZapisu,
+            // Zapisz wskaźniki do dedykowanych pól (będą dostępne w bazie danych)
+            procentCzasuOpieki: Math.round(
+              (czasOpiekiBezEdukacji + czasSnu) / 2
+            ), // Średnia wartość jako procentCzasuOpieki
+            procentCzasuOpiekiBezEdukacji: czasOpiekiBezEdukacji,
+            procentCzasuAktywnejOpieki: czasAktywnejOpieki,
+            procentCzasuSnu: czasSnu,
             tabeleCzasuOpieki, // Zachowanie tabeli dla referencji
           } as DzieckoRozszerzone;
         }
@@ -443,16 +449,22 @@ export default function CzasOpieki() {
     console.log(
       "Zapisuję wskaźniki czasu opieki przed powrotem:",
       wskaznikiDoZapisu
-    );
-
-    // Zapisujemy aktualne dane dziecka
+    ); // Zapisujemy aktualne dane dziecka
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {
           return {
             ...dziecko,
             cyklOpieki,
+            // Zapisz wskaźniki zarówno jako obiekt JSON jak i do poszczególnych pól
             wskaznikiCzasuOpieki: wskaznikiDoZapisu,
+            // Zapisz wskaźniki do dedykowanych pól (będą dostępne w bazie danych)
+            procentCzasuOpieki: Math.round(
+              (czasOpiekiBezEdukacji + czasSnu) / 2
+            ), // Średnia wartość jako procentCzasuOpieki
+            procentCzasuOpiekiBezEdukacji: czasOpiekiBezEdukacji,
+            procentCzasuAktywnejOpieki: czasAktywnejOpieki,
+            procentCzasuSnu: czasSnu,
             tabeleCzasuOpieki,
           } as DzieckoRozszerzone;
         }

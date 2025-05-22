@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// Zoptymalizowany i uzupełniony schemat bazy danych dla AliMatrix
-=======
 // Zoptymalizowany schemat bazy danych dla AliMatrix
->>>>>>> temp-branch
 generator client {
   provider = "prisma-client-js"
 }
@@ -55,19 +51,6 @@ model FormSubmission {
   wiekDrugiegoRodzica        String?
   wojewodztwoDrugiegoRodzica String?
   miejscowoscDrugiegoRodzica String?
-  
-<<<<<<< HEAD
-  // Dane użytkownika - dodatkowe pola
-  adresUlica                 String? // Adres - ulica
-  adresKodPocztowy           String? // Adres - kod pocztowy
-  adresMiasto                String? // Adres - miasto
-  pesel                      String? // PESEL (szyfrowanie powinno być zaimplementowane na poziomie aplikacji)
-  telefon                    String? // Numer telefonu
-  statusZatrudnienia         String? // Status zatrudnienia (powinno być ENUM w przyszłych wersjach)
-  dochodMiesieczny           Float?  // Dochód miesięczny
-  
-=======
->>>>>>> temp-branch
   // Dane sądowe
   rodzajSaduSad              String? // rejonowy, okregowy, nie_pamietam
   apelacjaSad                String? // ID apelacji (kompatybilność wsteczna)
@@ -85,32 +68,12 @@ model FormSubmission {
   inicjalySedziego           String? // Inicjały sędziego
   czyPozew                   String? // tak, nie
   watekWiny                  String? // nie, tak-ja, tak-druga-strona, tak-oboje
-<<<<<<< HEAD
-  
-  // Dodane szczegółowe pola dot. sądu
-  imieSedziego               String? // Imię sędziego
-  nazwiskoSedziego           String? // Nazwisko sędziego
-  typReprezentacji           String? // Typ reprezentacji (np. adwokat, radca prawny, samodzielnie)
-  imieReprezentanta          String? // Imię reprezentanta
-  nazwiskoReprezentanta      String? // Nazwisko reprezentanta
-  kosztReprezentacji         Float?  // Koszt reprezentacji
-  dataRozprawy               DateTime? // Data rozprawy
-  dataZlozeniaPozwu          DateTime? // Data złożenia pozwu
-  liczbaRozpraw              Int?    // Liczba rozpraw
-
-  // Dane porozumienia
-  dataPorozumienia           String?
-  sposobPorozumienia         String?
-  formaPorozumienia          String?
-  klauzulaWaloryzacyjna      String?
-=======
 
   // Dane porozumienia
   dataPorozumienia      String?
   sposobPorozumienia    String?
   formaPorozumienia     String?
   klauzulaWaloryzacyjna String?
->>>>>>> temp-branch
 
   // Dane ustaleń innych
   dataUstalenInnych       String?
@@ -123,18 +86,10 @@ model FormSubmission {
   ocenaAdekwatnosciInne         Float?
 
   // Powiązane dane
-<<<<<<< HEAD
-  liczbaDzieci        Int?
-  dzieci              Child[]       // Relacja z dziećmi
-  dochodyRodzicow     Dochody?      // Relacja z dochodami
-  kosztyUtrzymania    KosztyUtrzymania? // Relacja z kosztami utrzymania
-  
-=======
   liczbaDzieci    Int?
   dzieci          Child[] // Relacja z dziećmi
   dochodyRodzicow Dochody? // Relacja z dochodami
 
->>>>>>> temp-branch
   @@index([status])
   @@index([emailSubscriptionId])
   @@index([rodzajSaduSad])
@@ -147,14 +102,9 @@ model FormSubmission {
   @@index([podstawaUstalen])
 }
 
-<<<<<<< HEAD
-// Model dziecka (rozszerzony)
-=======
 // Model dziecka
->>>>>>> temp-branch
 model Child {
-  id                     String         @id @default(cuid())
-  formSubmissionId       String
+  id                     String         @id @default(cuid())  formSubmissionId       String
   formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
   childId                Int // ID dziecka w obrębie formularza (1, 2, 3, ...)
   wiek                   Int?
@@ -166,23 +116,12 @@ model Child {
   opiekaInnejOsoby       Boolean?
   modelOpieki            String? // 50/50, inny
   cyklOpieki             String? // 1, 2, 4, custom
-<<<<<<< HEAD
-  procentCzasuOpieki     Float?
-
-  // Dodane pola edukacyjne
-  poziomEdukacji         String?  // Szczegółowy poziom edukacyjny
-  kosztySzkoly           Float?   // Koszty opłat za szkołę/przedszkole
-  dodatkZajeciaCena      Float?   // Koszty dodatkowych zajęć
-  rodzajZajec            String?  // Opis rodzaju zajęć dodatkowych
-  szczegolowyProcentCzasu Json?   // Dokładny podział procentowy opieki dla poszczególnych dni
-=======
   procentCzasuOpieki     Float? // Ogólny procent czasu opieki (istniejące pole)
   
   // Dodatkowe wskaźniki czasu opieki
   procentCzasuOpiekiBezEdukacji Float? // Łączny czas opieki (bez placówki edukacyjnej)
   procentCzasuAktywnejOpieki   Float? // Czas aktywnej opieki (bez placówki edukacyjnej i bez snu)
   procentCzasuSnu              Float? // Czas nocnego snu pod opieką rodzica
->>>>>>> temp-branch
 
   // Dane o kosztach utrzymania dziecka
   kwotaAlimentow         Float?
@@ -231,40 +170,3 @@ model Dochody {
   drugiRodzicKosztyInni Float?
   drugiRodzicDodatkowe  Float?
 }
-<<<<<<< HEAD
-
-// Nowy model kosztów utrzymania - szczegółowe wartości
-model KosztyUtrzymania {
-  id                  String         @id @default(cuid())
-  formSubmissionId    String         @unique
-  formSubmission      FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-  
-  // Agregowane koszty (dla kompatybilności wstecznej)
-  kosztyUtrzymania    Float?  // Łączne koszty utrzymania
-  czynsz              Float?  // Czynsz/rata kredytu
-  media               Float?  // Łączne media (agregacja)
-  
-  // Szczegółowe koszty mediów
-  energia             Float?  // Energia elektryczna
-  woda                Float?  // Woda
-  ogrzewanie          Float?  // Ogrzewanie
-  internet            Float?  // Internet
-  telefon             Float?  // Telefon
-  
-  // Inne koszty
-  transport           Float?  // Koszty transportu
-  zywnosc             Float?  // Koszty żywności
-  lekarstwa           Float?  // Koszty lekarstw
-  
-  // Dodatkowe informacje o mieszkaniu  
-  typZamieszkania     String? // Własność, wynajem, mieszkanie komunalne, rodzinne, etc.
-  czestotliwoscOplat  String? // Miesięcznie, kwartalnie, rocznie
-  powierzchniaMieszkania Float? // Powierzchnia mieszkania w m²
-  liczbaOsob          Int?    // Liczba osób w gospodarstwie domowym
-  
-  // Inne informacje o wydatkach
-  inneKosztyMiesieczne Float? // Inne miesięczne koszty
-  inneKosztyOpis      String? // Opis innych kosztów
-}
-=======
->>>>>>> temp-branch

@@ -47,12 +47,11 @@ export const storeCSRFToken = (token: string): void => {
         "X-Requested-With": "XMLHttpRequest", // Standard CSRF protection header
       },
       body: JSON.stringify({ token }),
-    }).catch((err) => {
+    }).catch(() => {
       // Silent fail - client will still have the token locally
-      console.error("Failed to register CSRF token:", err);
     });
   } catch (e) {
-    console.error("Failed to store CSRF token:", e);
+    // Silent fail - we don't want to show errors to end users
   }
 };
 

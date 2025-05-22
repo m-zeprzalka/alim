@@ -73,11 +73,8 @@ export default function Wysylka() {
     router.push("/informacje-o-tobie");
   }; // Obsługa zakończenia formularza
   const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Walidacja formularza
+    e.preventDefault(); // Walidacja formularza
     if (!email || !validateEmail(email)) {
-      console.log("Email validation failed on client:", email);
       setErrorMessage("Wprowadź poprawny adres email.");
       return;
     }
@@ -88,9 +85,7 @@ export default function Wysylka() {
       );
       return;
     }
-
     const trimmedEmail = email.trim();
-    console.log("Submitting with email:", trimmedEmail);
 
     // Zapisz dane formularza przed wysłaniem
     updateFormData({
@@ -124,15 +119,12 @@ export default function Wysylka() {
       // Wyświetl informację o validacji danych
       setErrorMessage("Validacja danych formularza..."); // Sprawdź czy istnieją dane dzieci i kosztyDzieci, a jeśli tak, połącz je
       let updatedFormData = { ...formData };
-
       if (
         formData.dzieci &&
         Array.isArray(formData.dzieci) &&
         formData.kosztyDzieci &&
         Array.isArray(formData.kosztyDzieci)
       ) {
-        console.log("Łączenie danych dzieci z kosztami utrzymania...");
-
         // Połącz dane z kosztyDzieci z odpowiednimi rekordami w tablicy dzieci
         const mergedDzieci = formData.dzieci.map((dziecko) => {
           // Znajdź odpowiednie koszty dla tego dziecka
@@ -182,21 +174,7 @@ export default function Wysylka() {
         submissionDate: new Date().toISOString(),
         csrfToken: csrfToken, // Dodaj token CSRF
         notHuman: "", // Puste pole honeypot do wykrywania botów
-      }; // Log dla developerów - jakie dane sądowe są wysyłane
-      console.log("Dane sądu do wysyłki:", {
-        rokDecyzjiSad: submissionData.rokDecyzjiSad,
-        miesiacDecyzjiSad: submissionData.miesiacDecyzjiSad,
-        rodzajSaduSad: submissionData.rodzajSaduSad,
-        apelacjaSad: submissionData.apelacjaSad,
-        apelacjaId: submissionData.apelacjaId,
-        apelacjaNazwa: submissionData.apelacjaNazwa,
-        sadOkregowyId: submissionData.sadOkregowyId,
-        sadOkregowyNazwa: submissionData.sadOkregowyNazwa,
-        sadRejonowyId: submissionData.sadRejonowyId,
-        sadRejonowyNazwa: submissionData.sadRejonowyNazwa,
-      });
-
-      console.log("Submission data:", JSON.stringify(submissionData));
+      };
 
       // Wyświetl informację o wysyłaniu
       setErrorMessage("Zapisywanie danych do systemu...");
@@ -212,43 +190,34 @@ export default function Wysylka() {
         },
         body: JSON.stringify(submissionData),
       }).catch((error) => {
-        console.error("Network error during fetch:", error);
         throw new Error(
           "Błąd połączenia z serwerem. Sprawdź swoje połączenie internetowe i spróbuj ponownie."
         );
       });
-
-      console.log("Response status:", response.status);
       if (!response.ok) {
         // Próbujemy odczytać szczegóły błędu
         try {
           const errorData = await response.json();
-          console.error("Server returned error:", errorData);
           throw new Error(
             errorData.error ||
               "Wystąpił problem z wysyłaniem formularza. Spróbuj ponownie."
           );
         } catch (jsonError) {
           // Jeśli nie możemy odczytać JSON, zwracamy ogólny błąd
-          console.error("Failed to parse error response:", jsonError);
           throw new Error(
             "Wystąpił problem z wysyłaniem formularza. Spróbuj ponownie."
           );
         }
       } // Odczytaj odpowiedź i pobierz ID zgłoszenia
       const responseData = await response.json();
-      console.log("Response data:", responseData);
 
       // Zapisz ID zgłoszenia do formData
       if (responseData.id) {
         updateFormData({
           submissionId: responseData.id,
           isOfflineSubmission: responseData.isOffline === true,
-        });
-
-        // Jeśli to zgłoszenie offline, zapisz je lokalnie
+        }); // Jeśli to zgłoszenie offline, zapisz je lokalnie
         if (responseData.isOffline) {
-          console.log("Zapisywanie danych w trybie offline");
           try {
             // Importujemy dynamicznie funkcję do zapisywania offline
             const { saveFormDataLocally } = await import(
@@ -260,9 +229,8 @@ export default function Wysylka() {
               savedAt: new Date().toISOString(),
             });
           } catch (offlineError) {
-            console.error(
-              "Błąd podczas zapisywania danych offline:",
-              offlineError
+            setErrorMessage(
+              "Wystąpił problem z zapisem danych w trybie offline."
             );
           }
         }
@@ -275,7 +243,6 @@ export default function Wysylka() {
         }`
       );
     } catch (error) {
-      console.error("Błąd wysyłki formularza:", error);
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -342,7 +309,6 @@ export default function Wysylka() {
                   value={email}
                   onChange={(e) => {
                     const newEmail = e.target.value;
-                    console.log("Email changed:", newEmail);
                     setEmail(newEmail);
                   }}
                   onBlur={(e) => {
@@ -350,10 +316,8 @@ export default function Wysylka() {
                     const trimmedEmail = e.target.value.trim();
                     setEmail(trimmedEmail);
                     if (trimmedEmail && !validateEmail(trimmedEmail)) {
-                      console.log("Email invalid on blur");
                       setErrorMessage("Wprowadź poprawny adres email.");
                     } else {
-                      console.log("Email valid or empty on blur");
                       setErrorMessage(null);
                     }
                   }}

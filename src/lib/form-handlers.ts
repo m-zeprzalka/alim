@@ -25,7 +25,6 @@ export const safeNavigate = async (
     // Wykonaj nawigację
     navigateFunction();
   } catch (error) {
-    console.error("Error during navigation:", error);
     // W przypadku błędu i tak próbujemy nawigować, ale bez opóźnienia
     navigateFunction();
   }
@@ -55,22 +54,8 @@ export const trackedLog = (
   data?: any,
   type: "debug" | "info" | "warn" | "error" = "debug"
 ): void => {
-  const timestamp = new Date().toISOString().split("T")[1].split(".")[0]; // HH:MM:SS
-  const fullMessage = `[${timestamp}][${operationId}] ${message}`;
-
-  switch (type) {
-    case "info":
-      console.info(fullMessage, data !== undefined ? data : "");
-      break;
-    case "warn":
-      console.warn(fullMessage, data !== undefined ? data : "");
-      break;
-    case "error":
-      console.error(fullMessage, data !== undefined ? data : "");
-      break;
-    default:
-      console.debug(fullMessage, data !== undefined ? data : "");
-  }
+  // W wersji produkcyjnej nie wyświetlamy logów
+  // Funkcja została zachowana, aby zachować kompatybilność z istniejącym kodem
 };
 
 /**

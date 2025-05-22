@@ -24,69 +24,54 @@ model EmailSubscription {
 }
 
 model FormSubmission {
-  id                  String            @id @default(cuid())
-  emailSubscriptionId String
-  emailSubscription   EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
-  formData            Json // Pełne dane formularza w JSON
-  submittedAt         DateTime          @default(now())
-  processedAt         DateTime?
-  status              String            @default("pending") // pending, processed
-  reportUrl           String?
-
-  // Główne informacje o formularzu
-  sciezkaWybor        String? // established, not-established
-  podstawaUstalen     String? // postanowienie-zabezpieczajace, wyrok-rozwodowy, porozumienie-sad, porozumienie-mediacja, porozumienie-prywatne, inne
-  podstawaUstalenInne String? // Szczegóły dla opcji "inne"
-  wariantPostepu      String? // court, agreement, other
-  sposobFinansowania  String? // i-pay, i-receive, shared
-
-  // Dane demograficzne
-  plecUzytkownika            String?
-  wiekUzytkownika            String?
-  wojewodztwoUzytkownika     String?
-  miejscowoscUzytkownika     String?
-  stanCywilnyUzytkownika     String?
-  plecDrugiegoRodzica        String?
-  wiekDrugiegoRodzica        String?
-  wojewodztwoDrugiegoRodzica String?
-  miejscowoscDrugiegoRodzica String?
-  
-  // Dane sądowe
-  rodzajSaduSad              String? // rejonowy, okregowy, nie_pamietam
-  apelacjaSad                String? // ID apelacji (kompatybilność wsteczna)
-  apelacjaId                 String? // ID apelacji 
-  apelacjaNazwa              String? // Nazwa apelacji
-  sadOkregowyId              String? // ID sądu okręgowego
-  sadOkregowyNazwa           String? // Nazwa sądu okręgowego
-  sadRejonowyId              String? // ID sądu rejonowego
-  sadRejonowyNazwa           String? // Nazwa sądu rejonowego
-  rokDecyzjiSad              String? // Rok decyzji sądu
-  miesiacDecyzjiSad          String? // Miesiąc decyzji sądu
-  dataDecyzjiSad             String? // Pełna data decyzji
-  liczbaSedzi                String? // jeden, trzech
-  plecSedziego               String? // kobieta, mezczyzna
-  inicjalySedziego           String? // Inicjały sędziego
-  czyPozew                   String? // tak, nie
-  watekWiny                  String? // nie, tak-ja, tak-druga-strona, tak-oboje
-
-  // Dane porozumienia
-  dataPorozumienia      String?
-  sposobPorozumienia    String?
-  formaPorozumienia     String?
-  klauzulaWaloryzacyjna String?
-
-  // Dane ustaleń innych
-  dataUstalenInnych       String?
-  uzgodnienieFinansowania String?
-  planyWystapieniaDoSadu  String?
-
-  // Oceny adekwatności
+  id                            String            @id @default(cuid())
+  emailSubscriptionId           String
+  formData                      Json
+  submittedAt                   DateTime          @default(now())
+  processedAt                   DateTime?
+  status                        String            @default("pending")
+  reportUrl                     String?
+  rodzajSaduSad                 String?
+  apelacjaSad                   String?
+  sadOkregowyId                 String?
+  rokDecyzjiSad                 String?
+  watekWiny                     String?
+  sciezkaWybor                  String?
+  podstawaUstalen               String?
+  podstawaUstalenInne           String?
+  wariantPostepu                String?
+  sposobFinansowania            String?
+  plecUzytkownika               String?
+  wiekUzytkownika               String?
+  wojewodztwoUzytkownika        String?
+  miejscowoscUzytkownika        String?
+  stanCywilnyUzytkownika        String?
+  plecDrugiegoRodzica           String?
+  wiekDrugiegoRodzica           String?
+  wojewodztwoDrugiegoRodzica    String?
+  miejscowoscDrugiegoRodzica    String?
+  sadRejonowyId                 String?
+  dataDecyzjiSad                String?
+  miesiacDecyzjiSad             String?
+  liczbaSedzi                   String?
+  plecSedziego                  String?
+  inicjalySedziego              String?
+  czyPozew                      String?
+  dataPorozumienia              String?
+  sposobPorozumienia            String?
+  formaPorozumienia             String?
+  klauzulaWaloryzacyjna         String?
+  dataUstalenInnych             String?
+  uzgodnienieFinansowania       String?
+  planyWystapieniaDoSadu        String?
   ocenaAdekwatnosciSad          Float?
   ocenaAdekwatnosciPorozumienie Float?
   ocenaAdekwatnosciInne         Float?
   liczbaDzieci                  Int?
-  
-  // Pozostałe pola
+  apelacjaId                    String?
+  apelacjaNazwa                 String?
+  sadOkregowyNazwa              String?
+  sadRejonowyNazwa              String?
   adresUlica                    String?
   adresKodPocztowy              String?
   adresMiasto                   String?
@@ -103,10 +88,9 @@ model FormSubmission {
   dataRozprawy                  DateTime?         @db.Timestamp(6)
   dataZlozeniaPozwu             DateTime?         @db.Timestamp(6)
   liczbaRozpraw                 Int?
-  
-  // Relacje
   dzieci                        Child[]
   dochodyRodzicow               Dochody?
+  emailSubscription             EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
   kosztyUtrzymania              KosztyUtrzymania?
 
   @@index([status])
@@ -122,33 +106,23 @@ model FormSubmission {
 }
 
 model Child {
-  id                     String         @id @default(cuid())
-  formSubmissionId       String
-  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-  childId                Int // ID dziecka w obrębie formularza (1, 2, 3, ...)
-  wiek                   Int?
-  plec                   String? // K, M, I
-  specjalnePotrzeby      Boolean        @default(false)
-  opisSpecjalnychPotrzeb String?
-  uczeszczeDoPlacowki    Boolean?
-  typPlacowki            String? // zlobek, przedszkole, podstawowa, ponadpodstawowa
-  opiekaInnejOsoby       Boolean?
-  modelOpieki            String? // 50/50, inny
-  cyklOpieki             String? // 1, 2, 4, custom
-  procentCzasuOpieki     Float? // Ogólny procent czasu opieki (istniejące pole)
-  
-  // Dodatkowe wskaźniki czasu opieki
-  procentCzasuOpiekiBezEdukacji Float? // Łączny czas opieki (bez placówki edukacyjnej)
-  procentCzasuAktywnejOpieki   Float? // Czas aktywnej opieki (bez placówki edukacyjnej i bez snu)
-  procentCzasuSnu              Float? // Czas nocnego snu pod opieką rodzica
-
-  // Dane o kosztach utrzymania dziecka
-  kwotaAlimentow         Float?
-  twojeMiesieczneWydatki Float?
-  wydatkiDrugiegoRodzica Float?
-  kosztyUznanePrzezSad   Float?
-
-  // Inne źródła utrzymania dziecka
+  id                            String         @id @default(cuid())
+  formSubmissionId              String
+  childId                       Int
+  wiek                          Int?
+  plec                          String?
+  specjalnePotrzeby             Boolean        @default(false)
+  opisSpecjalnychPotrzeb        String?
+  uczeszczeDoPlacowki           Boolean?
+  typPlacowki                   String?
+  opiekaInnejOsoby              Boolean?
+  modelOpieki                   String?
+  cyklOpieki                    String?
+  procentCzasuOpieki            Float?
+  kwotaAlimentow                Float?
+  twojeMiesieczneWydatki        Float?
+  wydatkiDrugiegoRodzica        Float?
+  kosztyUznanePrzezSad          Float?
   rentaRodzinna                 Boolean        @default(false)
   rentaRodzinnaKwota            Float?
   swiadczeniePielegnacyjne      Boolean        @default(false)
@@ -157,48 +131,44 @@ model Child {
   inneZrodlaOpis                String?
   inneZrodlaKwota               Float?
   brakDodatkowychZrodel         Boolean        @default(true)
-  
-  // Pozostałe dane
   tabelaCzasu                   Json?
   wskaznikiCzasuOpieki          Json?
   wakacjeProcentCzasu           Float?
   wakacjeSzczegolowyPlan        Boolean        @default(false)
   wakacjeOpisPlan               String?
+  procentCzasuAktywnejOpieki    Float?
+  procentCzasuOpiekiBezEdukacji Float?
+  procentCzasuSnu               Float?
   poziomEdukacji                String?
   kosztySzkoly                  Decimal?       @db.Decimal(10, 2)
   dodatkZajeciaCena             Decimal?       @db.Decimal(10, 2)
   rodzajZajec                   String?
   szczegolowyProcentCzasu       Json?
+  formSubmission                FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 
-  @@unique([formSubmissionId, childId], map: "Child_formSubmissionId_childId_key")
+  @@unique([formSubmissionId, childId])
   @@index([formSubmissionId])
 }
 
 model Dochody {
   id                          String         @id @default(cuid())
-  formSubmissionId            String         @unique(map: "Dochody_formSubmissionId_key")
-  formSubmission              FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-  
-  // Własne dochody
+  formSubmissionId            String         @unique
   wlasneDochodyNetto          Float?
   wlasnePotencjalDochodowy    Float?
   wlasneKosztyUtrzymania      Float?
   wlasneKosztyInni            Float?
   wlasneDodatkoweZobowiazania Float?
-
-  // Dochody drugiego rodzica
   drugiRodzicDochody          Float?
   drugiRodzicPotencjal        Float?
   drugiRodzicKoszty           Float?
   drugiRodzicKosztyInni       Float?
   drugiRodzicDodatkowe        Float?
+  formSubmission              FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 }
 
 model KosztyUtrzymania {
   id                     String         @id @default(cuid())
   formSubmissionId       String         @unique
-  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-  
   kosztyUtrzymania       Decimal?       @db.Decimal(10, 2)
   czynsz                 Decimal?       @db.Decimal(10, 2)
   media                  Decimal?       @db.Decimal(10, 2)
@@ -216,4 +186,5 @@ model KosztyUtrzymania {
   liczbaOsob             Int?
   inneKosztyMiesieczne   Decimal?       @db.Decimal(10, 2)
   inneKosztyOpis         String?
+  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 }

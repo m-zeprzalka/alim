@@ -122,11 +122,60 @@ export default function Wysylka() {
       recordSubmission();
 
       // Wyświetl informację o validacji danych
-      setErrorMessage("Validacja danych formularza...");
+      setErrorMessage("Validacja danych formularza..."); // Sprawdź czy istnieją dane dzieci i kosztyDzieci, a jeśli tak, połącz je
+      let updatedFormData = { ...formData };
+
+      if (
+        formData.dzieci &&
+        Array.isArray(formData.dzieci) &&
+        formData.kosztyDzieci &&
+        Array.isArray(formData.kosztyDzieci)
+      ) {
+        console.log("Łączenie danych dzieci z kosztami utrzymania...");
+
+        // Połącz dane z kosztyDzieci z odpowiednimi rekordami w tablicy dzieci
+        const mergedDzieci = formData.dzieci.map((dziecko) => {
+          // Znajdź odpowiednie koszty dla tego dziecka
+          const kosztyDziecka = formData.kosztyDzieci?.find(
+            (k) => k.id === dziecko.id
+          );
+
+          if (kosztyDziecka) {
+            // Połącz dane kosztów z danymi dziecka
+            return {
+              ...dziecko,
+              kwotaAlimentow: kosztyDziecka.kwotaAlimentow,
+              twojeMiesieczneWydatki: kosztyDziecka.twojeMiesieczneWydatki,
+              wydatkiDrugiegoRodzica: kosztyDziecka.wydatkiDrugiegoRodzica,
+              kosztyUznanePrzezSad: kosztyDziecka.kosztyUznanePrzezSad,
+              rentaRodzinna:
+                kosztyDziecka.inneZrodlaUtrzymania?.rentaRodzinna || false,
+              rentaRodzinnaKwota:
+                kosztyDziecka.inneZrodlaUtrzymania?.rentaRodzinnaKwota,
+              swiadczeniePielegnacyjne:
+                kosztyDziecka.inneZrodlaUtrzymania?.swiadczeniePielegnacyjne ||
+                false,
+              swiadczeniePielegnacyjneKwota:
+                kosztyDziecka.inneZrodlaUtrzymania
+                  ?.swiadczeniePielegnacyjneKwota,
+              inneZrodla: kosztyDziecka.inneZrodlaUtrzymania?.inne || false,
+              inneZrodlaOpis: kosztyDziecka.inneZrodlaUtrzymania?.inneOpis,
+              inneZrodlaKwota: kosztyDziecka.inneZrodlaUtrzymania?.inneKwota,
+              brakDodatkowychZrodel:
+                kosztyDziecka.inneZrodlaUtrzymania?.brakDodatkowychZrodel ||
+                true,
+            };
+          }
+          return dziecko;
+        });
+
+        // Zaktualizuj tablicę dzieci połączonymi danymi
+        updatedFormData = { ...updatedFormData, dzieci: mergedDzieci };
+      }
 
       // Przygotuj dane do wysyłki z uwzględnieniem nowych pól
       const submissionData = {
-        ...formData,
+        ...updatedFormData,
         contactEmail: trimmedEmail,
         zgodaPrzetwarzanie,
         zgodaKontakt,

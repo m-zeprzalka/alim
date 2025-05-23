@@ -2,6 +2,11 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import * as ExcelJS from "exceljs";
+import { checkAdminRateLimit } from "@/lib/form-validation";
+import {
+  adminApiKeySchema,
+  exportRequestParamsSchema,
+} from "@/lib/schemas/admin-api-schema";
 import {
   Child,
   Dochody,
@@ -10,21 +15,80 @@ import {
   Prisma,
 } from "@prisma/client";
 
-// Proste zabezpieczenie - w produkcji należałoby to zamienić na uwierzytelnianie
-const API_KEY = process.env.ADMIN_API_KEY || "tajny_klucz_admin_2025";
+// Używamy silnego klucza API z zmiennych środowiskowych
+const API_KEY = process.env.ADMIN_API_KEY;
+if (!API_KEY) {
+  console.error("ADMIN_API_KEY nie jest ustawiony w zmiennych środowiskowych!");
+}
 
 export async function GET(request: NextRequest) {
   try {
-    // Sprawdzenie klucza API
-    const apiKey = request.headers.get("x-api-key");
-    if (apiKey !== API_KEY) {
-      return NextResponse.json({ error: "Brak autoryzacji" }, { status: 401 });
-    } // Zmienna do przechowywania formularzy
+    // Get IP for rate limiting
+    const ip = request.headers.get("x-forwarded-for") || "anonymous";
+
+    // Apply rate limiting for admin API - mniejszy limit dla exportu (obciążające operacje)
+    if (!checkAdminRateLimit(ip, 5, 120000)) {
+      // Limit 5 na 2 minuty dla dużych operacji eksportu
+      return NextResponse.json(
+        {
+          error: "Zbyt wiele żądań eksportu. Spróbuj ponownie za kilka minut.",
+        },
+        { status: 429 }
+      );
+    }
+
+    // Sprawdzenie klucza API z walidacją przez Zod
+    const apiKey = request.headers.get("x-api-key") || "";
+
+    try {
+      adminApiKeySchema.parse({ apiKey });
+    } catch (validationError) {
+      return NextResponse.json(
+        {
+          error: "Nieprawidłowy klucz API lub brak autoryzacji",
+          details:
+            process.env.NODE_ENV === "development"
+              ? validationError
+              : undefined,
+        },
+        { status: 401 }
+      );
+    }
+
+    // Walidacja parametrów zapytania
+    const { searchParams } = new URL(request.url);
+    const format = searchParams.get("format") || "xlsx";
+    const includePersonalData =
+      searchParams.get("includePersonalData") === "true";
+    const startDate = searchParams.get("startDate") || undefined;
+    const endDate = searchParams.get("endDate") || undefined;
+
+    try {
+      exportRequestParamsSchema.parse({
+        format,
+        includePersonalData,
+        startDate,
+        endDate,
+      });
+    } catch (validationError) {
+      return NextResponse.json(
+        {
+          error: "Nieprawidłowe parametry zapytania",
+          details:
+            process.env.NODE_ENV === "development"
+              ? validationError
+              : undefined,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Zmienna do przechowywania formularzy
     let formSubmissions: any[] = [];
 
     // Pobieranie wszystkich danych z bazy (bezpieczna wersja)
     try {
-      console.log("Rozpoczynam pobieranie danych formularzy...");
+      // Usunięto zbędne logi ze względów bezpieczeństwa
 
       // Najpierw sprawdzamy strukturę tabeli FormSubmission
       const tableInfo = await prisma.$queryRaw`
@@ -68,9 +132,7 @@ export async function GET(request: NextRequest) {
         orderBy: {
           submittedAt: "desc",
         },
-      });
-
-      console.log(`Pobrano ${formSubmissions.length} formularzy z bazy danych`);
+      }); // Usunięto zbędne logi ze względów bezpieczeństwa
     } catch (error) {
       console.error("Błąd podczas pobierania danych z bazy:", error);
       throw new Error(

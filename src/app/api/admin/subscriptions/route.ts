@@ -1,16 +1,47 @@
 // Admin API do sprawdzenia stanu bazy danych
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAdminRateLimit } from "@/lib/form-validation";
+import { adminApiKeySchema } from "@/lib/schemas/admin-api-schema";
 
-// Proste zabezpieczenie - w produkcji należałoby to zamienić na uwierzytelnianie
-const API_KEY = process.env.ADMIN_API_KEY || "tajny_klucz_admin_2025";
+// Używamy silnego klucza API z zmiennych środowiskowych
+const API_KEY = process.env.ADMIN_API_KEY;
+if (!API_KEY) {
+  console.error("ADMIN_API_KEY nie jest ustawiony w zmiennych środowiskowych!");
+}
 
 export async function GET(request: NextRequest) {
   try {
-    // Sprawdzenie klucza API
-    const apiKey = request.headers.get("x-api-key");
-    if (apiKey !== API_KEY) {
-      return NextResponse.json({ error: "Brak autoryzacji" }, { status: 401 });
+    // Get IP for rate limiting
+    const ip = request.headers.get("x-forwarded-for") || "anonymous";
+
+    // Apply rate limiting for admin API
+    if (!checkAdminRateLimit(ip, 20, 60000)) {
+      return NextResponse.json(
+        {
+          error:
+            "Zbyt wiele żądań do API administratora. Spróbuj ponownie za kilka minut.",
+        },
+        { status: 429 }
+      );
+    }
+
+    // Sprawdzenie klucza API z walidacją przez Zod
+    const apiKey = request.headers.get("x-api-key") || "";
+
+    try {
+      adminApiKeySchema.parse({ apiKey });
+    } catch (validationError) {
+      return NextResponse.json(
+        {
+          error: "Nieprawidłowy klucz API lub brak autoryzacji",
+          details:
+            process.env.NODE_ENV === "development"
+              ? validationError
+              : undefined,
+        },
+        { status: 401 }
+      );
     }
 
     // Pobieranie wszystkich subskrypcji

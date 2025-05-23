@@ -1,6 +1,11 @@
-// filepath: c:\ALIMATRIX\alimatrix\src\app\api\admin\court-stats\route.ts
+// API do statystyk sądowych
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { checkAdminRateLimit } from "@/lib/form-validation";
+import {
+  adminApiKeySchema,
+  statsRequestParamsSchema,
+} from "@/lib/schemas/admin-api-schema";
 
 // Set security headers for API responses
 const securityHeaders = {
@@ -11,9 +16,70 @@ const securityHeaders = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
 
-export async function GET() {
+// Używamy silnego klucza API z zmiennych środowiskowych
+const API_KEY = process.env.ADMIN_API_KEY;
+if (!API_KEY) {
+  console.error("ADMIN_API_KEY nie jest ustawiony w zmiennych środowiskowych!");
+}
+
+export async function GET(request: NextRequest) {
   try {
-    // W prawdziwej implementacji tutaj powinna być weryfikacja uprawnień administratora
+    // Get IP for rate limiting
+    const ip = request.headers.get("x-forwarded-for") || "anonymous";
+
+    // Apply rate limiting for admin API
+    if (!checkAdminRateLimit(ip, 20, 60000)) {
+      return NextResponse.json(
+        {
+          error:
+            "Zbyt wiele żądań do API administratora. Spróbuj ponownie za kilka minut.",
+        },
+        { status: 429 }
+      );
+    }
+
+    // Sprawdzenie klucza API z walidacją przez Zod
+    const apiKey = request.headers.get("x-api-key") || "";
+
+    try {
+      adminApiKeySchema.parse({ apiKey });
+    } catch (validationError) {
+      return NextResponse.json(
+        {
+          error: "Nieprawidłowy klucz API lub brak autoryzacji",
+          details:
+            process.env.NODE_ENV === "development"
+              ? validationError
+              : undefined,
+        },
+        { status: 401 }
+      );
+    }
+
+    // Walidacja parametrów zapytania
+    const { searchParams } = new URL(request.url);
+    const groupBy = searchParams.get("groupBy") || "court";
+    const startDate = searchParams.get("startDate") || undefined;
+    const endDate = searchParams.get("endDate") || undefined;
+
+    try {
+      statsRequestParamsSchema.parse({
+        groupBy,
+        startDate,
+        endDate,
+      });
+    } catch (validationError) {
+      return NextResponse.json(
+        {
+          error: "Nieprawidłowe parametry zapytania",
+          details:
+            process.env.NODE_ENV === "development"
+              ? validationError
+              : undefined,
+        },
+        { status: 400 }
+      );
+    }
 
     // Pobierz wszystkie zgłoszenia formularzy
     const formSubmissionData = await prisma.$queryRaw`

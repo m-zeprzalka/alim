@@ -16,13 +16,7 @@ import {
 
 // Sprawdzenie środowiska uruchomieniowego i konfiguracji bazy danych
 const isDevelopment = process.env.NODE_ENV === "development";
-console.log(`API running in ${process.env.NODE_ENV} mode`);
-if (isDevelopment) {
-  console.log(
-    "Database URL (masked):",
-    process.env.DATABASE_URL?.substring(0, 15) + "..."
-  );
-}
+// Usunięto logowanie środowiska i danych połączenia DB ze względów bezpieczeństwa
 
 // Set security headers for API responses
 const securityHeaders = {

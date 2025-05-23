@@ -163,7 +163,6 @@ export default function AdminSubscriptions() {
               <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border">
                   <thead className="bg-gray-100">
-                    {" "}
                     <tr>
                       <th className="py-2 px-4 border-b text-left">ID</th>
                       <th className="py-2 px-4 border-b text-left">Email</th>

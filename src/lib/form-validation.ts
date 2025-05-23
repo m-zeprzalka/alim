@@ -43,9 +43,7 @@ export const sanitizeEmail = (email: string): string => {
 export const sanitizeFormData = (formData: any): any => {
   // Create a deep copy of the form data
   const sanitized = JSON.parse(JSON.stringify(formData));
-
-  // Debug log to see if contactEmail exists in the original data
-  console.log("Original form data contactEmail:", formData.contactEmail);
+  // Usunięto logowanie danych email ze względów bezpieczeństwa
 
   // Remove any potentially dangerous keys from the data
   const dangerousKeys = [
@@ -114,6 +112,7 @@ export const sanitizeString = (str: string): string => {
 
 // Rate limiting helpers
 const ipRequests = new Map<string, { count: number; timestamp: number }>();
+const adminIpRequests = new Map<string, { count: number; timestamp: number }>();
 
 export const checkRateLimit = (
   ip: string,
@@ -140,12 +139,48 @@ export const checkRateLimit = (
   return requestData.count <= limit;
 };
 
+// Oddzielny rate limiter dla API administratora (większe limity)
+export const checkAdminRateLimit = (
+  ip: string,
+  limit = 20, // Większy limit dla administracyjnego API
+  timeWindow = 60000
+): boolean => {
+  const now = Date.now();
+  const requestData = adminIpRequests.get(ip) || { count: 0, timestamp: now };
+
+  // Reset if outside time window
+  if (now - requestData.timestamp > timeWindow) {
+    requestData.count = 1;
+    requestData.timestamp = now;
+  } else {
+    requestData.count += 1;
+  }
+
+  adminIpRequests.set(ip, requestData);
+  // Clean up old entries every 5 minutes
+  if (now % 300000 < 1000) {
+    cleanupAdminRateLimiter(timeWindow);
+  }
+
+  return requestData.count <= limit;
+};
+
 // Helper to cleanup rate limiting data
 const cleanupRateLimiter = (timeWindow: number): void => {
   const now = Date.now();
   for (const [ip, data] of ipRequests.entries()) {
     if (now - data.timestamp > timeWindow) {
       ipRequests.delete(ip);
+    }
+  }
+};
+
+// Helper to cleanup admin rate limiting data
+const cleanupAdminRateLimiter = (timeWindow: number): void => {
+  const now = Date.now();
+  for (const [ip, data] of adminIpRequests.entries()) {
+    if (now - data.timestamp > timeWindow) {
+      adminIpRequests.delete(ip);
     }
   }
 };

@@ -7,12 +7,8 @@ const globalForPrisma = global as unknown as {
 
 // Dodanie obsługi błędów połączenia
 const createPrismaClient = () => {
-  // Log database URL prefix for debugging (masking most of the URL for security)
-  const databaseUrl = process.env.DATABASE_URL || "";
-  const dbUrlPrefix = databaseUrl.substring(0, 20);
-  console.log(
-    `Initializing Prisma with database URL prefix: ${dbUrlPrefix}...`
-  );
+  // W środowisku produkcyjnym nie logujemy informacji o URL bazy danych
+  // Usunięto logowanie URL bazy danych ze względów bezpieczeństwa
 
   const client = new PrismaClient({
     log:
@@ -21,16 +17,12 @@ const createPrismaClient = () => {
         : ["error"],
     errorFormat: "pretty",
   });
-
-  // Dodanie prostego middleware do logowania czasu zapytań i obsługi błędów
+  // Dodanie prostego middleware do logowania błędów w środowisku produkcyjnym
+  // W środowisku produkcyjnym logujemy tylko błędy, nie czas wykonania zapytań
   client.$use(async (params, next) => {
     const before = Date.now();
     try {
       const result = await next(params);
-      const after = Date.now();
-      console.log(
-        `Query ${params.model}.${params.action} took ${after - before}ms`
-      );
       return result;
     } catch (error) {
       const after = Date.now();
@@ -51,9 +43,9 @@ export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 // Dodajemy logger dla fazy zamknięcia - bez użycia hooków beforeExit
 if (process.env.NODE_ENV === "development") {
-  // Using better method to log shutdown
+  // W środowisku produkcyjnym wyłączamy niepotrzebne logowanie
   process.on("beforeExit", () => {
-    console.log("Prisma Client is shutting down");
+    // Usunięto logowanie zamknięcia klienta
   });
 }
 

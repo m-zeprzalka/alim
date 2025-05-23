@@ -3,7 +3,7 @@ const csrfTokens = new Set<string>();
 
 // Register a token as valid (should be called when generating a token)
 export const registerCSRFToken = (token: string): void => {
-  console.log("[CSRF] Registering token:", token.substring(0, 10) + "...");
+  // Usunięto logowanie tokenów CSRF ze względów bezpieczeństwa
   csrfTokens.add(token);
 
   // Clean up tokens periodically (every 100 registrations)
@@ -15,11 +15,7 @@ export const registerCSRFToken = (token: string): void => {
 // Verify a token is valid
 export const verifyCSRFToken = (token: string): boolean => {
   const isValid = csrfTokens.has(token);
-  console.log(
-    "[CSRF] Verifying token:",
-    token.substring(0, 10) + "...",
-    isValid ? "VALID" : "INVALID"
-  );
+  // Usunięto logowanie weryfikacji tokenów CSRF ze względów bezpieczeństwa
   return isValid;
 };
 

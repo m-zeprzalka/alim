@@ -99,12 +99,8 @@ export async function POST(request: NextRequest) {
     consumeCSRFToken(csrfToken);
 
     // Parse the request body
-    const body = await request.json();
-    console.log("Received body:", JSON.stringify(body));
-
-    // Sanitize the data to prevent injection attacks
+    const body = await request.json(); // Sanitize the data to prevent injection attacks
     const sanitizedBody = sanitizeFormData(body);
-    console.log("Sanitized body:", JSON.stringify(sanitizedBody));
 
     // Check honeypot field - if it's not empty, it's likely a bot
     if (sanitizedBody.notHuman && sanitizedBody.notHuman.length > 0) {
@@ -123,8 +119,6 @@ export async function POST(request: NextRequest) {
       // Reszta danych formularza (obecnie nieużywana)
       ..._unusedFormData
     } = sanitizedBody;
-
-    console.log("Email from request:", contactEmail);
 
     // Basic validation
     if (!contactEmail || typeof contactEmail !== "string") {
@@ -147,7 +141,6 @@ export async function POST(request: NextRequest) {
 
     // Proper email sanitization and verification
     const cleanEmail = sanitizeEmail(contactEmail);
-    console.log("Sanitized email:", cleanEmail);
 
     if (!cleanEmail || cleanEmail.length < 5 || !cleanEmail.includes("@")) {
       console.error("Email format validation failed:", { cleanEmail });
@@ -177,14 +170,13 @@ export async function POST(request: NextRequest) {
       // Try to save the email subscription with proper schema
       let subscription: any; // Using 'any' type to avoid complex Prisma types
       try {
-        console.log("Connecting to database...");
         // Próba sprawdzenia połączenia z bazą danych bez explicit $connect
         // Nowsze wersje Prisma automatycznie łączą się z bazą przy pierwszej operacji
         let isConnected = false;
         try {
           // Sprawdzmy czy możemy wykonać prostą operację na bazie
           const dbCheck = await prisma.$queryRaw`SELECT 1 as connected`;
-          console.log("Database connection test successful:", dbCheck);
+
           updateDatabaseStatus(true);
           isConnected = true;
         } catch (connectionError) {
@@ -198,7 +190,6 @@ export async function POST(request: NextRequest) {
             "Database connection issue detected, attempting to reconnect..."
           );
           await prisma.$connect();
-          console.log("Reconnection attempt completed");
         }
 
         // Create or find the email subscription
@@ -220,8 +211,6 @@ export async function POST(request: NextRequest) {
             status: "submitted",
           },
         });
-
-        console.log("Email subscription created or updated:", subscription.id);
       } catch (err) {
         const error = err as Error & { code?: string; meta?: any };
 
@@ -253,10 +242,6 @@ export async function POST(request: NextRequest) {
           acceptedContact: zgodaKontakt === true,
           createdAt: new Date(),
         };
-        console.log(
-          "Using temporarily generated subscription ID:",
-          subscription.id
-        );
       }
 
       // Create a new form submission with reference to the email subscription
@@ -270,22 +255,12 @@ export async function POST(request: NextRequest) {
       delete formData.csrfToken;
 
       // Update form date for consistency
-      formData.submissionDate = new Date().toISOString();
-
-      // Log information about court fields
-      console.log("Court data to be saved:", {
-        rokDecyzjiSad: formData.rokDecyzjiSad,
-        sadRejonowyNazwa: formData.sadRejonowyNazwa,
-        sadOkregowyNazwa: formData.sadOkregowyNazwa,
-        apelacjaNazwa: formData.apelacjaNazwa,
-      });
+      formData.submissionDate = new Date().toISOString(); // Court data processing complete
 
       let submissionId: string;
 
       try {
-        console.log("Starting form submission to database");
         await prisma.$connect();
-        console.log("Connection established");
 
         // Extract children data
         const dzieci = formData.dzieci || [];
@@ -363,11 +338,6 @@ export async function POST(request: NextRequest) {
             ? parseInt(String(formData.liczbaDzieci))
             : null,
         };
-
-        console.log(
-          "Base form data to be saved:",
-          JSON.stringify(createData, null, 2)
-        );
 
         // Build complete submission data with children and income
         const fullCreateData = {
@@ -499,13 +469,6 @@ export async function POST(request: NextRequest) {
               }
             : {}),
         };
-
-        console.log(
-          "Full data to be saved:",
-          JSON.stringify(fullCreateData, null, 2)
-        );
-        console.log("Executing prisma.formSubmission.create...");
-
         // Create the submission with all related data
         const submission = await prisma.formSubmission.create({
           data: fullCreateData,
@@ -516,15 +479,12 @@ export async function POST(request: NextRequest) {
         });
 
         submissionId = submission.id;
-        console.log("Form submission created successfully:", submissionId);
 
         // Log child and income data
         if (submission.dzieci && submission.dzieci.length > 0) {
-          console.log(`Saved ${submission.dzieci.length} children records`);
         }
 
         if (submission.dochodyRodzicow) {
-          console.log("Income data saved successfully");
         }
 
         // Return success response with details
@@ -561,10 +521,6 @@ export async function POST(request: NextRequest) {
         };
 
         submissionId = uuidv4();
-        console.log(
-          "Using generated UUID for failed submission:",
-          submissionId
-        );
 
         return NextResponse.json(
           {

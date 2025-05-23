@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
       );
     } // Parse the request body
     const body = await request.json();
-    console.log("Received body in subscribe:", JSON.stringify(body));
 
     // Mapowanie pól do oczekiwanego formatu, jeśli przychodzą z alternatywnej ścieżki
     if (body.email && !body.contactEmail) {
@@ -36,15 +35,10 @@ export async function POST(request: NextRequest) {
       body.zgodaPrzetwarzanie = body.acceptedTerms;
       body.zgodaKontakt = body.acceptedTerms; // zakładamy, że w uproszczonym formularzu jedna zgoda pokrywa obie
       delete body.acceptedTerms;
-    }
-
-    // Sanitize the data
+    } // Sanitize the data
     const sanitizedBody = sanitizeFormData(body);
-    console.log("Sanitized body in subscribe:", JSON.stringify(sanitizedBody));
     const { contactEmail, zgodaPrzetwarzanie, zgodaKontakt, ...formData } =
       sanitizedBody; // Validate input
-
-    console.log("Email from request in subscribe:", contactEmail);
 
     if (!contactEmail) {
       console.error("Email validation failed in subscribe:", {

@@ -144,7 +144,6 @@ export const useSecureFormStore = create<SecureFormStore>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          console.log("Form data hydrated successfully");
         } else {
           console.error("Failed to hydrate form data");
         }

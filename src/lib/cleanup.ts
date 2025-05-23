@@ -21,8 +21,6 @@ export const cleanupServerData = (): void => {
     return;
   }
 
-  console.log("Running server data cleanup...");
-
   try {
     // Cleanup CSRF tokens - parse token to get timestamp
     // In future implementation, we'll add proper token cleanup logic
@@ -34,8 +32,6 @@ export const cleanupServerData = (): void => {
 
     // Record the cleanup time
     lastCleanupTime = now;
-
-    console.log("Server data cleanup completed successfully");
   } catch (error) {
     console.error("Error during server data cleanup:", error);
   }
@@ -46,8 +42,6 @@ export const cleanupServerData = (): void => {
  * Call this function when the server starts
  */
 export const initScheduledCleanup = (): NodeJS.Timeout => {
-  console.log("Initializing scheduled server data cleanup");
-
   // Run cleanup every hour
   return setInterval(() => {
     cleanupServerData();

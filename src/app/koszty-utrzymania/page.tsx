@@ -298,7 +298,7 @@ export default function KosztyUtrzymania() {
       const liczbaDzieci = formData.dzieci?.length || 0;
 
       // Debug logging - before changes
-      console.log("DEBUG: Przed zmianami w handleNext (koszty-utrzymania)");
+
       // Log informacji o stanie formularza został usunięty przed deploymentem
 
       // Sprawdzamy, czy zapisanie się powiodło
@@ -314,9 +314,7 @@ export default function KosztyUtrzymania() {
           noweZakonczoneIndeksyDzieci.length >= liczbaDzieci;
         if (czyWszystkieDzieciZakonczone) {
           // Wszystkie dzieci są już zakończone, przechodzimy do następnego kroku
-          console.log(
-            `Wszystkie dzieci zakończone (${liczbaDzieci}/${liczbaDzieci}). Przechodzę do dochody-i-koszty`
-          );
+
           // Zapisujemy aktualizację
           await updateFormData({
             zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
@@ -354,33 +352,9 @@ export default function KosztyUtrzymania() {
             zakonczoneIndeksyDzieci: noweZakonczoneIndeksyDzieci,
           });
 
-          // Debug logging - after assigning next child
-          console.log(
-            "DEBUG: Po ustawieniu następnego dziecka (koszty-utrzymania)"
-          );
-          console.log(
-            `Ustawiono następny indeks dziecka: ${nextIndex}, ID: ${formData.dzieci?.[nextIndex]?.id}`
-          );
-          console.log(
-            `Aktualizacja zakończonych indeksów: ${JSON.stringify(
-              noweZakonczoneIndeksyDzieci
-            )}`
-          );
-
           // Przewijamy stronę do góry przed przejściem do następnej strony/dziecka
           scrollToTop(); // Dodajemy małe opóźnienie dla lepszego UX
           setTimeout(() => {
-            // Wracamy do strony dzieci, aby rozpocząć proces od nowa dla kolejnego dziecka
-            console.log(
-              `Zakończono cykl dla dziecka #${
-                aktualneDzieckoIndex + 1
-              }, przechodzę do dziecka #${nextIndex + 1}`
-            );
-            console.log(
-              `Zakończone dzieci: ${JSON.stringify(
-                noweZakonczoneIndeksyDzieci
-              )}, Liczba dzieci: ${liczbaDzieci}`
-            );
             trackedLog(operationId, "Navigating back to dzieci for next child");
             router.push("/dzieci");
 

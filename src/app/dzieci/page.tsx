@@ -57,8 +57,6 @@ export default function Dzieci() {
       return;
     }
 
-    // Debug log - when /dzieci page loads
-    console.log("DEBUG: Załadowano stronę dzieci");
     // Log informacji o stanie formularza został usunięty przed deploymentem
   }, [formData.podstawaUstalen, router, formData]);
 
@@ -476,9 +474,6 @@ export default function Dzieci() {
               ? "/czas-opieki"
               : "/koszty-utrzymania";
 
-          console.log(
-            `Dziecko #${aktualneDzieckoIndex + 1} - Przechodzę do ${targetPath}`
-          );
           trackedLog(operationId, `Navigating to ${targetPath}`);
           router.push(targetPath);
 

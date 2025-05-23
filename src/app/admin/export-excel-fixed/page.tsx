@@ -47,7 +47,6 @@ export default function ExportExcelFixed() {
       const blob = await response.blob();
       const blobSizeMB = (blob.size / (1024 * 1024)).toFixed(2); // Convert to MB
       setFileSize(blobSizeMB);
-      console.log(`Pobrano plik Excel o rozmiarze ${blobSizeMB} MB`);
 
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement("a");

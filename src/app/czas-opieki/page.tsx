@@ -398,7 +398,7 @@ export default function CzasOpieki() {
       czasSnu: czasSnu,
     };
 
-    console.log("Zapisuję wskaźniki czasu opieki:", wskaznikiDoZapisu); // Zapisujemy dane do store'a
+    // Zapisujemy dane do store'a
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {
@@ -424,11 +424,6 @@ export default function CzasOpieki() {
       }); // Przewijamy stronę do góry przed przejściem do następnej strony
       scrollToTop();
       const aktualneDzieckoIndex = formData.aktualneDzieckoIndex || 0;
-      console.log(
-        `Zakończono wypełnianie czasu opieki dla dziecka ${
-          aktualneDzieckoIndex + 1
-        }, przechodzimy do opieki wakacyjnej`
-      );
 
       // Zawsze przechodzimy do strony opieki w okresach specjalnych dla tego dziecka
       const operationId = Date.now().toString();
@@ -446,10 +441,7 @@ export default function CzasOpieki() {
       czasSnu: czasSnu,
     };
 
-    console.log(
-      "Zapisuję wskaźniki czasu opieki przed powrotem:",
-      wskaznikiDoZapisu
-    ); // Zapisujemy aktualne dane dziecka
+    // Zapisujemy aktualne dane dziecka
     if (aktualneDzieckoId && formData.dzieci) {
       const zaktualizowaneDzieci = formData.dzieci.map((dziecko) => {
         if (dziecko.id === aktualneDzieckoId) {

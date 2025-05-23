@@ -198,12 +198,10 @@ export function initializeOfflineService(): void {
     // Nasłuchiwanie zmian stanu połączenia
     window.addEventListener("online", () => {
       updateDatabaseStatus(true);
-      console.log("Connection restored - sync pending...");
     });
 
     window.addEventListener("offline", () => {
       updateDatabaseStatus(false);
-      console.log("Connection lost - switching to offline mode");
     });
   }
 }

@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
         FROM information_schema.columns 
         WHERE table_name = 'FormSubmission'
       `;
-      console.log("Dostępne kolumny w tabeli FormSubmission:", tableInfo);
+
       // Pobieramy dane z bezpiecznym zapytaniem z określonymi polami (unikając nieistniejących kolumn)
       formSubmissions = await prisma.formSubmission.findMany({
         select: {

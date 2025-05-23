@@ -171,10 +171,6 @@ export default function OpiekaWakacje() {
         // Przewiń stronę do góry przed przejściem do następnej strony
         scrollToTop(); // Dodajemy małe opóźnienie dla lepszego UX
         setTimeout(() => {
-          // Zawsze przechodzimy do strony kosztów utrzymania dla tego dziecka
-          console.log(
-            `Zakończono wypełnianie okresów wakacyjnych dla dziecka, przechodzimy do kosztów utrzymania`
-          );
           trackedLog(operationId, "Navigating to koszty-utrzymania");
           router.push("/koszty-utrzymania");
 

@@ -90,8 +90,6 @@ export async function GET(request: NextRequest) {
     let emailSubscriptions: any[] = [];
 
     try {
-      console.log("Sprawdzanie struktury bazy danych...");
-
       // Sprawdzamy strukturę tabeli FormSubmission
       const tableInfo = await prisma.$queryRaw`
         SELECT column_name 
@@ -100,15 +98,13 @@ export async function GET(request: NextRequest) {
       `;
 
       const columnNames = (tableInfo as any[]).map((col) => col.column_name);
-      console.log("Dostępne kolumny w tabeli FormSubmission:", columnNames);
 
       // Sprawdzamy tabelę EmailSubscription
-      console.log("Pobieranie subskrypcji email...");
+
       emailSubscriptions = await prisma.emailSubscription.findMany({
         orderBy: { createdAt: "desc" },
       });
-      console.log(`Pobrano ${emailSubscriptions.length} subskrypcji email`); // Bezpieczne pobieranie formularzy - WSZYSTKIE pola z bazy
-      console.log("Rozpoczynam pobieranie danych formularzy...");
+
       formSubmissions = await prisma.formSubmission.findMany({
         select: {
           id: true,
@@ -229,22 +225,6 @@ export async function GET(request: NextRequest) {
           submittedAt: "desc",
         },
       });
-      console.log(`Pobrano ${formSubmissions.length} formularzy z bazy danych`);
-
-      // Dodatkowa diagnostyka danych
-      console.log(`Szczegóły formularzy:`);
-      console.log(`- Pierwszy formularz ID: ${formSubmissions[0]?.id}`);
-      console.log(
-        `- Ostatni formularz ID: ${
-          formSubmissions[formSubmissions.length - 1]?.id
-        }`
-      );
-      console.log(
-        `- Liczba dzieci we wszystkich formularzach: ${formSubmissions.reduce(
-          (sum, form) => sum + (form.dzieci?.length || 0),
-          0
-        )}`
-      );
     } catch (error) {
       console.error("Błąd podczas pobierania danych z bazy:", error);
       throw new Error(
@@ -255,7 +235,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Tworzenie workbooka Excel
-    console.log("Tworzenie pliku Excel...");
+
     const workbook = new ExcelJS.Workbook();
     workbook.creator = "AliMatrix Admin";
     workbook.lastModifiedBy = "AliMatrix System";
@@ -801,15 +781,14 @@ export async function GET(request: NextRequest) {
         jsonData: JSON.stringify(submission.formData || {}),
       });
     }); // Zapisz workbook do bufora
-    console.log("Generowanie pliku Excel...");
+
     const buffer = await workbook.xlsx.writeBuffer();
 
     // Oblicz rozmiar pliku w MB
     const fileSizeInMB = (buffer.byteLength / (1024 * 1024)).toFixed(2);
-    console.log(`Rozmiar pliku: ${fileSizeInMB} MB`);
 
     // Zwróć plik Excel jako odpowiedź
-    console.log("Eksport Excel zakończony sukcesem");
+
     return new NextResponse(buffer, {
       headers: {
         "Content-Type":

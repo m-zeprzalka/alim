@@ -9,14 +9,6 @@
   - `src/app/api/admin/export-excel/route.ts`
   - Plik `.env` (prawdopodobnie zawiera ten sam klucz)
 
-- [ ] **Usunięcie wrażliwych danych z logów** - Należy zweryfikować i usunąć wszystkie logi zawierające dane poufne:
-
-  - Usunięcie logów pokazujących danych formularzy w `src/app/api/secure-submit/route.ts`:
-    - Linia ~278: `console.log("Court data to be saved:", {...})`
-    - Linia ~499: `console.log("Full data to be saved:", JSON.stringify(fullCreateData, null, 2))`
-  - Usunięcie logów pokazujących dane konfiguracyjne:
-    - Linia ~14: `console.log("Database URL (masked):", ...)`
-
 - [ ] **Wprowadzenie proper authorization** - Panel administracyjny zabezpieczony jest tylko przez API key w nagłówku:
 
   - Wdrożyć prawidłowe uwierzytelnianie (np. Auth.js/NextAuth) z zabezpieczeniem wszystkich tras `/admin/*`

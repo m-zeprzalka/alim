@@ -91,7 +91,7 @@ model FormSubmission {
   dzieci                        Child[]
   dochodyRodzicow               Dochody?
   emailSubscription             EmailSubscription @relation(fields: [emailSubscriptionId], references: [id])
-  kosztyUtrzymania              KosztyUtrzymania?
+
 
   @@index([status])
   @@index([emailSubscriptionId])
@@ -166,25 +166,3 @@ model Dochody {
   formSubmission              FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
 }
 
-model KosztyUtrzymania {
-  id                     String         @id @default(cuid())
-  formSubmissionId       String         @unique
-  kosztyUtrzymania       Decimal?       @db.Decimal(10, 2)
-  czynsz                 Decimal?       @db.Decimal(10, 2)
-  media                  Decimal?       @db.Decimal(10, 2)
-  energia                Decimal?       @db.Decimal(10, 2)
-  woda                   Decimal?       @db.Decimal(10, 2)
-  ogrzewanie             Decimal?       @db.Decimal(10, 2)
-  internet               Decimal?       @db.Decimal(10, 2)
-  telefon                Decimal?       @db.Decimal(10, 2)
-  transport              Decimal?       @db.Decimal(10, 2)
-  zywnosc                Decimal?       @db.Decimal(10, 2)
-  lekarstwa              Decimal?       @db.Decimal(10, 2)
-  typZamieszkania        String?
-  czestotliwoscOplat     String?
-  powierzchniaMieszkania Decimal?       @db.Decimal(10, 2)
-  liczbaOsob             Int?
-  inneKosztyMiesieczne   Decimal?       @db.Decimal(10, 2)
-  inneKosztyOpis         String?
-  formSubmission         FormSubmission @relation(fields: [formSubmissionId], references: [id], onDelete: Cascade)
-}
